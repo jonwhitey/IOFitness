@@ -26,7 +26,7 @@ function auth({ ROOT_URL, server }) {
       verified(null, user);
     } catch (err) {
       verified(err);
-        console.log(err); // eslint-disable-line
+      console.log(err); // eslint-disable-line
     }
   };
   passport.use(
@@ -54,19 +54,18 @@ function auth({ ROOT_URL, server }) {
   server.use(passport.session());
 
   server.get('/auth/google', (req, res, next) => {
-    const options = {
-      scope: ['profile', 'email'],
-      prompt: 'select_account',
-    };
-
     if (req.query && req.query.redirectUrl && req.query.redirectUrl.startsWith('/')) {
       req.session.finalUrl = req.query.redirectUrl;
     } else {
       req.session.finalUrl = null;
     }
-
-    passport.authenticate('google', options)(req, res, next);
+    
+    passport.authenticate('google', {
+      scope: ['profile', 'email'],
+      prompt: 'select_account',
+    }) (req, res, next);
   });
+  
 
   server.get(
     '/oauth2callback',

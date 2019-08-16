@@ -4,8 +4,8 @@
 
 Builder Book is an open source web app to publish documentation or books. The app is built with React/Material-UI/Next/Express/Mongoose/MongoDB and includes these third party APIs: Google, Github, AWS SES, Mailchimp, Stripe.
 
-- Live app: https://builderbook.org/books/builder-book/introduction.
-- Learn how to build this app from scratch with our [book](https://builderbook.org/book)
+- Live app: https://basics.fitness/books/builder-book/introduction.
+- Learn how to build this app from scratch with our [book](https://basics.fitness/book)
 
 We've used this `builderbook` project to build [saas](https://github.com/async-labs/saas), [async](https://async-await.com), and other real-world web apps.
 
@@ -373,9 +373,9 @@ Let's go step by step.
     Navigate to `Settings` tab and scroll to the `Domains and certificates` and click purple <b>Add domain</b> button:
     ![image](https://user-images.githubusercontent.com/10218864/54623152-36cc0b80-4a28-11e9-974b-8a14fb56a86a.png)
 
-    Type your custom domain name, I added `heroku.builderbook.org` as a custom domain, click <b>Save changes</b> button.
+    Type your custom domain name, I added `heroku.basics.fitness` as a custom domain, click <b>Save changes</b> button.
 
-    Heroku will displa you a value for CNAME record that you have to create for your custom domain. For me, custom domain is `heroku.builderbook.org and I manage DNS records at Now by Zeit.
+    Heroku will displa you a value for CNAME record that you have to create for your custom domain. For me, custom domain is `heroku.basics.fitness and I manage DNS records at Now by Zeit.
     
     After you create a CNAME, ACM status on Heroku's dashboard will change to `Ok`:
     ![image](https://user-images.githubusercontent.com/10218864/54624195-2452d180-4a2a-11e9-999d-a6a771cde73c.png)
@@ -441,7 +441,7 @@ We welcome suggestions and pull requests, especially for [issues](https://github
 
 By participating in this project, you are expected to uphold Builder Book's [Code of Conduct](https://github.com/builderbook/builderbook/blob/master/CODE-OF-CONDUCT.md).
 
-Want to support this project? Sign up at [async](https://async-await.com) and/or buy our [book](https://builderbook.org/book). Also check out our open source [SaaS boilerplate app](https://github.com/async-labs/saas).
+Want to support this project? Sign up at [async](https://async-await.com) and/or buy our [book](https://basics.fitness/book). Also check out our open source [SaaS boilerplate app](https://github.com/async-labs/saas).
 
 
 ## Team
@@ -449,7 +449,7 @@ Want to support this project? Sign up at [async](https://async-await.com) and/or
 - [Delgermurun Purevkhuu](https://github.com/delgermurun)
 - [Timur Zhiyentayev](https://github.com/tima101)
 
-You can contact us at team@builderbook.org
+You can contact us at team@basics.fitness
 
 
 ## License

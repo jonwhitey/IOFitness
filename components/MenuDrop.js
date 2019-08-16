@@ -12,14 +12,14 @@ class MenuDrop extends React.Component {
   };
 
   state = {
-    anchorEl: undefined,
     open: false,
+    anchorEl: undefined,
   };
 
   button = undefined;
 
   handleClick = (event) => {
-    this.setState({ anchorEl: event.currentTarget, open: true, });
+    this.setState({ open: true, anchorEl: event.currentTarget });
   };
 
   handleClose = () => {
@@ -28,10 +28,9 @@ class MenuDrop extends React.Component {
 
   render() {
     const { options, src, alt } = this.props;
-    const { anchorEl, open } = this.state;
 
     return (
-      <div style={{ verticalAlign: 'middle', display: 'inline-block' }}>
+      <div>
         <Avatar
           role="presentation"
           aria-owns="simple-menu"
@@ -44,15 +43,14 @@ class MenuDrop extends React.Component {
         />
         <Menu
           id="simple-menu"
-          anchorEl={anchorEl}
-          open={open}
+          anchorEl={this.state.anchorEl}
+          open={this.state.open}
           onClose={this.handleClose}
-          keepMounted
         >
           <p />
-          {options.map((option) => (
+          {options.map(option => (
             <div id="wrappingLink" key={option.text}>
-              <Link prefetch={!option.noPrefetch} href={option.href} as={option.as || option.href}>
+              <Link prefetch href={option.href} as={option.as || option.href}>
                 <a style={{ padding: '0px 20px' }}>{option.text}</a>
               </Link>
               <p />

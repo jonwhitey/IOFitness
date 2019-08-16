@@ -1,11 +1,10 @@
 import React from 'react';
 import Router from 'next/router';
-import Head from 'next/head';
 import NProgress from 'nprogress';
 
 import withAuth from '../../lib/withAuth';
 import EditBook from '../../components/admin/EditBook';
-import { addBook, syncAllChapters } from '../../lib/api/admin';
+import { addBook, syncBookContent } from '../../lib/api/admin';
 import notify from '../../lib/notifier';
 
 class AddBook extends React.Component {
@@ -17,7 +16,7 @@ class AddBook extends React.Component {
       notify('Saved');
       try {
         const bookId = book._id;
-        await syncAllChapters({ bookId });
+        await syncBookContent({ bookId });
         notify('Synced');
         NProgress.done();
         Router.push(`/admin/book-detail?slug=${book.slug}`, `/admin/book-detail/${book.slug}`);
@@ -34,10 +33,6 @@ class AddBook extends React.Component {
   render() {
     return (
       <div style={{ padding: '10px 45px' }}>
-        <Head>
-          <title>Add Book</title>
-          <meta name="description" content="Add new book" />
-        </Head>
         <EditBook onSave={this.addBookOnSave} />
       </div>
     );

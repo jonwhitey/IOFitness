@@ -10,13 +10,8 @@ import { theme } from '../lib/theme';
 import Notifier from '../components/Notifier';
 import Header from '../components/Header';
 
-import * as gtag from '../lib/gtag';
-
 Router.onRouteChangeStart = () => NProgress.start();
-Router.onRouteChangeComplete = (url) => {
-  NProgress.done();
-  gtag.pageview(url);
-};
+Router.onRouteChangeComplete = () => NProgress.done();
 Router.onRouteChangeError = () => NProgress.done();
 
 class MyApp extends App {
@@ -41,8 +36,6 @@ class MyApp extends App {
   render() {
     const { Component, pageProps } = this.props;
 
-    // console.log(pageProps);
-    // console.log(pageProps.noHeader);
 
     return (
       <Container>

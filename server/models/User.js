@@ -3,6 +3,7 @@ const _ = require('lodash');
 const generateSlug = require('../utils/slugify');
 const sendEmail = require('../aws');
 const { getEmailTemplate } = require('./EmailTemplate');
+
 const logger = require('../logs');
 
 const { Schema } = mongoose;
@@ -40,9 +41,6 @@ const mongoSchema = new Schema({
   displayName: String,
   avatarUrl: String,
 
-  purchasedBookIds: [String],
-  freeBookIds: [String],
-
   isGithubConnected: {
     type: Boolean,
     default: false,
@@ -50,33 +48,12 @@ const mongoSchema = new Schema({
   githubAccessToken: {
     type: String,
   },
+  purchasedBookIds: [String],
 });
 
 class UserClass {
   static publicFields() {
-    return [
-      'id',
-      'displayName',
-      'email',
-      'avatarUrl',
-      'slug',
-      'isAdmin',
-      'isGithubConnected',
-      'purchasedBookIds',
-      'freeBookIds',
-    ];
-  }
-
-  static search(query) {
-    return this.find(
-      {
-        $or: [
-          { displayName: { $regex: query, $options: 'i' } },
-          { email: { $regex: query, $options: 'i' } },
-        ],
-      },
-      UserClass.publicFields().join(' '),
-    );
+    return ['id', 'displayName', 'email', 'avatarUrl', 'slug', 'isAdmin', 'isGithubConnected', 'purchasedBookIds'];
   }
 
   static async signInOrSignUp({ googleId, email, googleToken, displayName, avatarUrl }) {
@@ -84,6 +61,7 @@ class UserClass {
 
     if (user) {
       const modifier = {};
+
       if (googleToken.accessToken) {
         modifier.access_token = googleToken.accessToken;
       }
@@ -102,7 +80,6 @@ class UserClass {
     }
 
     const slug = await generateSlug(this, displayName);
-    const userCount = await this.find().countDocuments();
 
     const newUser = await this.create({
       createdAt: new Date(),
@@ -112,7 +89,6 @@ class UserClass {
       displayName,
       avatarUrl,
       slug,
-      isAdmin: userCount === 0,
     });
 
     const template = await getEmailTemplate('welcome', {

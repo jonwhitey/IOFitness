@@ -2,7 +2,6 @@ import React from 'react';
 import Router from 'next/router';
 import NProgress from 'nprogress';
 import PropTypes from 'prop-types';
-import Head from 'next/head';
 import Error from 'next/error';
 
 import EditBookComp from '../../components/admin/EditBook';
@@ -27,9 +26,8 @@ class EditBook extends React.Component {
   async componentDidMount() {
     NProgress.start();
 
-    const { slug } = this.props;
-
     try {
+      const { slug } = this.props;
       const book = await getBookDetail({ slug });
       this.setState({ book }); // eslint-disable-line
       NProgress.done();
@@ -39,7 +37,7 @@ class EditBook extends React.Component {
     }
   }
 
-  editBookOnSave = async (data) => {
+  editBook = async (data) => {
     const { book } = this.state;
     NProgress.start();
 
@@ -71,14 +69,7 @@ class EditBook extends React.Component {
 
     return (
       <div>
-        <Head>
-          <title>
-            Edit
-            {book.name}
-          </title>
-          <meta name="description" content={`Edit book: ${book.name}`} />
-        </Head>
-        <EditBookComp onSave={this.editBookOnSave} book={book} />
+        <EditBookComp onSave={this.editBook} book={book} />
       </div>
     );
   }

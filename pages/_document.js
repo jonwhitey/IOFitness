@@ -1,12 +1,11 @@
-/* eslint-disable react/no-danger */
 import React from 'react';
 import Document, { Head, Main, NextScript } from 'next/document';
 import { ServerStyleSheets } from '@material-ui/styles';
 import htmlescape from 'htmlescape';
 
-const { GA_TRACKING_ID, StripePublishableKey } = process.env;
-const env = { GA_TRACKING_ID, StripePublishableKey };
-// console.log(GA_TRACKING_ID);
+const { StripePublishableKey } = process.env;
+
+const env = { StripePublishableKey };
 
 class MyDocument extends Document {
   render() {
@@ -62,41 +61,27 @@ class MyDocument extends Document {
                 background:#FFF;
                 color: #000;
                 border: 1px solid #ddd;
-                font-size: 14px;
               }
               code {
                 font-size: 14px;
-                background: #FFF;
               }
             `}
           </style>
-          <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_TRACKING_ID}`} />
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){
-                  dataLayer.push(arguments);
-                }
-                gtag('js', new Date());
-                gtag('config', '${GA_TRACKING_ID}');
-              `,
-            }}
-          />
         </Head>
         <body
           style={{
             font: '16px Muli',
             color: '#222',
             margin: '0px auto',
-            fontWeight: '400',
+            fontWeight: '300',
             lineHeight: '1.5em',
             backgroundColor: '#F7F9FC',
             minHeight: '100%',
           }}
         >
           <Main />
-          <script dangerouslySetInnerHTML={{ __html: `__ENV__ = ${htmlescape(env)}` }} />
+          {/* eslint-disable-next-line ract/no-danger */}
+          <script dangerouslySetInnerHTML={{ __html: `__ENV__ = ${htmlescape(env)}`}}/>
           <NextScript />
         </body>
       </html>

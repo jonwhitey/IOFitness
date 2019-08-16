@@ -1,11 +1,10 @@
 const qs = require('qs');
 const request = require('request');
 const GithubAPI = require('@octokit/rest');
-
 const User = require('./models/User');
 
-const TOKEN_URI = 'https://github.com/login/oauth/access_token';
 const AUTHORIZE_URI = 'https://github.com/login/oauth/authorize';
+const TOKEN_URI = 'https://github.com/login/oauth/access_token';
 
 function setupGithub({ server }) {
   const dev = process.env.NODE_ENV !== 'production';
@@ -19,7 +18,6 @@ function setupGithub({ server }) {
       return;
     }
 
-    // Redirect to Github /oauth/authorize endpoint
     res.redirect(
       `${AUTHORIZE_URI}?${qs.stringify({
         scope: 'repo',
@@ -80,8 +78,7 @@ function setupGithub({ server }) {
 
 function getAPI({ accessToken }) {
   const github = new GithubAPI({
-    // debug: true,
-    timeout: 0,
+    timeout: 5000,
     baseUrl: 'https://api.github.com',
     headers: {
       accept: 'application/json',

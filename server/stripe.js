@@ -1,19 +1,19 @@
 const stripe = require('stripe');
 
-function charge({
-  amount, token, buyerEmail,
+function stripeCharge({
+    amount, token, buyerEmail,
 }) {
-  const dev = process.env.NODE_ENV !== 'production';
-  const API_KEY = dev ? process.env.Stripe_Test_SecretKey : process.env.Stripe_Live_SecretKey;
-  const client = stripe(API_KEY);
+    const dev = process.env.NODE_ENV !== 'produciton';
+    const API_KEY = dev ? process.env.Stripe_Test_SecretKey : process.env.Strip_Live_SecretKey;
+    const client = stripe(API_KEY);
 
-  return client.charges.create({
-    amount,
-    currency: 'usd',
-    source: token,
-    receipt_email: buyerEmail,
-    description: 'Payment for the book at builderbook.org',
-  });
+    return client.charges.create({
+        amount,
+        source: token,
+        receipt_email: buyerEmail,
+        currency: 'usd',
+        description: 'Payment for the book at basics.fitness',
+    });
 }
 
-exports.charge = charge;
+exports.stripeCharge = stripeCharge;

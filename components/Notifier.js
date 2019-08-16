@@ -13,7 +13,7 @@ class Notifier extends React.Component {
     openSnackbarFn = this.openSnackbar;
   }
 
-  handleSnackbarClose = () => {
+  handleSnackbarRequestClose = () => {
     this.setState({
       open: false,
       message: '',
@@ -25,7 +25,6 @@ class Notifier extends React.Component {
   };
 
   render() {
-    const { open } = this.state;
     const message = (
       <span id="snackbar-message-id" dangerouslySetInnerHTML={{ __html: this.state.message }} />
     );
@@ -34,9 +33,9 @@ class Notifier extends React.Component {
       <Snackbar
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         message={message}
-        autoHideDuration={3000}
-        onClose={this.handleSnackbarClose}
-        open={open}
+        autoHideDuration={5000}
+        onClose={this.handleSnackbarRequestClose}
+        open={this.state.open}
         ContentProps={{
           'aria-describedby': 'snackbar-message-id',
         }}

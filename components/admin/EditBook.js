@@ -7,7 +7,7 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 
 import { getGithubRepos } from '../../lib/api/admin';
-import { styleTextField } from '../../lib/SharedStyles';
+import { styleTextField } from '../../components/SharedStyles';
 import notify from '../../lib/notifier';
 
 class EditBook extends React.Component {
@@ -42,9 +42,7 @@ class EditBook extends React.Component {
 
   onSubmit = (event) => {
     event.preventDefault();
-    const { onSave } = this.props;
-    const { book } = this.state;
-    const { name, price, githubRepo } = book;
+    const { name, price, githubRepo } = this.state.book;
 
     if (!name) {
       notify('Name is required');
@@ -61,22 +59,37 @@ class EditBook extends React.Component {
       return;
     }
 
-    onSave(book);
+    this.props.onSave(this.state.book);
   };
 
   render() {
-    const { book, repos } = this.state;
     return (
       <div style={{ padding: '10px 45px' }}>
-        <br />
         <form onSubmit={this.onSubmit}>
+          <br />
+          <div>
+            <TextField
+              onChange={(event) => {
+                this.setState({
+                  book: Object.assign({}, this.state.book, { name: event.target.value }),
+                });
+              }}
+              value={this.state.book.name}
+              type="text"
+              label="Book's title"
+              style={styleTextField}
+              required
+            />
+          </div>
+          <br />
+          <br />
           <TextField
             onChange={(event) => {
               this.setState({
-                book: Object.assign({}, book, { price: Number(event.target.value) }),
+                book: Object.assign({}, this.state.book, { price: Number(event.target.value) }),
               });
             }}
-            value={book.price || ''}
+            value={this.state.book.price}
             type="number"
             label="Book's price"
             className="textFieldInput"
@@ -87,72 +100,26 @@ class EditBook extends React.Component {
           <br />
           <br />
           <div>
-            <TextField
-              onChange={(event) => {
-                this.setState({
-                  book: Object.assign({}, book, { name: event.target.value }),
-                });
-              }}
-              value={book.name || ''}
-              type="text"
-              label="Book's title"
-              style={styleTextField}
-              required
-            />
-          </div>
-          <br />
-          <div>
             <span>Github repo: </span>
             <Select
-              value={book.githubRepo || ''}
+              value={this.state.book.githubRepo || ''}
               input={<Input />}
               onChange={(event) => {
                 this.setState({
-                  book: Object.assign({}, book, { githubRepo: event.target.value }),
+                  book: Object.assign({}, this.state.book, { githubRepo: event.target.value }),
                 });
               }}
             >
               <MenuItem value="">
                 <em>-- choose github repo --</em>
               </MenuItem>
-              {repos.map((r) => (
+              {this.state.repos.map(r => (
                 <MenuItem value={r.full_name} key={r.id}>
                   {r.full_name}
                 </MenuItem>
               ))}
             </Select>
           </div>
-          <br />
-
-          <TextField
-            onChange={(event) => {
-              this.setState({
-                book: Object.assign({}, book, {
-                  supportURL: event.target.value,
-                }),
-              });
-            }}
-            value={book.supportURL || ''}
-            label="Support URL"
-            className="textFieldInput"
-            style={styleTextField}
-          />
-          <br />
-          <br />
-
-          <TextField
-            onChange={(event) => {
-              this.setState({
-                book: Object.assign({}, book, {
-                  textNearButton: event.target.value,
-                }),
-              });
-            }}
-            value={book.textNearButton || ''}
-            label="Text next to Buy Button"
-            className="textFieldInput"
-            style={styleTextField}
-          />
           <br />
           <br />
           <Button variant="contained" type="submit">

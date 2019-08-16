@@ -12,11 +12,3 @@ node_modules/
 .coverage
 .env
 .next
-
-book/8-exp
-tutorials/working
-
-yarn-error.log
-.directory
-*.code-workspace
-package-lock.json
