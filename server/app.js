@@ -6,7 +6,6 @@ const mongoose = require('mongoose');
 const helmet = require('helmet');
 const sitemapAndRobots = require('./sitemapAndRobots');
 
-
 const auth = require('./google');
 const { setupGithub } = require('./github');
 const api = require('./api');
@@ -25,7 +24,7 @@ const MONGO_URL = dev ? process.env.MONGO_URL_TEST : process.env.MONGO_URL;
 const options = {
   useNewUrlParser: true,
   useCreateIndex: true,
-  useFindAndModify: false, 
+  useFindAndModify: false,
 };
 mongoose.connect(MONGO_URL, options);
 
