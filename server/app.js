@@ -31,10 +31,6 @@ mongoose.connect(MONGO_URL, options);
 const port = process.env.PORT || 8000;
 const ROOT_URL = getRootUrl();
 
-console.log(process.env.NODE_ENV);
-console.log(dev);
-console.log(ROOT_URL);
-
 const URL_MAP = {
   '/login': '/public/login',
   '/my-books': '/customer/my-books',

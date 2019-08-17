@@ -51,6 +51,7 @@ class MenuDrop extends React.Component {
         >
           <p />
           {options.map((option) => (
+            (console.log(option));
             <div id="wrappingLink" key={option.text}>
               <Link prefetch={!option.noPrefetch} href={option.href} as={option.as || option.href}>
                 <a style={{ padding: '0px 20px' }}>{option.text}</a>
