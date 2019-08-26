@@ -8,6 +8,8 @@ const logger = require('../logs');
 
 const { Schema } = mongoose;
 
+
+// define user Schema
 const mongoSchema = new Schema({
   googleId: {
     type: String,

@@ -10,6 +10,8 @@ import MenuDrop from './MenuDrop';
 
 import { styleToolbar, styleRaisedButton } from './SharedStyles';
 
+// Header component that is displayed on all pages
+
 const optionsMenuCustomer = [
   {
     text: 'My books',

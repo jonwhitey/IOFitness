@@ -4,8 +4,23 @@ import { ServerStyleSheets } from '@material-ui/styles';
 import htmlescape from 'htmlescape';
 
 const { StripePublishableKey } = process.env;
-
 const env = { StripePublishableKey };
+
+/*
+
+MyDocument extends and customizes the next.js Document
+that will extend <head>, <html> and <body> elements to every page
+
+Renders a custom next.js _document as shown in next.js documentation
+Ensure page sent from the server includes proper rendered styles
+
+Render App on the servers
+Add styles as props to MyDocument, render Document component on the server
+Rednered page sent from server includes proper styles
+No flash of style
+
+*/
+
 
 class MyDocument extends Document {
   render() {

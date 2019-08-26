@@ -1,3 +1,7 @@
+/* 
+node does not support ES6 syntax yet, could use babel-node, 
+want avoid configuration errors so we don't
+*/
 const express = require('express');
 const session = require('express-session');
 const mongoSessionStore = require('connect-mongo');
@@ -8,7 +12,7 @@ const sitemapAndRobots = require('./sitemapAndRobots');
 
 const auth = require('./google');
 const { setupGithub } = require('./github');
-const api = require('./api');
+const api = require('./api/index');
 
 const logger = require('./logs');
 const { insertTemplates } = require('./models/EmailTemplate');
@@ -16,9 +20,20 @@ const routesWithSlug = require('./routesWithSlug');
 
 const getRootUrl = require('../lib/api/getRootUrl');
 
+// initializes dotenv file
 require('dotenv').config();
 
+/* 
+Initialize the next server, express server, and MongoDB
+dev is true when the environment is not in production
+*/ 
+
 const dev = process.env.NODE_ENV !== 'production';
+
+/* 
+connect to mongodb
+options object avoids deprecation warning
+*/
 const MONGO_URL = dev ? process.env.MONGO_URL_TEST : process.env.MONGO_URL;
 
 const options = {
@@ -26,8 +41,10 @@ const options = {
   useCreateIndex: true,
   useFindAndModify: false,
 };
+
 mongoose.connect(MONGO_URL, options);
 
+// specify port, root_url, and url_map
 const port = process.env.PORT || 8000;
 const ROOT_URL = getRootUrl();
 
@@ -35,6 +52,8 @@ const URL_MAP = {
   '/login': '/public/login',
   '/my-books': '/customer/my-books',
 };
+
+// create next server
 
 const app = next({ dev });
 const handle = app.getRequestHandler();
@@ -90,3 +109,9 @@ app.prepare().then(async () => {
     logger.info(`> Ready on ${ROOT_URL}`);
   });
 });
+
+module.exports = {
+  mongoose,
+  options,
+  MONGO_URL,
+}

@@ -1,3 +1,5 @@
+/* 
+
 const generateSlug = require('../../../server/utils/slugify');
 
 const MockUser = {
@@ -36,3 +38,5 @@ describe('slugify', () => {
     });
   });
 });
+
+*/
