@@ -1,6 +1,6 @@
 const { assert } = require('chai');
-const User = require('../models/User');
 const { connect, disconnect } = require('../database');
+const User = require('../models/User');
 
 // call signInOrSignup with user
 
