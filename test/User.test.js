@@ -1,6 +1,7 @@
 const { assert } = require('chai');
-const { connect, disconnect } = require('../database');
-const User = require('../models/User');
+const { connect, disconnect } = require('../server/database');
+const User = require('../server/models/User');
+const { stop } = require('../server/app.js');
 
 // call signInOrSignup with user
 
@@ -24,12 +25,22 @@ const user = {
 };
 
 describe('User', () => {
-  beforeEach(connect);
-  afterEach(disconnect);
-
+  /* beforeEach(async () => {
+    await connect;
+    console.log('Connected');
+  });
+   afterEach(async () => {
+    await disconnect;
+    console.log('disconnected');
+    await stop;
+    console.log('stopped app');
+  });
+*/
   describe('can', () => {
     it('exist', async () => {
       const jewhite = await User.findOne({ email: 'jewhite@colorado.edu' });
+      console.log(jewhite);
+      
       assert.exists(jewhite, 'jewhite exists!');
     });
   });
