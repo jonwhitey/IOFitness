@@ -8,6 +8,7 @@ const logger = require('../logs');
 
 const { Schema } = mongoose;
 
+
 // define user Schema
 const mongoSchema = new Schema({
   googleId: {
@@ -54,16 +55,7 @@ const mongoSchema = new Schema({
 
 class UserClass {
   static publicFields() {
-    return [
-      'id',
-      'displayName',
-      'email',
-      'avatarUrl',
-      'slug',
-      'isAdmin',
-      'isGithubConnected',
-      'purchasedBookIds',
-    ];
+    return ['id', 'displayName', 'email', 'avatarUrl', 'slug', 'isAdmin', 'isGithubConnected', 'purchasedBookIds'];
   }
 
   static async signInOrSignUp({ googleId, email, googleToken, displayName, avatarUrl }) {
