@@ -110,13 +110,7 @@ app.prepare().then(async () => {
   });
 });
 
-const stop = () => {
-  app.close();
-};
-
 module.exports = {
-  mongoose,
   options,
   MONGO_URL,
-  stop,
 };

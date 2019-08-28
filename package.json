@@ -7,7 +7,7 @@
     "build": "NODE_ENV=production next build",
     "start": "node server/app.js",
     "lint": "eslint components pages lib server",
-    "test": "mocha",
+    "test": "mocha --exit --recursive",
     "test-jest": "jest --coverage",
     "now": "now && now alias && now rm builderbook --safe --yes",
     "now-upgrade": "npm install now -g",
@@ -20,6 +20,7 @@
   "dependencies": {
     "@material-ui/core": "4.1.3",
     "@material-ui/styles": "latest",
+    "@moebius/http-graceful-shutdown": "^1.1.0",
     "@octokit/rest": "^16.28.2",
     "aws-sdk": "2.483.0",
     "chai": "^4.2.0",
