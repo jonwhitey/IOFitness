@@ -1,4 +1,5 @@
 const { assert } = require('chai');
+const { connect, disconnect } = require('../server/database');
 const User = require('../server/models/User');
 
 // call signInOrSignup with user
@@ -22,11 +23,14 @@ const user = {
   __v: { $numberInt: '0' },
 };
 
-describe('User can', () => {
-  it('exist', async () => {
-    console.log('calling findOne');
-    const jewhite = await User.findOne({ email: 'jewhite@colorado.edu' });
-    console.log(jewhite);
-    assert.exists(jewhite, 'jewhite exists!');
+describe('User', () => {
+  //beforeEach(connect);
+  //afterEach(disconnect);
+
+  describe('can', () => {
+    it('exist', async () => {
+      const jewhite = await User.findOne({ email: 'jewhite@colorado.edu' });
+      assert.exists(jewhite, 'jewhite exists!');
+    });
   });
 });
