@@ -26,7 +26,7 @@ require('dotenv').config();
 /* 
 Initialize the next server, express server, and MongoDB
 dev is true when the environment is not in production
-*/ 
+*/
 
 const dev = process.env.NODE_ENV !== 'production';
 
@@ -110,7 +110,3 @@ app.prepare().then(async () => {
   });
 });
 
-module.exports = {
-  options,
-  MONGO_URL,
-}

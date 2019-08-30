@@ -1,6 +1,6 @@
 const { assert } = require('chai');
-const { connect, disconnect } = require('../server/database');
-const User = require('../server/models/User');
+const { mongoose } = require('../../../server/app');
+const User = require('../../../server/models/User');
 
 // call signInOrSignup with user
 
@@ -24,9 +24,6 @@ const user = {
 };
 
 describe('User', () => {
-  //beforeEach(connect);
-  //afterEach(disconnect);
-
   describe('can', () => {
     it('exist', async () => {
       const jewhite = await User.findOne({ email: 'jewhite@colorado.edu' });
