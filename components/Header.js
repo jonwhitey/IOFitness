@@ -12,6 +12,7 @@ import { styleToolbar, styleRaisedButton } from './SharedStyles';
 
 // Header component that is displayed on all pages
 
+// dropdown options for customer
 const optionsMenuCustomer = [
   {
     text: 'My books',
@@ -24,6 +25,7 @@ const optionsMenuCustomer = [
   },
 ];
 
+// dropdown menu for admin
 const optionsMenuAdmin = [
   {
     text: 'Admin',
@@ -89,10 +91,11 @@ function Header({ user, hideHeader, redirectUrl }) {
                 ) : null}
               </div>
             ) : (
-              <Link 
-                prefetch 
-                href={{ pathname: "/public/login", query: { redirectUrl }}}
-                as={{ pathname: '/login', query: { redirectUrl }}} >
+              <Link
+                prefetch
+                href={{ pathname: '/public/login', query: { redirectUrl } }}
+                as={{ pathname: '/login', query: { redirectUrl } }}
+              >
                 <a style={{ margin: '0px 20px 0px auto' }}>Log in</a>
               </Link>
             )}
@@ -107,6 +110,8 @@ Header.propTypes = {
   user: PropTypes.shape({
     avatarUrl: PropTypes.string,
     displayName: PropTypes.string,
+    isAdmin: PropTypes.bool,
+    isGithubConnected: PropTypes.bool,
   }),
   hideHeader: PropTypes.bool,
   redirectUrl: PropTypes.string,

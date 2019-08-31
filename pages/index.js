@@ -4,6 +4,9 @@ import Head from 'next/head';
 
 import withAuth from '../lib/withAuth';
 
+// Index is a little dashboard that shows the functionality of withAuth
+// withAuth passed the user object as a prop to Index
+
 // eslint-disable-next-line react/prefer-stateless-function
 class Index extends React.Component {
   static propTypes = {

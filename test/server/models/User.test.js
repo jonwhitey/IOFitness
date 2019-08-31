@@ -1,4 +1,6 @@
 const { assert } = require('chai');
+const request = require('supertest');
+const express = require('express');
 const { mongoose } = require('../../../server/app');
 const User = require('../../../server/models/User');
 
@@ -23,11 +25,55 @@ const user = {
   __v: { $numberInt: '0' },
 };
 
+const loginPath =
+'/oauth2callback?code=4%2FqgH_9G3guZEyh-QBIT1JglqZnGpvJlsb-OUBMbBrwkdq1wpb34goYMiqigX1N9isk9U8qC5Iovjc6SWGPog1pxs&scope=email+profile+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email+openid&authuser=0&session_state=5a2523d1d923f62d3eb11b831b3757688879ab04..23bc&prompt=consent HTTP/1.1\r\nHost: 127.0.0.1:55953\r\nAccept-Encoding: gzip, deflate\r\nUser-Agent: node-superagent/3.8.3\r\nConnection: close\r\n\r\n'
+const app = express();
+
 describe('User', () => {
   describe('can', () => {
     it('exist', async () => {
       const jewhite = await User.findOne({ email: 'jewhite@colorado.edu' });
       assert.exists(jewhite, 'jewhite exists!');
     });
+  });
+});
+
+// SigninorSignUp
+
+/*
+ when a user logs in: 
+  1. route responds with user object,
+  2. create a new session document, 
+  3. set a cookie on the browser, 
+  4. update user prop on the app, 
+*/
+
+describe('Sign in process for existing user:', () => {
+  describe('server', () => {
+    it('responds with the user object', async () => {
+      // hitting oauth2callback responds with json
+      request(app)
+        .get(loginPath)
+        .expect('Content-Type', /json/)
+        .end(function(err, res) {
+          console.log(res);
+        });
+    });
+    /* it('creates a new session document', () => {
+
+    });
+    const agent = request.agent(app);
+    it('sets a cookie on the users browser', () => {
+      
+      agent
+      .get('/')
+      .expect('set-cookie', 'cookie=hey; Path=/', done);
+  });
+
+    });
+    it('updates the user prop', () => {
+
+    });
+    */
   });
 });

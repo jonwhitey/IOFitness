@@ -7,46 +7,40 @@ import withAuth from '../../lib/withAuth';
 import { styleLoginButton } from '../../components/SharedStyles';
 
 function Login({ router }) {
-const redirectUrl = (router && router.query && router.query.redirectUrl) || '';
+  const redirectUrl = (router && router.query && router.query.redirectUrl) || '';
 
-return (
- <div style={{ textAlign: 'center', margin: '0 20px' }}>
-   <Head>
-     <title>
-       Log in to Builder Book
-     </title>
-     <meta name="description" content="Login page for basics.fitness" />
-   </Head>
-   <br />
-   <p style={{ margin: '45px auto', fontSize: '44px', fontWeight: '400' }}>
-     Log in
-   </p>
-   <p>
-     You’ll be logged in for 14 days unless you log out manually.
-   </p>
-   <br />
-   <Button
-     variant="contained"
-     style={styleLoginButton}
-     href={`/auth/google?redirectUrl=${redirectUrl}`}
-   >
-     <img
-       src="https://storage.googleapis.com/builderbook/G.svg"
-       alt="Log in with Google"
-       style={{ marginRight: '10px' }}
-     />
-     Log in with Google
-   </Button>
- </div>
-);
+  return (
+    <div style={{ textAlign: 'center', margin: '0 20px' }}>
+      <Head>
+        <title>Log in to Builder Book</title>
+        <meta name="description" content="Login page for basics.fitness" />
+      </Head>
+      <br />
+      <p style={{ margin: '45px auto', fontSize: '44px', fontWeight: '400' }}>Log in</p>
+      <p>You’ll be logged in for 14 days unless you log out manually.</p>
+      <br />
+      <Button
+        variant="contained"
+        style={styleLoginButton}
+        href={`/auth/google?redirectUrl=${redirectUrl}`}
+      >
+        <img
+          src="https://storage.googleapis.com/builderbook/G.svg"
+          alt="Log in with Google"
+          style={{ marginRight: '10px' }}
+        />
+        Log in with Google
+      </Button>
+    </div>
+  );
 }
 
 Login.propTypes = {
-router: PropTypes.shape({
- query: PropTypes.shape({
-   redirectUrl: PropTypes.string,
- }),
-}).isRequired,
+  router: PropTypes.shape({
+    query: PropTypes.shape({
+      redirectUrl: PropTypes.string,
+    }),
+  }).isRequired,
 };
 
 export default withAuth(withRouter(Login), { logoutRequired: true });

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Menu from '@material-ui/core/Menu';
 import Avatar from '@material-ui/core/Avatar';
 
+// MenuDrop component for the Header HOC
 class MenuDrop extends React.Component {
   static propTypes = {
     src: PropTypes.string.isRequired,
@@ -28,7 +29,7 @@ class MenuDrop extends React.Component {
 
   render() {
     const { options, src, alt } = this.props;
-
+    const { open, anchorEl } = this.state;
     return (
       <div>
         <Avatar
@@ -41,12 +42,7 @@ class MenuDrop extends React.Component {
           alt={alt}
           style={{ margin: '0px 20px 0px auto', cursor: 'pointer' }}
         />
-        <Menu
-          id="simple-menu"
-          anchorEl={this.state.anchorEl}
-          open={this.state.open}
-          onClose={this.handleClose}
-        >
+        <Menu id="simple-menu" anchorEl={anchorEl} open={open} onClose={this.handleClose}>
           <p />
           {options.map((option) => (
             <div id="wrappingLink" key={option.text}>

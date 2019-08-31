@@ -58,11 +58,17 @@ const URL_MAP = {
 const app = next({ dev });
 const handle = app.getRequestHandler();
 
+// next server that uses express
 app.prepare().then(async () => {
   const server = express();
   server.use(helmet());
 
   server.use(express.json());
+
+  /* 
+    initalize mongoSessionStore
+     create session object with the cookie, secret, exipiration and MongoStore
+  */
 
   const MongoStore = mongoSessionStore(session);
   const sess = {
@@ -85,6 +91,7 @@ app.prepare().then(async () => {
     sess.cookie.secure = true;
   }
 
+  // anytime a user opens the app, create and save the sess cookie and document
   server.use(session(sess));
 
   await insertTemplates();
@@ -110,3 +117,4 @@ app.prepare().then(async () => {
   });
 });
 
+module.exports = { app };

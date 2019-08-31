@@ -1,4 +1,4 @@
-/* 
+/*
 
 const generateSlug = require('../../../server/utils/slugify');
 

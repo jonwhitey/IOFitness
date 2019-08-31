@@ -8,7 +8,6 @@ const logger = require('../logs');
 
 const { Schema } = mongoose;
 
-
 // define user Schema
 const mongoSchema = new Schema({
   googleId: {
@@ -55,15 +54,25 @@ const mongoSchema = new Schema({
 
 class UserClass {
   static publicFields() {
-    return ['id', 'displayName', 'email', 'avatarUrl', 'slug', 'isAdmin', 'isGithubConnected', 'purchasedBookIds'];
+    return [
+      'id',
+      'displayName',
+      'email',
+      'avatarUrl',
+      'slug',
+      'isAdmin',
+      'isGithubConnected',
+      'purchasedBookIds',
+    ];
   }
 
   static async signInOrSignUp({ googleId, email, googleToken, displayName, avatarUrl }) {
+    // check if user exists
     const user = await this.findOne({ googleId }).select(UserClass.publicFields().join(' '));
 
     if (user) {
       const modifier = {};
-
+      // check if google provided new tokens
       if (googleToken.accessToken) {
         modifier.access_token = googleToken.accessToken;
       }
@@ -71,16 +80,16 @@ class UserClass {
       if (googleToken.refreshToken) {
         modifier.refresh_token = googleToken.refreshToken;
       }
-
+      // if google did not provide tokens; leave it the same
       if (_.isEmpty(modifier)) {
         return user;
       }
-
+      // if google did provide the tokens, update the User document
       await this.updateOne({ googleId }, { $set: modifier });
 
       return user;
     }
-
+    // if user does not exists, generate a slug and add the new user
     const slug = await generateSlug(this, displayName);
 
     const newUser = await this.create({

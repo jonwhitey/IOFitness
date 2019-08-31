@@ -10,6 +10,7 @@ import { theme } from '../lib/theme';
 import Notifier from '../components/Notifier';
 import Header from '../components/Header';
 
+//adds nProgress to the next router
 Router.onRouteChangeStart = () => NProgress.start();
 Router.onRouteChangeComplete = () => NProgress.done();
 Router.onRouteChangeError = () => NProgress.done();

@@ -1,12 +1,12 @@
-const express = require("express");
-const logger = require("../logs.js");
+const express = require('express');
+const logger = require('../logs.js');
 const Book = require('../models/Book.js');
 
 const router = express.Router();
 
 router.use((req, res, next) => {
   if (!req.user) {
-    res.status(401).json({ error: "Unauthorized" });
+    res.status(401).json({ error: 'Unauthorized' });
     return;
   }
 
@@ -17,7 +17,7 @@ router.use((req, res, next) => {
 // 1. /buy-book
 // 2. /my-books
 
-router.post("/buy-book", async (req, res) => {
+router.post('/buy-book', async (req, res) => {
   const { id, stripeToken } = req.body;
 
   try {
