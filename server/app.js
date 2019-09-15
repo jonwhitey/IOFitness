@@ -10,7 +10,7 @@ const mongoose = require('mongoose');
 const helmet = require('helmet');
 const sitemapAndRobots = require('./sitemapAndRobots');
 
-const auth = require('./google');
+const auth = require('./login');
 const { setupGithub } = require('./github');
 const api = require('./api/index');
 
@@ -50,6 +50,7 @@ const ROOT_URL = getRootUrl();
 
 const URL_MAP = {
   '/login': '/public/login',
+  '/signup': '/public/signup',
   '/my-books': '/customer/my-books',
 };
 
@@ -91,7 +92,11 @@ app.prepare().then(async () => {
     sess.cookie.secure = true;
   }
 
-  // anytime a user opens the app, create and save the sess cookie and document
+  /* 
+  anytime a user opens the app, and logs in? 
+  create and save the sess cookie and document
+  */
+
   server.use(session(sess));
 
   await insertTemplates();

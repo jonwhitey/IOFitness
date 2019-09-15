@@ -1,7 +1,7 @@
 const { assert } = require('chai');
 const request = require('supertest');
 const express = require('express');
-const { mongoose } = require('../../../server/app');
+const { mongoose, app } = require('../../../server/app');
 const User = require('../../../server/models/User');
 
 // call signInOrSignup with user
@@ -10,7 +10,7 @@ const User = require('../../../server/models/User');
 
 // define user (potential to remove to . in jonathanewhite@colorado.edu)
 
-const user = {
+const user1 = {
   _id: { $oid: '5d5038f4938319beacb621da' },
   isAdmin: false,
   isGithubConnected: false,
@@ -25,9 +25,6 @@ const user = {
   __v: { $numberInt: '0' },
 };
 
-const loginPath =
-'/oauth2callback?code=4%2FqgH_9G3guZEyh-QBIT1JglqZnGpvJlsb-OUBMbBrwkdq1wpb34goYMiqigX1N9isk9U8qC5Iovjc6SWGPog1pxs&scope=email+profile+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email+openid&authuser=0&session_state=5a2523d1d923f62d3eb11b831b3757688879ab04..23bc&prompt=consent HTTP/1.1\r\nHost: 127.0.0.1:55953\r\nAccept-Encoding: gzip, deflate\r\nUser-Agent: node-superagent/3.8.3\r\nConnection: close\r\n\r\n'
-const app = express();
 
 describe('User', () => {
   describe('can', () => {
@@ -49,11 +46,29 @@ describe('User', () => {
 */
 
 describe('Sign in process for existing user:', () => {
-  describe('server', () => {
+  it('persists a new user', async () => {
+    // set up
+    await User.deleteOne({email: 'test1@test.ts'});
+    const user = {
+      googleId: 'test1',
+      email: 'test1@test.ts',
+      googleToken: { accessToken: 'test1', refreshToken: 'test1' },
+      displayName: 'Test Name',
+      avatarUrl: 'test1',
+    };
+
+    // exercise
+    const saved = await User.signInOrSignUp(user);
+
+    // verify
+    assert.equal(user.email, saved.email);
+  });
+// setup exercise verify
+  /* describe('server', () => {
     it('responds with the user object', async () => {
       // hitting oauth2callback responds with json
       request(app)
-        .get(loginPath)
+        .get('/')
         .expect('Content-Type', /json/)
         .end(function(err, res) {
           console.log(res);
@@ -75,5 +90,6 @@ describe('Sign in process for existing user:', () => {
 
     });
     */
-  });
 });
+
+// session has been added to sessions collection User.id === session.passport.user

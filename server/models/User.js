@@ -10,9 +10,19 @@ const { Schema } = mongoose;
 
 // define user Schema
 const mongoSchema = new Schema({
-  googleId: {
+  email: {
     type: String,
     required: true,
+    unique: true,
+  },
+  password: {
+    type: String,
+    required: false,
+    unique: false,
+  },
+  googleId: {
+    type: String,
+    required: false,
     unique: true,
   },
   googleToken: {
@@ -21,6 +31,7 @@ const mongoSchema = new Schema({
     token_type: String,
     expiry_date: Number,
   },
+
   slug: {
     type: String,
     required: true,
@@ -30,24 +41,20 @@ const mongoSchema = new Schema({
     type: Date,
     required: true,
   },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-  },
   isAdmin: {
     type: Boolean,
     default: false,
   },
   displayName: String,
   avatarUrl: String,
-
-  isGithubConnected: {
-    type: Boolean,
-    default: false,
-  },
-  githubAccessToken: {
-    type: String,
+  github: {
+    isGithubConnected: {
+      type: Boolean,
+      default: false,
+    },
+    githubAccessToken: {
+      type: String,
+    },
   },
   purchasedBookIds: [String],
 });
@@ -66,9 +73,9 @@ class UserClass {
     ];
   }
 
-  static async signInOrSignUp({ googleId, email, googleToken, displayName, avatarUrl }) {
-    // check if user exists
-    const user = await this.findOne({ googleId }).select(UserClass.publicFields().join(' '));
+  static async signInOrSignUp({ email, password, googleId, googleToken, displayName, avatarUrl }) {
+    // check if user exists with email
+    const user = await this.findOne({ email }).select(UserClass.publicFields().join(' '));
 
     if (user) {
       const modifier = {};
@@ -94,6 +101,8 @@ class UserClass {
 
     const newUser = await this.create({
       createdAt: new Date(),
+      email,
+      password,
       googleId,
       email,
       googleToken,
