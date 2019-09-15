@@ -35,19 +35,20 @@ function auth({ ROOT_URL, server }) {
   };
 
   // initalize google strategy parameters
-  passport.use(
-    new GoogleStrategy(
-      {
-        clientID: process.env.Google_clientID,
-        clientSecret: process.env.Google_clientSecret,
-        callbackURL: `${ROOT_URL}/oauth2callback`,
-      },
-      verifyGoogle,
-    ),
-  );
-  
+  // passport.use(
+  //   new GoogleStrategy(
+  //     {
+  //       clientID: process.env.Google_clientID,
+  //       clientSecret: process.env.Google_clientSecret,
+  //       callbackURL: `${ROOT_URL}/oauth2callback`,
+  //     },
+  //     verifyGoogle,
+  //   ),
+  // );
+
 
   const verifyLocal = async (email, password, done) => {
+    console.log({email,password})
     try {
       // signInOrSign up the user to MongoDb
       console.log('verifyLocal running');
@@ -66,34 +67,30 @@ function auth({ ROOT_URL, server }) {
 
       return done(null, user);
     } catch (err) {
-      return done(err);
       console.log(err); // eslint-disable-line
+      return done(err);
     }
   };
 
   // initialize local strategy
   passport.use(
-    new LocalStrategy(
-      {
-        userNameField: 'email',
-        passwordField: 'password',
-      },
-      verifyLocal,
-    ),
+    new LocalStrategy(verifyLocal)
   );
 
   // a unique cookie on your browser matches (after decoding) a unique session in the db
   // saves a user id into the session document at session.passport.user.id
   passport.serializeUser((user, done) => {
+    console.log("serializeUser")
     done(null, user.id);
   });
 
   /*
-  check if the cookie matches the session and the session contains a user id, 
-  then makes sure the user exists, 
+  check if the cookie matches the session and the session contains a user id,
+  then makes sure the user exists,
   then passes the user object to req.user, withAuth gets user from req.user
   */
   passport.deserializeUser((id, done) => {
+    console.log("deserializeUser")
     User.findById(id, User.publicFields(), (err, user) => {
       done(err, user);
     });
@@ -103,22 +100,25 @@ function auth({ ROOT_URL, server }) {
   // creates persistent login session
   server.use(passport.session());
 
-  /* 
-   when you get to /auth/google and you have a complete request, 
+  /*
+   when you get to /auth/google and you have a complete request,
    call passport.authenticate, choose profile, and send to /oauth2callback
   */
-  server.get('/auth/google', (req, res, next) => {
-    if (req.query && req.query.redirectUrl && req.query.redirectUrl.startsWith('/')) {
-      req.session.finalUrl = req.query.redirectUrl;
-    } else {
-      req.session.finalUrl = null;
-    }
+  server.get(
+    '/auth/google',
+    (req, res, next) => {
+      if (req.query && req.query.redirectUrl && req.query.redirectUrl.startsWith('/')) {
+        req.session.finalUrl = req.query.redirectUrl;
+      } else {
+        req.session.finalUrl = null;
+      }
 
-    passport.authenticate('google', {
-      scope: ['profile', 'email'],
-      prompt: 'select_account',
-    })(req, res, next);
-  });
+      passport.authenticate('google', {
+        scope: ['profile', 'email'],
+        prompt: 'select_account',
+      })(req, res, next);
+    }
+  );
 
   server.get(
     '/oauth2callback',
@@ -138,15 +138,15 @@ function auth({ ROOT_URL, server }) {
 
   server.post(
     '/login',
-    console.log(req)
-    passport.authenticate('local', { failureRedirect: '/fail' }),
+    passport.authenticate('local', { failureRedirect: '/login' }),
     (req, res) => {
+      console.log('POSTING REQUEST')
       if (req.query && req.query.redirectUrl && req.query.redirectUrl.startsWith('/')) {
         req.session.finalUrl = req.query.redirectUrl;
       } else {
         req.session.finalUrl = null;
       }
-    res.redirect('/');
+      res.redirect('/');
     },
   );
 

@@ -60,10 +60,10 @@ function Login({ router }) {
           margin="normal"
           required
           fullWidth
-          id="email"
+          id="username"
           label="Email Address"
-          name="email"
-          autoComplete="email"
+          name="username"
+          autoComplete="username"
           autoFocus
         />
         <TextField
@@ -93,7 +93,7 @@ function Login({ router }) {
         <Grid container>
           <Grid item xs>
             <Link href="#" variant="body2">
-              Forgot password?
+              <a>Forgot password??</a>
             </Link>
           </Grid>
           <Grid item>
