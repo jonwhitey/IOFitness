@@ -2,6 +2,7 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 const LocalStrategy = require('passport-local').Strategy;
 const User = require('./models/User');
+const bodyParser = require('bo')
 
 function auth({ ROOT_URL, server }) {
   // recieves profile and googleToken from Google's response, calls User.SignInOrSignUp, verified is a callback function
@@ -35,20 +36,19 @@ function auth({ ROOT_URL, server }) {
   };
 
   // initalize google strategy parameters
-  // passport.use(
-  //   new GoogleStrategy(
-  //     {
-  //       clientID: process.env.Google_clientID,
-  //       clientSecret: process.env.Google_clientSecret,
-  //       callbackURL: `${ROOT_URL}/oauth2callback`,
-  //     },
-  //     verifyGoogle,
-  //   ),
-  // );
-
+  passport.use(
+    new GoogleStrategy(
+      {
+        clientID: process.env.Google_clientID,
+        clientSecret: process.env.Google_clientSecret,
+        callbackURL: `${ROOT_URL}/oauth2callback`,
+      },
+      verifyGoogle,
+    ),
+  );
 
   const verifyLocal = async (email, password, done) => {
-    console.log({email,password})
+    console.log({ email, password });
     try {
       // signInOrSign up the user to MongoDb
       console.log('verifyLocal running');
@@ -73,14 +73,12 @@ function auth({ ROOT_URL, server }) {
   };
 
   // initialize local strategy
-  passport.use(
-    new LocalStrategy(verifyLocal)
-  );
+  passport.use(new LocalStrategy(verifyLocal));
 
   // a unique cookie on your browser matches (after decoding) a unique session in the db
   // saves a user id into the session document at session.passport.user.id
   passport.serializeUser((user, done) => {
-    console.log("serializeUser")
+    console.log('serializeUser');
     done(null, user.id);
   });
 
@@ -90,7 +88,7 @@ function auth({ ROOT_URL, server }) {
   then passes the user object to req.user, withAuth gets user from req.user
   */
   passport.deserializeUser((id, done) => {
-    console.log("deserializeUser")
+    console.log('deserializeUser');
     User.findById(id, User.publicFields(), (err, user) => {
       done(err, user);
     });
@@ -104,21 +102,18 @@ function auth({ ROOT_URL, server }) {
    when you get to /auth/google and you have a complete request,
    call passport.authenticate, choose profile, and send to /oauth2callback
   */
-  server.get(
-    '/auth/google',
-    (req, res, next) => {
-      if (req.query && req.query.redirectUrl && req.query.redirectUrl.startsWith('/')) {
-        req.session.finalUrl = req.query.redirectUrl;
-      } else {
-        req.session.finalUrl = null;
-      }
-
-      passport.authenticate('google', {
-        scope: ['profile', 'email'],
-        prompt: 'select_account',
-      })(req, res, next);
+  server.get('/auth/google', (req, res, next) => {
+    if (req.query && req.query.redirectUrl && req.query.redirectUrl.startsWith('/')) {
+      req.session.finalUrl = req.query.redirectUrl;
+    } else {
+      req.session.finalUrl = null;
     }
-  );
+
+    passport.authenticate('google', {
+      scope: ['profile', 'email'],
+      prompt: 'select_account',
+    })(req, res, next);
+  });
 
   server.get(
     '/oauth2callback',
@@ -140,7 +135,7 @@ function auth({ ROOT_URL, server }) {
     '/login',
     passport.authenticate('local', { failureRedirect: '/login' }),
     (req, res) => {
-      console.log('POSTING REQUEST')
+      console.log('POSTING REQUEST');
       if (req.query && req.query.redirectUrl && req.query.redirectUrl.startsWith('/')) {
         req.session.finalUrl = req.query.redirectUrl;
       } else {
