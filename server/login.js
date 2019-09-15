@@ -2,6 +2,7 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 const LocalStrategy = require('passport-local').Strategy;
 const User = require('./models/User');
+const bodyParser = require('body-parser')
 
 function auth({ ROOT_URL, server }) {
   // recieves profile and googleToken from Google's response, calls User.SignInOrSignUp, verified is a callback function
@@ -99,6 +100,7 @@ function auth({ ROOT_URL, server }) {
   server.use(passport.initialize());
   // creates persistent login session
   server.use(passport.session());
+  server.use(bodyParser.urlencoded({ extended: false }));
 
   /*
    when you get to /auth/google and you have a complete request,
