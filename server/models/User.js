@@ -20,10 +20,21 @@ const mongoSchema = new Schema({
     required: false,
     unique: false,
   },
+  firstName: {
+    type: String,
+    required: false,
+    unique: false,
+  },
+  lastName: {
+    type: String,
+    required: false,
+    unique: false,
+  },
   googleId: {
     type: String,
     required: false,
     unique: true,
+    sparse: true,
   },
   googleToken: {
     access_token: String,
@@ -63,6 +74,8 @@ class UserClass {
   static publicFields() {
     return [
       'id',
+      'firstName',
+      'lastName',
       'displayName',
       'email',
       'avatarUrl',
@@ -73,38 +86,64 @@ class UserClass {
     ];
   }
 
-  static async signInOrSignUp({ email, password, googleId, googleToken, displayName, avatarUrl }) {
+  static async signInOrSignUp({
+    email,
+    password,
+    firstName,
+    lastName,
+    googleId,
+    googleToken,
+    displayName,
+    avatarUrl,
+  }) {
     // check if user exists with email
     const user = await this.findOne({ email }).select(UserClass.publicFields().join(' '));
-
     if (user) {
-      const modifier = {};
-      // check if google provided new tokens
-      if (googleToken.accessToken) {
-        modifier.access_token = googleToken.accessToken;
-      }
+      if (user.googleId) {
+        const modifier = {};
+        // check if google provided new tokens
+        if (googleToken.accessToken) {
+          modifier.access_token = googleToken.accessToken;
+        }
 
-      if (googleToken.refreshToken) {
-        modifier.refresh_token = googleToken.refreshToken;
-      }
-      // if google did not provide tokens; leave it the same
-      if (_.isEmpty(modifier)) {
+        if (googleToken.refreshToken) {
+          modifier.refresh_token = googleToken.refreshToken;
+        }
+        // if google did not provide tokens; leave it the same
+        if (_.isEmpty(modifier)) {
+          return user;
+        }
+        // if google did provide the tokens, update the User document
+        await this.updateOne({ googleId }, { $set: modifier });
+
         return user;
       }
-      // if google did provide the tokens, update the User document
-      await this.updateOne({ googleId }, { $set: modifier });
-
+    }
+    if (user) {
       return user;
     }
-    // if user does not exists, generate a slug and add the new user
+    // if user does not exist, generate a slug and add the new user
+
+    if (!displayName) {
+      // eslint-disable-next-line no-param-reassign
+      displayName = firstName + lastName;
+    }
+
     const slug = await generateSlug(this, displayName);
+
+    // set default avatarUrl
+    if (avatarUrl === undefined) {
+      // eslint-disable-next-line no-param-reassign
+      avatarUrl = 'https://storage.googleapis.com/builderbook/logo.svg';
+    }
 
     const newUser = await this.create({
       createdAt: new Date(),
       email,
       password,
+      firstName,
+      lastName,
       googleId,
-      email,
       googleToken,
       displayName,
       avatarUrl,
@@ -127,6 +166,12 @@ class UserClass {
     }
 
     return _.pick(newUser, UserClass.publicFields());
+  }
+
+  static async verifyPassword(email, password) {
+    const verified = await this.findOne({ email, password });
+    console.log(`VERIFIED ${verified}`);
+    return !!verified;
   }
 }
 

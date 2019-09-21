@@ -52,7 +52,7 @@ function SignUp({ router }) {
         <Typography component="h1" variant="h5">
           Sign up
         </Typography>
-        <form className={classes.form} noValidate method="POST" action="/locallogin">
+        <form className={classes.form} noValidate method="POST" action="/login">
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <TextField
@@ -112,8 +112,12 @@ function SignUp({ router }) {
           </Button>
           <Grid container justify="flex-end">
             <Grid item>
-              <Link href="#" variant="body2">
-                Already have an account? Sign in
+              <Link
+                prefetch
+                href={{ pathname: '/public/login', query: { redirectUrl } }}
+                as={{ pathname: '/login', query: { redirectUrl } }}
+              >
+                <a>Already have an account? Sign in</a>
               </Link>
             </Grid>
           </Grid>

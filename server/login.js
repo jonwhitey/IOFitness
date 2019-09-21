@@ -1,8 +1,8 @@
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 const LocalStrategy = require('passport-local').Strategy;
+const bodyParser = require('body-parser');
 const User = require('./models/User');
-const bodyParser = require('bo')
 
 function auth({ ROOT_URL, server }) {
   // recieves profile and googleToken from Google's response, calls User.SignInOrSignUp, verified is a callback function
@@ -47,24 +47,30 @@ function auth({ ROOT_URL, server }) {
     ),
   );
 
-  const verifyLocal = async (email, password, done) => {
-    console.log({ email, password });
+  const verifyLocal = async (req, email, password, done) => {
+    console.log({ email, password, req });
+    const { firstName, lastName } = req.body;
     try {
       // signInOrSign up the user to MongoDb
       console.log('verifyLocal running');
       const user = await User.signInOrSignUp({
         email,
         password,
+        firstName,
+        lastName,
       });
+      console.log(user);
 
       if (!user) {
+        console.log('no user');
         return done(null, false);
       }
 
-      if (!user.verifyPassword(password)) {
+      if (!User.verifyPassword(email, password)) {
+        console.log('password not working');
         return done(null, false);
       }
-
+      console.log('return user');
       return done(null, user);
     } catch (err) {
       console.log(err); // eslint-disable-line
@@ -73,7 +79,15 @@ function auth({ ROOT_URL, server }) {
   };
 
   // initialize local strategy
-  passport.use(new LocalStrategy(verifyLocal));
+  passport.use(
+    new LocalStrategy(
+      {
+        usernameField: 'email',
+        passReqToCallback: true,
+      },
+      verifyLocal,
+    ),
+  );
 
   // a unique cookie on your browser matches (after decoding) a unique session in the db
   // saves a user id into the session document at session.passport.user.id
@@ -88,7 +102,7 @@ function auth({ ROOT_URL, server }) {
   then passes the user object to req.user, withAuth gets user from req.user
   */
   passport.deserializeUser((id, done) => {
-    console.log('deserializeUser');
+    console.log(`deserializeUser`);
     User.findById(id, User.publicFields(), (err, user) => {
       done(err, user);
     });
@@ -97,6 +111,7 @@ function auth({ ROOT_URL, server }) {
   server.use(passport.initialize());
   // creates persistent login session
   server.use(passport.session());
+  server.use(bodyParser.urlencoded({ extended: false }));
 
   /*
    when you get to /auth/google and you have a complete request,
@@ -133,7 +148,7 @@ function auth({ ROOT_URL, server }) {
 
   server.post(
     '/login',
-    passport.authenticate('local', { failureRedirect: '/login' }),
+    passport.authenticate('local', { failureRedirect: '/fail' }),
     (req, res) => {
       console.log('POSTING REQUEST');
       if (req.query && req.query.redirectUrl && req.query.redirectUrl.startsWith('/')) {

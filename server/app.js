@@ -98,10 +98,10 @@ app.prepare().then(async () => {
   */
 
   server.use(session(sess));
+  auth({ ROOT_URL, server });
 
   await insertTemplates();
 
-  auth({ server, ROOT_URL });
   setupGithub({ server });
   api(server);
   routesWithSlug({ server, app });

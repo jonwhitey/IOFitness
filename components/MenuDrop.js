@@ -6,6 +6,7 @@ import Avatar from '@material-ui/core/Avatar';
 
 // MenuDrop component for the Header HOC
 class MenuDrop extends React.Component {
+
   static propTypes = {
     src: PropTypes.string.isRequired,
     alt: PropTypes.string.isRequired,
@@ -46,7 +47,6 @@ class MenuDrop extends React.Component {
           <p />
           {options.map((option) => (
             <div id="wrappingLink" key={option.text}>
-              {console.log(option)}
               <Link prefetch href={option.href} as={option.as || option.href}>
                 <a style={{ padding: '0px 20px' }}>{option.text}</a>
               </Link>
