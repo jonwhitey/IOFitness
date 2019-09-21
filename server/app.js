@@ -109,6 +109,7 @@ app.prepare().then(async () => {
 
   server.get('*', (req, res) => {
     const url = URL_MAP[req.path];
+    logger.info(`> Request- ${req}`);
     if (url) {
       app.render(req, res, url);
     } else {
