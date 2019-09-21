@@ -96,7 +96,11 @@ app.prepare().then(async () => {
   anytime a user opens the app, and logs in? 
   create and save the sess cookie and document
   */
-
+  server.use(function(req, res, next) {
+    console.log(`handling request for: ${req.url}`);
+    next();
+  });
+  server.use(express.static('../_next/static'));
   server.use(session(sess));
   auth({ ROOT_URL, server });
 
