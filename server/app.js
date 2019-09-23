@@ -8,6 +8,7 @@ const mongoSessionStore = require('connect-mongo');
 const next = require('next');
 const mongoose = require('mongoose');
 const helmet = require('helmet');
+const path = require('path');
 const sitemapAndRobots = require('./sitemapAndRobots');
 
 const auth = require('./login');
@@ -96,12 +97,16 @@ app.prepare().then(async () => {
   anytime a user opens the app, and logs in? 
   create and save the sess cookie and document
   */
-  server.use(function(req, res, next) {
-    console.log(`handling request for: ${req.url}`);
+
+  /*server.get('/_next*', (req, res, next) => {
+    console.log(`get request for: ${req.url}, ${req.method}`);
     next();
-  });
-  server.use(express.static('../_next/static'));
+  }); */
+
+  server.use(express.static('/_next*'));
+
   server.use(session(sess));
+
   auth({ ROOT_URL, server });
 
   await insertTemplates();
@@ -113,7 +118,6 @@ app.prepare().then(async () => {
 
   server.get('*', (req, res) => {
     const url = URL_MAP[req.path];
-    logger.info(`> Request- ${req}`);
     if (url) {
       app.render(req, res, url);
     } else {

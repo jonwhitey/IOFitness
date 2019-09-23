@@ -109,6 +109,14 @@ function auth({ ROOT_URL, server }) {
       done(err, user);
     });
   });
+  
+  server.use(express.static('/_next'));
+
+  server.get('/_next*', (req, res, next) => {
+    console.log(`get request for: ${req.url}, ${req.method}`);
+    next();
+  });
+
   // initalizes passport on our express server
   server.use(passport.initialize());
   // creates persistent login session
