@@ -56,7 +56,7 @@ class MyApp extends App {
 
 
     return (
-      <Container>
+      <div>
         {/* ThemeProvider makes the theme available down the React
               tree thanks to React context. */}
         <ThemeProvider theme={theme}>
@@ -66,7 +66,7 @@ class MyApp extends App {
           <Component {...pageProps} />
           <Notifier />
         </ThemeProvider>
-      </Container>
+      </div>
     );
   }
 }

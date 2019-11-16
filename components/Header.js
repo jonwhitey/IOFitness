@@ -5,6 +5,7 @@ import Grid from '@material-ui/core/Grid';
 import Hidden from '@material-ui/core/Hidden';
 import Button from '@material-ui/core/Button';
 import Avatar from '@material-ui/core/Avatar';
+import logout from '../lib//api/auth';
 
 import MenuDrop from './MenuDrop';
 
@@ -21,7 +22,8 @@ const optionsMenuCustomer = [
   },
   {
     text: 'Log out',
-    href: '/logout',
+    href: '/api/v1/auth/logout',
+    as: '/api/v1/auth/logout',
   },
 ];
 
@@ -33,7 +35,8 @@ const optionsMenuAdmin = [
   },
   {
     text: 'Log out',
-    href: '/logout',
+    href: '/api/v1/auth/logout',
+    as: '/api/v1/auth/logout',
   },
 ];
 
@@ -52,7 +55,7 @@ function Header({ user, hideHeader, redirectUrl }) {
         <Grid container direction="row" justify="space-around" alignItems="center">
           <Grid item sm={8} xs={7} style={{ textAlign: 'left' }}>
             {!user ? (
-              <Link prefetch href="/">
+              <Link href="/">
                 <Avatar
                   src="https://storage.googleapis.com/builderbook/logo.svg"
                   alt="Builder Book logo"
@@ -92,7 +95,6 @@ function Header({ user, hideHeader, redirectUrl }) {
               </div>
             ) : (
               <Link
-                prefetch
                 href={{ pathname: '/public/login', query: { redirectUrl } }}
                 as={{ pathname: '/login', query: { redirectUrl } }}
               >

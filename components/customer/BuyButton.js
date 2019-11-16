@@ -72,7 +72,7 @@ class BuyButton extends React.Component {
 
     if (!user) {
     const redirectUrl = window.location.pathname;
-      window.location.href = `/auth/google?redirectUrl=${redirectUrl}?buy=1`;
+      window.location.href = `/auth/login?redirectUrl=${redirectUrl}?buy=1`;
     }
   };
 

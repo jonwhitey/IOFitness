@@ -2,7 +2,6 @@ const styleBigAvatar = {
   width: '80px',
   height: '80px',
   margin: '0px auto 15px',
-
 };
 
 const styleRaisedButton = {
@@ -16,7 +15,7 @@ const styleToolbar = {
   paddingRight: '20px',
 };
 
-const styleLoginButton = {
+const styleGoogleLoginButton = {
   borderRadius: '2px',
   textTransform: 'none',
   font: '16px Muli',
@@ -30,10 +29,12 @@ const styleTextField = {
   font: '15px Muli',
   color: '#222',
   fontWeight: '300',
+  width: '100%',
+  paddingBottom: 10,
 };
 
 const styleForm = {
-  margin: '7% auto',
+  margin: 'auto',
   width: '360px',
 };
 
@@ -45,11 +46,19 @@ const styleGrid = {
   lineHeight: '1.5em',
 };
 
+const styleSubmitButton = {
+  padding: 10,
+};
+
+const styleTitle = { margin: '45px auto', fontSize: '44px', fontWeight: '400' };
+
 module.exports = {
+  styleSubmitButton,
+  styleTitle,
   styleBigAvatar,
   styleRaisedButton,
   styleToolbar,
-  styleLoginButton,
+  styleGoogleLoginButton,
   styleTextField,
   styleForm,
   styleGrid,

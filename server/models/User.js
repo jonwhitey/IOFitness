@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const _ = require('lodash');
+const bcrypt = require('bcrypt');
 const generateSlug = require('../utils/slugify');
 const sendEmail = require('../aws');
 const { getEmailTemplate } = require('./EmailTemplate');
@@ -15,7 +16,7 @@ const mongoSchema = new Schema({
     required: true,
     unique: true,
   },
-  password: {
+  passwordHash: {
     type: String,
     required: false,
     unique: false,
@@ -76,6 +77,7 @@ class UserClass {
       'id',
       'firstName',
       'lastName',
+      'passwordHash',
       'displayName',
       'email',
       'avatarUrl',
@@ -96,8 +98,23 @@ class UserClass {
     displayName,
     avatarUrl,
   }) {
+    const saltRounds = 10;
+    const passwordHash = bcrypt.hashSync(password, saltRounds);
+
     // check if user exists with email
     const user = await this.findOne({ email }).select(UserClass.publicFields().join(' '));
+    if (user) {
+      const match = await bcrypt.compare(password, user.passwordHash);
+      if (user && password && match) {
+        console.log('Singin Success');
+        return user;
+      }
+      if (user && password && !match) {
+        console.log(`correct email but wrong password`);
+        return false;
+      }
+    }
+
     if (user) {
       if (user.googleId) {
         const modifier = {};
@@ -120,6 +137,7 @@ class UserClass {
       }
     }
     if (user) {
+      console.log('USER EXISTS');
       return user;
     }
     // if user does not exist, generate a slug and add the new user
@@ -140,7 +158,7 @@ class UserClass {
     const newUser = await this.create({
       createdAt: new Date(),
       email,
-      password,
+      passwordHash,
       firstName,
       lastName,
       googleId,
@@ -167,13 +185,22 @@ class UserClass {
 
     return _.pick(newUser, UserClass.publicFields());
   }
+}
 
+/*
   static async verifyPassword(email, password) {
-    const verified = await this.findOne({ email, password });
-    console.log(`VERIFIED ${verified}`);
-    return !!verified;
+    const user = await this.findOne({ email });
+    const match = await bcrypt.compare(password, user.passwordHash);
+
+    if (match) {
+      console.log('BCRYPT WORKED!');
+      return true;
+    }
+    console.log(`correct email but wrong password`);
+    return false;
   }
 }
+*/
 
 mongoSchema.loadClass(UserClass);
 
