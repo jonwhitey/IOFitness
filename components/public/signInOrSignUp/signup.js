@@ -55,102 +55,95 @@ class SignUp extends React.Component {
           </Head>
           <br />
           <p style={styleTitle}>Sign up</p>
-          <Grid container spacing={2} alignItems="center">
-            <form onSubmit={this.handleSubmit} style={styleForm}>
-              <Grid item xs>
-                <TextField
-                  autoComplete="fname"
-                  name="firstName"
-                  variant="outlined"
-                  fullWidth
-                  id="firstName"
-                  label="First Name"
-                  autoFocus
-                  onInput={this.handleUserInput}
-                  style={styleTextField}
-                />
-              </Grid>
-              <Grid item xs>
-                <TextField
-                  variant="outlined"
-                  fullWidth
-                  id="lastName"
-                  label="Last Name"
-                  name="lastName"
-                  autoComplete="lname"
-                  onInput={this.handleUserInput}
-                  style={styleTextField}
-                  justify="right"
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  label="Email Address"
-                  name="email"
-                  autoComplete="email"
-                  onInput={this.handleUserInput}
-                  error={formErrors.email}
-                  id="outlined-error-helper-text"
-                  helperText={formErrors.email}
-                  style={styleTextField}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  name="password"
-                  label="Password"
-                  type="password"
-                  autoComplete="current-password"
-                  onInput={this.handleUserInput}
-                  error={formErrors.password}
-                  id="outlined-error-helper-text"
-                  helperText={formErrors.password}
-                  style={styleTextField}
-                />
-              </Grid>
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                color="primary"
-                style={styleSubmitButton}
-              >
-                Sign Up
-              </Button>
-            </form>
-          </Grid>
+          <form onSubmit={this.handleSubmit} style={styleForm}>
+            <TextField
+              autoComplete="fname"
+              name="firstName"
+              variant="outlined"
+              fullWidth
+              id="firstName"
+              label="First Name"
+              autoFocus
+              onInput={this.handleUserInput}
+              style={styleTextField}
+            />
+
+            <TextField
+              variant="outlined"
+              fullWidth
+              id="lastName"
+              label="Last Name"
+              name="lastName"
+              autoComplete="lname"
+              onInput={this.handleUserInput}
+              style={styleTextField}
+              justify="right"
+            />
+
+            <TextField
+              variant="outlined"
+              required
+              fullWidth
+              label="Email Address"
+              name="email"
+              autoComplete="email"
+              onInput={this.handleUserInput}
+              error={formErrors.email}
+              id="outlined-error-helper-text"
+              helperText={formErrors.email}
+              style={styleTextField}
+            />
+
+            <TextField
+              variant="outlined"
+              required
+              fullWidth
+              name="password"
+              label="Password"
+              type="password"
+              autoComplete="current-password"
+              onInput={this.handleUserInput}
+              error={formErrors.password}
+              id="outlined-error-helper-text"
+              helperText={formErrors.password}
+              style={styleTextField}
+            />
+
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="primary"
+              style={styleSubmitButton}
+            >
+              Sign Up
+            </Button>
+          </form>
+
           <br />
-          <Grid container spacing={2} justify="center">
-            <Grid item xs={12}>
-              <Link
-                href={{ pathname: '/public/login', query: { redirectUrl } }}
-                as={{ pathname: '/login', query: { redirectUrl } }}
-              >
-                <a> Already a user? Sign in here.</a>
-              </Link>
-            </Grid>
-            <br />
-            <Grid item xs={12}>
-              <Button
-                variant="contained"
-                style={styleGoogleLoginButton}
-                href={`/auth/google?redirectUrl=${redirectUrl}`}
-              >
-                <img
-                  src="https://storage.googleapis.com/builderbook/G.svg"
-                  alt="Log in with Google"
-                  style={{ marginRight: '10px' }}
-                />
-                Log in with Google
-              </Button>
-            </Grid>
-          </Grid>
+
+          <Link
+            href={{ pathname: '/public/login', query: { redirectUrl } }}
+            as={{ pathname: '/login', query: { redirectUrl } }}
+          >
+            <a> Already a user? Sign in here.</a>
+          </Link>
+
+          <br />
+          <br />
+
+          <Button
+            variant="contained"
+            style={styleGoogleLoginButton}
+            href={`/auth/google?redirectUrl=${redirectUrl}`}
+          >
+            <img
+              src="https://storage.googleapis.com/builderbook/G.svg"
+              alt="Log in with Google"
+              style={{ marginRight: '10px' }}
+            />
+            Log in with Google
+          </Button>
         </div>
       </Container>
     );

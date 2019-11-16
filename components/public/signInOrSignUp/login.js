@@ -8,7 +8,9 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import TextField from '@material-ui/core/TextField';
 // import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Link from 'next/link';
+import Container from '@material-ui/core/Container';
 
+import { CssBaseline } from '@material-ui/core';
 import { styleGoogleLoginButton, styleForm, styleTextField } from '../../SharedStyles';
 
 class Login extends React.Component {
@@ -35,93 +37,92 @@ class Login extends React.Component {
   render() {
     const { redirectUrl, formErrors } = this.props;
     return (
-      <div align="center" width="360px">
-        <Head>
-          <title>Log in to basics.fitness</title>
-          <meta name="description" content="Login page for basics.fitness" />
-        </Head>
-        <br />
-        <p style={{ margin: '45px auto', fontSize: '44px', fontWeight: '400' }}>Log in</p>
-        <p>You’ll be logged in for 14 days unless you log out manually.</p>
-        <br />
-        <Grid container>
+      <Container component="main" maxWidth="xs">
+        <CssBaseline />
+        <div align="center" width="360px">
+          <Head>
+            <title>Log in to basics.fitness</title>
+            <meta name="description" content="Login page for basics.fitness" />
+          </Head>
+          <br />
+          <p style={{ margin: '45px auto', fontSize: '44px', fontWeight: '400' }}>Log in</p>
+          <p>You’ll be logged in for 14 days unless you log out manually.</p>
+          <br />
           <form style={styleForm} noValidate onSubmit={this.handleSubmit}>
-            <Grid item xs={12}>
-              <TextField
-                variant="outlined"
-                margin="normal"
-                required
-                fullWidth
-                label="Email Address"
-                name="email"
-                autoComplete="email"
-                autoFocus
-                onChange={this.handleUserInput}
-                style={styleTextField}
-                error={formErrors.email}
-                id="outlined-error-helper-text"
-                helperText={formErrors.email}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                variant="outlined"
-                margin="normal"
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                autoComplete="current-password"
-                onChange={this.handleUserInput}
-                style={styleTextField}
-                error={formErrors.password}
-                id="outlined-error-helper-text"
-                helperText={formErrors.password}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <FormControlLabel
-                control={<Checkbox value="remember" color="primary" />}
-                label="Remember me"
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <Button type="submit" fullWidth variant="contained" color="primary">
-                Log In
-              </Button>
-            </Grid>
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              label="Email Address"
+              name="email"
+              autoComplete="email"
+              autoFocus
+              onChange={this.handleUserInput}
+              style={styleTextField}
+              error={formErrors.email}
+              id="outlined-error-helper-text"
+              helperText={formErrors.email}
+            />
+
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              name="password"
+              label="Password"
+              type="password"
+              autoComplete="current-password"
+              onChange={this.handleUserInput}
+              style={styleTextField}
+              error={formErrors.password}
+              id="outlined-error-helper-text"
+              helperText={formErrors.password}
+            />
+
+            <FormControlLabel
+              control={<Checkbox value="remember" color="primary" />}
+              label="Remember me"
+            />
+
+            <br />
+
+            <Button type="submit" fullWidth variant="contained" color="primary">
+              Log In
+            </Button>
           </form>
-        </Grid>
-        <Grid container>
-          <Grid item xs={6}>
-            <Link href="#">
-              <a>Forgot password</a>
-            </Link>
+          <br />
+          <Grid container width="360px">
+            <Grid item xs={6}>
+              <Link href="#" align="left">
+                <a>Forgot password</a>
+              </Link>
+            </Grid>
+            <Grid item xs>
+              <Link
+                href={{ pathname: '/public/signup', query: { redirectUrl } }}
+                as={{ pathname: '/signup', query: { redirectUrl } }}
+              >
+                <a>Sign up</a>
+              </Link>
+            </Grid>
           </Grid>
-          <Grid item xs={6}>
-            <Link
-              href={{ pathname: '/public/signup', query: { redirectUrl } }}
-              as={{ pathname: '/signup', query: { redirectUrl } }}
-            >
-              <a style={{ margin: '0px 20px 0px auto' }}>Sign up</a>
-            </Link>
-          </Grid>
-        </Grid>
-        <br />
-        <Button
-          variant="contained"
-          style={styleGoogleLoginButton}
-          href={`/auth/google?redirectUrl=${redirectUrl}`}
-        >
-          <img
-            src="https://storage.googleapis.com/builderbook/G.svg"
-            alt="Log in with Google"
-            style={{ marginRight: '10px' }}
-          />
-          Log in with Google
-        </Button>
-      </div>
+          <br />
+          <Button
+            variant="contained"
+            style={styleGoogleLoginButton}
+            href={`/auth/google?redirectUrl=${redirectUrl}`}
+          >
+            <img
+              src="https://storage.googleapis.com/builderbook/G.svg"
+              alt="Log in with Google"
+              style={{ marginRight: '10px' }}
+            />
+            Log in with Google
+          </Button>
+        </div>
+      </Container>
     );
   }
 }
