@@ -54,7 +54,6 @@ app.prepare().then(async () => {
   server.get('/static/*', (req, res) => {
     handle(req, res);
   });
-  
 
   auth({ ROOT_URL, server });
   api(server);
@@ -65,10 +64,12 @@ app.prepare().then(async () => {
   routesWithSlug({ server, app });
   sitemapAndRobots({ server });
 
-
   server.get('*', (req, res) => {
     const url = URL_MAP[req.path];
+    console.log('get request on app.js');
+    console.log(req.url);
     if (url) {
+      console.log(url);
       app.render(req, res, url);
     } else {
       console.log('Being handled');

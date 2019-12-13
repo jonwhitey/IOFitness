@@ -1,11 +1,16 @@
+/* eslint-disable func-names */
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 const LocalStrategy = require('passport-local').Strategy;
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const mongoSessionStore = require('connect-mongo');
 const mongoose = require('mongoose');
+const RememberMeStrategy = require('passport-remember-me').Strategy;
 const User = require('./models/User');
+const RememberMeToken = require('./models/RememberMeToken');
+const randomString = require('../lib/randomString');
 
 function auth({ ROOT_URL, server }) {
   const dev = process.env.NODE_ENV !== 'production';
@@ -36,13 +41,14 @@ function auth({ ROOT_URL, server }) {
     sess.cookie.secure = true;
   }
 
+  server.use(cookieParser());
   server.use(session(sess));
   // initalizes passport on our express server
   server.use(passport.initialize());
   // creates persistent login session
   server.use(passport.session());
   server.use(bodyParser.urlencoded({ extended: false }));
-
+  server.use(passport.authenticate('remember-me'));
   /* 
   anytime a user opens the app, and logs in? 
   create and save the sess cookie and document
@@ -62,6 +68,8 @@ function auth({ ROOT_URL, server }) {
   passport.deserializeUser((id, done) => {
     console.log(`deserializeUser, id: ${id}`);
     User.findById(id, User.publicFields(), (err, user) => {
+      console.log(err);
+      console.log(user);
       done(err, user);
     });
   });
@@ -129,9 +137,11 @@ function auth({ ROOT_URL, server }) {
         console.log('no user');
         return done(null, false);
       }
-      console.log('return user');
+      console.log('return user auth.js');
+      console.log(user);
       return done(null, user);
     } catch (err) {
+      console.log('Error in /server/auth.js');
       console.log(err); // eslint-disable-line
       return done(err);
     }
@@ -147,6 +157,52 @@ function auth({ ROOT_URL, server }) {
       verifyLocal,
     ),
   );
-}
 
+  // Remember Me cookie strategy
+  //   This strategy consumes a remember me token, supplying the user the
+  //   token was originally issued to.  The token is single-use, so a new
+  //   token is then issued to replace it.
+
+  passport.use(
+    new RememberMeStrategy(
+      async function(token, done) {
+        console.log('Deleting token - auth.js');
+        await RememberMeToken.consumeToken(token, async function(err, uid) {
+          if (err) {
+            return done(err);
+          }
+          if (!uid) {
+            console.log('no user');
+            return done(null, false);
+          }
+          await RememberMeToken.findById(uid, function(err, user) {
+            if (err) {
+              console.log('ERROR in rememberme');
+              return done(err);
+            }
+            if (!user) {
+              console.log('NO USER');
+              return done(null, false);
+            }
+            console.log(`found USER with findById ${user}`);
+            return done(null, user);
+          });
+        });
+      },
+      async function(user, done) {
+        console.log('saving token - auth.js');
+        console.log(`user @ auth.js = ${user}`);
+        const token = randomString(64);
+        await RememberMeToken.saveToken(token, user, function(err) {
+          if (err) {
+            console.log(`ERROR ${err}`);
+            return done(err);
+          }
+          console.log(`saving token ${token}`);
+          return done(null, token);
+        });
+      },
+    ),
+  );
+}
 module.exports = auth;

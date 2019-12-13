@@ -1,5 +1,7 @@
 const express = require('express');
 const passport = require('passport');
+const RememberMeToken = require('../models/RememberMeToken');
+const randomString = require('../../lib/randomString');
 
 const router = express.Router();
 
@@ -50,29 +52,55 @@ router.get('/logout', (req, res) => {
 router.post(
   ['/loginLocal', '/signUpLocal'],
   passport.authenticate('local', { failWithError: true }),
-  (req, res) => {
+
+  (req, res, next) => {
+    console.log(`post to loginLocal/signUpLocal - req.body.rememberMe`);
+    console.log(req.body.rememberMe);
+
+    if (req.body.rememberMe) {
+      console.log('REMEMBER ME!');
+      const token = randomString(64);
+      const uid = req.user.id;
+      console.log(`uid = ${uid}`);
+      // eslint-disable-next-line func-names
+      RememberMeToken.saveToken(token, uid);
+      res.cookie('remember_me', token, {
+        path: '/',
+        httpOnly: true,
+        maxAge: 604800000,
+      }); // 7 days
+      console.log(`COOKIE:`);
+    }
+
     if (req.query && req.query.redirectUrl && req.query.redirectUrl.startsWith('/')) {
       req.session.finalUrl = req.query.redirectUrl;
     } else {
       req.session.finalUrl = null;
     }
     if (req.user && req.user.isAdmin) {
-      res.json({ status: 200, redirect: '/admin', isAdmin: true });
+      // res.json({ status: 200, redirect: '/admin', isAdmin: true });
+      console.log(` user and user.isAdmin: res.json ${res.json}`);
     } else if (!req.user) {
-      res.json({ status: 403, message: 'Incorrect username or password' });
+      // res.json({ status: 403, message: 'Incorrect username or password' });
+      console.log(` not user: res.json ${res.json}`);
     } else if (req.session.finalUrl) {
-      res.json({ redirect: req.session.finalUrl });
+      // res.json({ redirect: req.session.finalUrl });
+      console.log(` finalUrl: finalUrl ${req.session.finalUrl}`);
     } else {
-      res.json({ status: 200, username: req.user.username });
-      console.log(`Login Success ${res.json()}`);
+      // res.json({ status: 200, username: req.user.username });
+      console.log(`Login Success`);
+
+      // console.log(res.status + res.user + res.redirect);
       res.send();
+      console.log(res.redirect);
+      console.log('should have redirected');
+      next();
+      // I think this next() call is fucking everything up
     }
   },
-  (err, req, res) => {
-    console.log('ERROR!!!');
-    console.log(err);
-    console.log(req);
-    console.log(res);
+  (err, req, res, next) => {
+    console.log(`ERROR!!!`);
+    return next();
   },
 );
 

@@ -10,7 +10,7 @@ import TextField from '@material-ui/core/TextField';
 import Link from 'next/link';
 import Container from '@material-ui/core/Container';
 
-import { CssBaseline } from '@material-ui/core';
+import { CssBaseline, Input } from '@material-ui/core';
 import { styleGoogleLoginButton, styleForm, styleTextField } from '../../SharedStyles';
 
 class Login extends React.Component {
@@ -23,19 +23,22 @@ class Login extends React.Component {
   handleUserInput(e) {
     const { name } = e.target;
     const { value } = e.target;
+    const { checked } = e.target;
     const { validateField } = this.props;
-    validateField(name, value);
+    console.log(`Checked name: ${name}, checked: ${checked}`);
+    validateField(name, value, checked);
   }
 
   handleSubmit(e) {
-    const { email, password, validateForm } = this.props;
-    const data = { email, password, signUpOrLogin: 'login' };
+    const { email, password, rememberMe, validateForm } = this.props;
+    const data = { email, password, rememberMe, signUpOrLogin: 'login' };
     e.preventDefault();
     validateForm(data);
   }
 
   render() {
-    const { redirectUrl, formErrors } = this.props;
+    const { redirectUrl, formErrors, rememberMe } = this.props;
+    console.log('render login');
     return (
       <Container component="main" maxWidth="xs">
         <CssBaseline />
@@ -60,7 +63,7 @@ class Login extends React.Component {
               autoFocus
               onChange={this.handleUserInput}
               style={styleTextField}
-              error={formErrors.email}
+              error={!!formErrors.email}
               id="outlined-error-helper-text"
               helperText={formErrors.email}
             />
@@ -76,13 +79,20 @@ class Login extends React.Component {
               autoComplete="current-password"
               onChange={this.handleUserInput}
               style={styleTextField}
-              error={formErrors.password}
+              error={!!formErrors.password}
               id="outlined-error-helper-text"
               helperText={formErrors.password}
             />
 
             <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
+              control={
+                <Checkbox
+                  name="remember"
+                  color="primary"
+                  value={rememberMe}
+                  onChange={this.handleUserInput}
+                />
+              }
               label="Remember me"
             />
 
@@ -95,7 +105,7 @@ class Login extends React.Component {
           <br />
           <Grid container width="360px">
             <Grid item xs={6}>
-              <Link href="#" align="left">
+              <Link href="#">
                 <a>Forgot password</a>
               </Link>
             </Grid>
@@ -137,6 +147,7 @@ Login.propTypes = {
   validateField: PropTypes.func,
   validateForm: PropTypes.func,
   redirectUrl: PropTypes.string,
+  rememberMe: PropTypes.bool,
 };
 
 export default Login;

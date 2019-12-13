@@ -88,6 +88,13 @@ class UserClass {
     ];
   }
 
+  static async findById({ id }) {
+    console.log('User.findById');
+    const user = await this.findOne({ id });
+    console.log(!!user);
+    return !!user;
+  }
+
   static async signInOrSignUp({
     email,
     password,

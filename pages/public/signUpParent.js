@@ -45,6 +45,7 @@ class SignUpParent extends React.Component {
       validEmail: false,
       validPassword: false,
       validForm: false,
+      rememberMe: false,
     };
     this.validateField = this.validateField.bind(this);
     this.validateForm = this.validateForm.bind(this);
@@ -75,7 +76,6 @@ class SignUpParent extends React.Component {
           window.location.reload(true);
         }
         if (signUpOrLogin === 'login') {
-          console.log('loginLocal');
           await loginLocal(data);
           window.location.reload(true);
         }
@@ -83,6 +83,7 @@ class SignUpParent extends React.Component {
         NProgress.done();
       } catch (err) {
         NProgress.done();
+        console.log('ERROR in validateForm');
         console.log(err);
         notify(`Incorrect username or password.`);
         this.setState({ formErrors: { password: 'Incorrect username or password.' } });
@@ -92,7 +93,7 @@ class SignUpParent extends React.Component {
     }
   };
 
-  validateField(fieldName, value) {
+  validateField(fieldName, value, checked) {
     let { validEmail, validPassword } = this.state;
     const schema = new PasswordValidator();
     schema
@@ -149,6 +150,9 @@ class SignUpParent extends React.Component {
       case 'lastName':
         this.setState({ lastName: value });
         break;
+      case 'remember':
+        console.log(`VALUE START: ${checked}`);
+        this.setState({ rememberMe: checked });
     }
 
     if (validEmail && validPassword) {
