@@ -68,8 +68,6 @@ function auth({ ROOT_URL, server }) {
   passport.deserializeUser((id, done) => {
     console.log(`deserializeUser, id: ${id}`);
     User.findById(id, User.publicFields(), (err, user) => {
-      console.log(err);
-      console.log(user);
       done(err, user);
     });
   });
@@ -138,7 +136,6 @@ function auth({ ROOT_URL, server }) {
         return done(null, false);
       }
       console.log('return user auth.js');
-      console.log(user);
       return done(null, user);
     } catch (err) {
       console.log('Error in /server/auth.js');
@@ -167,6 +164,7 @@ function auth({ ROOT_URL, server }) {
     new RememberMeStrategy(
       async function(token, done) {
         console.log('Deleting token - auth.js');
+        // try to put it in try blocks
         await RememberMeToken.consumeToken(token, async function(err, uid) {
           if (err) {
             return done(err);
@@ -175,32 +173,35 @@ function auth({ ROOT_URL, server }) {
             console.log('no user');
             return done(null, false);
           }
-          await RememberMeToken.findById(uid, function(err, user) {
-            if (err) {
-              console.log('ERROR in rememberme');
-              return done(err);
-            }
+          console.log(`RememberMEStrategy UID = ${uid}`);
+          try {
+            const user = await RememberMeToken.findById(uid);
+            console.log(`RememberMe findById returns user: ${user}`);
+
             if (!user) {
-              console.log('NO USER');
+              console.log('RememberMeStrategy findById - NO USER ');
               return done(null, false);
             }
-            console.log(`found USER with findById ${user}`);
+            console.log(`RememberMeStrategy findByID found USER ${user}`);
             return done(null, user);
-          });
+          } catch (e) {
+            console.log('RememberMeStrategy findById -ERROR in rememberme');
+            return done(e);
+          }
         });
       },
       async function(user, done) {
         console.log('saving token - auth.js');
-        console.log(`user @ auth.js = ${user}`);
+        console.log(`user @ auth.js = ${user.email}`);
         const token = randomString(64);
-        await RememberMeToken.saveToken(token, user, function(err) {
-          if (err) {
-            console.log(`ERROR ${err}`);
-            return done(err);
-          }
-          console.log(`saving token ${token}`);
+        try {
+          await RememberMeToken.saveToken(token, user._id);
+          console.log(`RememberMeStrategy saving token ${token}`);
           return done(null, token);
-        });
+        } catch (e) {
+          console.log(`RememberMeStrategy saving token error ${e}`);
+          return done(e);
+        }
       },
     ),
   );

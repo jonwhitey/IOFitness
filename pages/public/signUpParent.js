@@ -77,6 +77,7 @@ class SignUpParent extends React.Component {
         }
         if (signUpOrLogin === 'login') {
           await loginLocal(data);
+          console.log('LOGGING IN');
           window.location.reload(true);
         }
         notify('Success!');

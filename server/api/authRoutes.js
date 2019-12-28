@@ -45,8 +45,9 @@ router.get(
 
 router.get('/logout', (req, res) => {
   console.log('logging out');
+  res.clearCookie('remember_me');
   req.logout();
-  res.redirect('/login');
+  res.redirect('/');
 });
 
 router.post(
@@ -69,7 +70,6 @@ router.post(
         httpOnly: true,
         maxAge: 604800000,
       }); // 7 days
-      console.log(`COOKIE:`);
     }
 
     if (req.query && req.query.redirectUrl && req.query.redirectUrl.startsWith('/')) {
@@ -78,29 +78,23 @@ router.post(
       req.session.finalUrl = null;
     }
     if (req.user && req.user.isAdmin) {
-      // res.json({ status: 200, redirect: '/admin', isAdmin: true });
+      res.json({ status: 200, redirect: '/admin', isAdmin: true });
       console.log(` user and user.isAdmin: res.json ${res.json}`);
     } else if (!req.user) {
-      // res.json({ status: 403, message: 'Incorrect username or password' });
+      res.json({ status: 403, message: 'Incorrect username or password' });
       console.log(` not user: res.json ${res.json}`);
     } else if (req.session.finalUrl) {
-      // res.json({ redirect: req.session.finalUrl });
+      res.json({ redirect: req.session.finalUrl });
       console.log(` finalUrl: finalUrl ${req.session.finalUrl}`);
     } else {
-      // res.json({ status: 200, username: req.user.username });
+      res.json({ status: 200, username: req.user.username });
       console.log(`Login Success`);
 
-      // console.log(res.status + res.user + res.redirect);
       res.send();
-      console.log(res.redirect);
-      console.log('should have redirected');
-      next();
-      // I think this next() call is fucking everything up
     }
   },
   (err, req, res, next) => {
     console.log(`ERROR!!!`);
-    return next();
   },
 );
 

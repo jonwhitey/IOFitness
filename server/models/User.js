@@ -88,10 +88,9 @@ class UserClass {
     ];
   }
 
-  static async findById({ id }) {
+  static async findByIdTrueOrFalse({ id }) {
     console.log('User.findById');
     const user = await this.findOne({ id });
-    console.log(!!user);
     return !!user;
   }
 
@@ -113,7 +112,7 @@ class UserClass {
     if (user) {
       const match = await bcrypt.compare(password, user.passwordHash);
       if (user && password && match) {
-        console.log('Singin Success');
+        console.log('found user and password match');
         return user;
       }
       if (user && password && !match) {
