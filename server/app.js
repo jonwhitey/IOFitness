@@ -66,8 +66,7 @@ app.prepare().then(async () => {
 
   server.get('*', (req, res) => {
     const url = URL_MAP[req.path];
-    console.log('get request on app.js');
-    console.log(req.url);
+    console.log(`app.js - GET request req.url: ${url}`);
     if (url) {
       console.log(url);
       app.render(req, res, url);

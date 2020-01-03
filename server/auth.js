@@ -7,10 +7,7 @@ const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const mongoSessionStore = require('connect-mongo');
 const mongoose = require('mongoose');
-const RememberMeStrategy = require('passport-remember-me').Strategy;
 const User = require('./models/User');
-const RememberMeToken = require('./models/RememberMeToken');
-const randomString = require('../lib/randomString');
 
 function auth({ ROOT_URL, server }) {
   const dev = process.env.NODE_ENV !== 'production';
@@ -48,7 +45,6 @@ function auth({ ROOT_URL, server }) {
   // creates persistent login session
   server.use(passport.session());
   server.use(bodyParser.urlencoded({ extended: false }));
-  server.use(passport.authenticate('remember-me'));
   /* 
   anytime a user opens the app, and logs in? 
   create and save the sess cookie and document
@@ -152,57 +148,6 @@ function auth({ ROOT_URL, server }) {
         passReqToCallback: true,
       },
       verifyLocal,
-    ),
-  );
-
-  // Remember Me cookie strategy
-  //   This strategy consumes a remember me token, supplying the user the
-  //   token was originally issued to.  The token is single-use, so a new
-  //   token is then issued to replace it.
-
-  passport.use(
-    new RememberMeStrategy(
-      async function(token, done) {
-        console.log('Deleting token - auth.js');
-        // try to put it in try blocks
-        await RememberMeToken.consumeToken(token, async function(err, uid) {
-          if (err) {
-            return done(err);
-          }
-          if (!uid) {
-            console.log('no user');
-            return done(null, false);
-          }
-          console.log(`RememberMEStrategy UID = ${uid}`);
-          try {
-            const user = await RememberMeToken.findById(uid);
-            console.log(`RememberMe findById returns user: ${user}`);
-
-            if (!user) {
-              console.log('RememberMeStrategy findById - NO USER ');
-              return done(null, false);
-            }
-            console.log(`RememberMeStrategy findByID found USER ${user}`);
-            return done(null, user);
-          } catch (e) {
-            console.log('RememberMeStrategy findById -ERROR in rememberme');
-            return done(e);
-          }
-        });
-      },
-      async function(user, done) {
-        console.log('saving token - auth.js');
-        console.log(`user @ auth.js = ${user.email}`);
-        const token = randomString(64);
-        try {
-          await RememberMeToken.saveToken(token, user._id);
-          console.log(`RememberMeStrategy saving token ${token}`);
-          return done(null, token);
-        } catch (e) {
-          console.log(`RememberMeStrategy saving token error ${e}`);
-          return done(e);
-        }
-      },
     ),
   );
 }

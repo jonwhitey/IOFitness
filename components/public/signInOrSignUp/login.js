@@ -30,15 +30,16 @@ class Login extends React.Component {
   }
 
   handleSubmit(e) {
-    const { email, password, rememberMe, validateForm } = this.props;
-    const data = { email, password, rememberMe, signUpOrLogin: 'login' };
+    const { email, password, rememberMe, validateForm, rememberMeToken } = this.props;
+    const data = { email, password, rememberMe, rememberMeToken, signUpOrLogin: 'login' };
+
     e.preventDefault();
     validateForm(data);
   }
 
   render() {
-    const { redirectUrl, formErrors, rememberMe } = this.props;
-    console.log('render login');
+    const { rememberMeEmail, redirectUrl, formErrors, rememberMe } = this.props;
+    console.log('Login.js - render login');
     return (
       <Container component="main" maxWidth="xs">
         <CssBaseline />
@@ -66,6 +67,7 @@ class Login extends React.Component {
               error={!!formErrors.email}
               id="outlined-error-helper-text"
               helperText={formErrors.email}
+              defaultValue={rememberMeEmail}
             />
 
             <TextField
@@ -86,11 +88,13 @@ class Login extends React.Component {
 
             <FormControlLabel
               control={
+                // eslint-disable-next-line react/jsx-wrap-multilines
                 <Checkbox
                   name="remember"
                   color="primary"
                   value={rememberMe}
                   onChange={this.handleUserInput}
+                  checked={rememberMe}
                 />
               }
               label="Remember me"
@@ -148,6 +152,8 @@ Login.propTypes = {
   validateForm: PropTypes.func,
   redirectUrl: PropTypes.string,
   rememberMe: PropTypes.bool,
+  rememberMeToken: PropTypes.string,
+  rememberMeEmail: PropTypes.string,
 };
 
 export default Login;

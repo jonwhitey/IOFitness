@@ -94,6 +94,16 @@ class UserClass {
     return !!user;
   }
 
+  static async findEmail({ uid }) {
+    try {
+      const email = await this.findOne({ _id: uid }).select('email');
+      return email;
+    } catch (e) {
+      console.log(`User.js findEmail error -  ${e}`);
+      return e;
+    }
+  }
+
   static async signInOrSignUp({
     email,
     password,
@@ -180,7 +190,7 @@ class UserClass {
 
     try {
       await sendEmail({
-        from: `Kelly from Builder Book <${process.env.EMAIL_SUPPORT_FROM_ADDRESS}>`,
+        from: `Jon at basics.fitness <${process.env.EMAIL_SUPPORT_FROM_ADDRESS}>`,
         to: [email],
         subject: template.subject,
         body: template.message,
@@ -192,21 +202,6 @@ class UserClass {
     return _.pick(newUser, UserClass.publicFields());
   }
 }
-
-/*
-  static async verifyPassword(email, password) {
-    const user = await this.findOne({ email });
-    const match = await bcrypt.compare(password, user.passwordHash);
-
-    if (match) {
-      console.log('BCRYPT WORKED!');
-      return true;
-    }
-    console.log(`correct email but wrong password`);
-    return false;
-  }
-}
-*/
 
 mongoSchema.loadClass(UserClass);
 

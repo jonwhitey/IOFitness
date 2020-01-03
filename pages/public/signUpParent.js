@@ -15,7 +15,7 @@ import styleForm from '../../components/SharedStyles.js';
 import withAuth from '../../lib/withAuth';
 import SignUp from '../../components/public/signInOrSignUp/signup';
 import Login from '../../components/public/signInOrSignUp/login';
-import { signUpLocal, loginLocal } from '../../lib/api/auth';
+import { signUpLocal, loginLocal, findEmailByToken } from '../../lib/api/auth';
 
 // eslint-disable-next-line react/prefer-stateless-function
 class SignUpParent extends React.Component {
@@ -26,16 +26,21 @@ class SignUpParent extends React.Component {
       }),
       asPath: PropTypes.string,
     }),
+    rememberMeEmail: PropTypes.string,
+    rememberMeToken: PropTypes.string,
   };
 
   static defaultProps = {
     router: {
       asPath: '',
     },
+    rememberMeEmail: '',
+    remembereToken: '',
   };
 
   constructor(props) {
     super(props);
+
     this.state = {
       email: '',
       password: '',
@@ -49,6 +54,7 @@ class SignUpParent extends React.Component {
     };
     this.validateField = this.validateField.bind(this);
     this.validateForm = this.validateForm.bind(this);
+    // this.rememberMe = this.rememberMe.bind(this);
   }
 
   static async getInitialProps({ req, res }) {
@@ -57,18 +63,36 @@ class SignUpParent extends React.Component {
     if (req && req.headers && req.headers.cookie) {
       headers.cookie = req.headers.cookie;
     }
+    if (headers.cookie.includes('remember_me')) {
+      const cookieStr = headers.cookie;
+      const rememberMeToken = cookieStr.substring(
+        cookieStr.indexOf('=') + 1,
+        cookieStr.indexOf(';'),
+      );
+      console.log(`signUpParent.js - rememberMeToken: ${rememberMeToken}`);
+      try {
+        const rememberMeEmail = await findEmailByToken({ rememberMeToken });
+        console.log(`signupParent: ${rememberMeEmail}`);
+        console.log(rememberMeEmail);
+        return { rememberMeEmail, rememberMeToken };
+      } catch (err) {
+        console.log(`signUpParent.js - no rememberMeEmail`);
+      }
+    }
   }
 
   componentDidMount() {
-    const { router } = this.props;
+    const { router, rememberMeEmail } = this.props;
     router.prefetch('/dynamic');
+    if (rememberMeEmail) {
+      this.setState({ email: rememberMeEmail, validEmail: true, rememberMe: true });
+    }
   }
 
   validateForm = async (data) => {
     NProgress.start();
     const { validForm } = this.state;
     const { signUpOrLogin } = data;
-
     if (validForm) {
       try {
         if (signUpOrLogin === 'signup') {
@@ -76,6 +100,7 @@ class SignUpParent extends React.Component {
           window.location.reload(true);
         }
         if (signUpOrLogin === 'login') {
+          console.log(data);
           await loginLocal(data);
           console.log('LOGGING IN');
           window.location.reload(true);
@@ -164,13 +189,15 @@ class SignUpParent extends React.Component {
   }
 
   render() {
-    const { router } = this.props;
+    const { router, rememberMeEmail, rememberMeToken } = this.props;
     const redirectUrl = (router && router.query && router.query.redirectUrl) || '';
     console.log(router.asPath);
     if (router.asPath.substring(0, 6) === '/login') {
       return (
         <section>
           <Login
+            rememberMeEmail={rememberMeEmail}
+            rememberMeToken={rememberMeToken}
             {...this.state}
             validateField={this.validateField}
             validateForm={this.validateForm}
