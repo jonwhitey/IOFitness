@@ -54,13 +54,9 @@ class MyApp extends App {
   render() {
     const { Component, pageProps } = this.props;
 
-
     return (
       <div>
-        {/* ThemeProvider makes the theme available down the React
-              tree thanks to React context. */}
         <ThemeProvider theme={theme}>
-          {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
           <CssBaseline />
           {pageProps.noHeader ? null : <Header {...pageProps} />}
           <Component {...pageProps} />

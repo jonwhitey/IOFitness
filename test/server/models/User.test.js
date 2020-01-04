@@ -3,12 +3,6 @@ const request = require('supertest');
 const express = require('express');
 const User = require('../../../server/models/User');
 
-// call signInOrSignup with user
-
-// see if a refresh token is given back / if the session is updated
-
-// define user (potential to remove to . in jonathanewhite@colorado.edu)
-
 describe('User model', () => {
   describe('can', () => {
     it('connect to DB and retrieve and email', async () => {
