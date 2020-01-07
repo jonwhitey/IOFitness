@@ -9,9 +9,8 @@ const mongoose = require('mongoose');
 
 // define user (potential to remove to . in jonathanewhite@colorado.edu)
 
-/*
 describe('Login and Signup API Intergration Tests', () => {
-  describe('Login in with an existing user', () => {
+  describe('/signUpLocal', () => {
     it('should return a user', async () => {
       // setup
       const data = {
@@ -26,5 +25,37 @@ describe('Login and Signup API Intergration Tests', () => {
       assert.exists(res, 'response is undefined or null');
     });
   });
+  describe('loginLocal', () => {
+    it('loginLocal', async () => {
+      // setup
+      
+      // exercise
+      const res = await loginLocal(data);
+      // verify
+      console.log(res);
+      assert.exists(res, 'response is undefined or null');
+    });
+  });
+  describe('findEmailByToken', () => {
+    it('loginLocal', async () => {
+      // setup
+      
+      // exercise
+      const res = await loginLocal(data);
+      // verify
+      console.log(res);
+      assert.exists(res, 'response is undefined or null');
+    });
+  });
+  describe('logout', () => {
+    it('loginLocal', async () => {
+      // setup
+      
+      // exercise
+      const res = await loginLocal(data);
+      // verify
+      console.log(res);
+      assert.exists(res, 'response is undefined or null');
+    });
+  });
 });
-*/
