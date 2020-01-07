@@ -77,7 +77,6 @@ class UserClass {
       'id',
       'firstName',
       'lastName',
-      'passwordHash',
       'displayName',
       'email',
       'avatarUrl',
@@ -86,12 +85,6 @@ class UserClass {
       'isGithubConnected',
       'purchasedBookIds',
     ];
-  }
-
-  static async findByIdTrueOrFalse({ id }) {
-    console.log('User.findById');
-    const user = await this.findOne({ id });
-    return !!user;
   }
 
   static async findEmail({ uid }) {
@@ -118,11 +111,14 @@ class UserClass {
     const passwordHash = bcrypt.hashSync(password, saltRounds);
 
     // check if user exists with email
-    const user = await this.findOne({ email }).select(UserClass.publicFields().join(' '));
+    let user = await this.findOne({ email });
     if (user) {
       const match = await bcrypt.compare(password, user.passwordHash);
       if (user && password && match) {
         console.log('found user and password match');
+        user = _.pick(user, UserClass.publicFields());
+
+        console.log(`User.js returns ${user}`);
         return user;
       }
       if (user && password && !match) {
@@ -171,7 +167,7 @@ class UserClass {
       avatarUrl = 'https://storage.googleapis.com/builderbook/logo.svg';
     }
 
-    const newUser = await this.create({
+    let newUser = await this.create({
       createdAt: new Date(),
       email,
       passwordHash,
@@ -184,10 +180,14 @@ class UserClass {
       slug,
     });
 
+    newUser = _.pick(newUser, UserClass.publicFields());
+
     const template = await getEmailTemplate('welcome', {
       userName: displayName,
     });
-
+    if (email === 'jonathan.e.white@colorado.edu') {
+      return newUser;
+    }
     try {
       await sendEmail({
         from: `Jon at basics.fitness <${process.env.EMAIL_SUPPORT_FROM_ADDRESS}>`,
@@ -199,7 +199,7 @@ class UserClass {
       logger.error('Email sending error:', err);
     }
 
-    return _.pick(newUser, UserClass.publicFields());
+    return newUser;
   }
 }
 

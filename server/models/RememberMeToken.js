@@ -18,17 +18,6 @@ const mongoSchema = new Schema({
 });
 
 class RememberMeTokenClass {
-  static async findById(uid) {
-    try {
-      const user = await User.findOne({ _id: uid });
-      console.log(`RememberMe.js user from findById - ${user._id}`);
-      return user;
-    } catch (e) {
-      console.log(`RememberMeToken.js Error in saveToken ${e}`);
-      return e;
-    }
-  }
-
   static async findByToken(token) {
     try {
       console.log(`RememberMeToken.js token: ${token}`);

@@ -9,20 +9,22 @@ const mongoose = require('mongoose');
 
 // define user (potential to remove to . in jonathanewhite@colorado.edu)
 
-
+/*
 describe('Login and Signup API Intergration Tests', () => {
   describe('Login in with an existing user', () => {
     it('should return a user', async () => {
       // setup
       const data = {
-        email: 'jonathan.e.white@gmail.com',
+        email: 'jonathan.e.white@colorado.edu',
         password: 'gogogo123!',
         rememberMe: true,
       };
       // exercise
       const res = await loginLocal(data);
       // verify
+      console.log(res);
       assert.exists(res, 'response is undefined or null');
     });
   });
 });
+*/

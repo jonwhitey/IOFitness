@@ -1,50 +1,51 @@
 const { assert } = require('chai');
-const request = require('supertest');
-const express = require('express');
 const User = require('../../../server/models/User');
 
-describe('User model', () => {
-  describe('can', () => {
-    it('connect to DB and retrieve and email', async () => {
-      const primary = await User.findOne({ email: 'jonathan42white@gmail.com' });
-      assert.exists(primary, 'jonathan42white@gmail.com exists!');
-    });
-    it('signup a new user', async () => {
+describe('User Model Method Tests:', () => {
+  const user = {
+    email: 'jonathan.e.white@colorado.edu',
+    password: 'Gogogo123!',
+    firstName: 'Jonathan',
+    lastName: 'White',
+  };
+  let returnedUser = {};
+  after(async () => {
+    await User.deleteOne({ email: 'jonathan.e.white@colorado.edu' });
+    console.log('delete user');
+  });
+
+  describe('signInOrSignUp', () => {
+    it('can SignUp a new User', async () => {
       // set up
-      await User.deleteOne({ email: 'jonathan.e.white@colorado.edu' });
-      const user = {
-        email: 'jonathan.e.white@colorado.edu',
-        password: 'gogogo123!',
-        firstName: 'Jonathan',
-        lastName: 'White',
-      };
       // exercise
-      const saved = await User.signInOrSignUp(user);
+      returnedUser = await User.signInOrSignUp(user);
       // verify
-      assert.equal(user.email, saved.email);
+      assert.equal(returnedUser.email, user.email);
+      user.id = returnedUser.id;
+      return { user, returnedUser };
     });
+  });
+
+  describe('findEmail', () => {
     it('can find a user with User.findEmail(uid)', async () => {
       // set up
-      const email = 'jonathan42white@gmail.com';
-      const uid =  '5dbefd18d53308fee9dface3';
+      const { id, email } = user;
+      const uid = { uid: id };
       // exercise
-      const user = await User.findEmail({ uid });
+      const userEmail = await User.findEmail(uid);
       // verify
-      assert.equal(email, user.email);
+      assert.equal(userEmail.email, email);
+    });
+  });
+
+  describe('signInOrSignUp', () => {
+    it('signin an existing user', async () => {
+      // setup
+      const userToSignin = { email: user.email, password: user.password };
+      // exercise
+      const signedInUser = await User.signInOrSignUp(userToSignin);
+      // verify
+      assert.deepEqual(signedInUser, returnedUser);
     });
   });
 });
-// SigninorSignUp
-
-/*
- when a user logs in: 
-  1. route responds with user object,
-  2. create a new session document, 
-  3. set a cookie on the browser, 
-  4. update user prop on the app, 
-*/
-/*
-describe('Sign in process for existing user:', () => {
-  
-});
-*/
