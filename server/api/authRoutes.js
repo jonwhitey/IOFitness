@@ -15,9 +15,11 @@ router.post('/findEmailByToken', async (req, res, next) => {
   console.log(req.body);
   try {
     const { rememberMeToken } = req.body;
+    console.log(rememberMeToken);
     const { email } = await RememberMeToken.findByToken(rememberMeToken);
-    console.log(`authRoutes email: ${email}`);
-    res.json(email);
+    console.log(`authRoutes rememberMeEmail: ${email}`);
+    res.json({ email });
+    res.send();
   } catch (err) {
     res.json({ error: err.message || err.toString() });
   }
@@ -60,6 +62,7 @@ router.get(
 router.get('/logout', (req, res) => {
   console.log('logging out');
   res.clearCookie('builderbook.sid');
+  res.json({ status: 200, message: 'logout successful' });
   req.logout();
   res.redirect('/');
 });
@@ -70,16 +73,15 @@ router.post(
 
   async (req, res) => {
     console.log(`post to loginLocal/signUpLocal - req.body.rememberMe`);
-    console.log(
-      `authRoutes.js - post to loginLocal -  rememberMeToken: ${req.body.rememberMeToken}`,
-    );
-    console.log(req.body);
+    console.log(req.body.rememberMe);
+    let token = '';
     if (req.body.rememberMeToken) {
       await RememberMeToken.consumeToken(req.body.rememberMeToken);
     }
+
     if (req.body.rememberMe) {
       console.log('REMEMBER ME!');
-      const token = randomString(64);
+      token = randomString(64);
       const uid = req.user.id;
       console.log(`uid = ${uid}`);
       // eslint-disable-next-line func-names
@@ -92,28 +94,15 @@ router.post(
     } else {
       res.clearCookie('remember_me');
     }
-
-    if (req.query && req.query.redirectUrl && req.query.redirectUrl.startsWith('/')) {
-      req.session.finalUrl = req.query.redirectUrl;
-    } else {
-      req.session.finalUrl = null;
-    }
-    if (req.user && req.user.isAdmin) {
-      res.json({ status: 200, redirect: '/admin', isAdmin: true });
-      console.log(` user and user.isAdmin: res.json ${res.json}`);
-    } else if (!req.user) {
-      res.json({ status: 403, message: 'Incorrect username or password' });
-      console.log(` not user: res.json ${res.json}`);
-    } else if (req.session.finalUrl) {
-      res.json({ redirect: req.session.finalUrl });
-      console.log(` finalUrl: finalUrl ${req.session.finalUrl}`);
-    } else {
-      res.json({ status: 200, username: req.user.username });
-      console.log(`Login Success`);
-      console.log(`LOGIN LOCAL res.username: ${res.username}`);
-
-      res.send();
-    }
+    console.log(token);
+    res.json({
+      status: 200,
+      message: 'User logged in successfully',
+      email: req.user.email,
+      rememberMeToken: token,
+    });
+    console.log('/loginLocal Res');
+    res.send();
   },
   (err, req, res, next) => {
     console.log(`ERROR!!!`);
@@ -121,3 +110,20 @@ router.post(
 );
 
 module.exports = router;
+
+/*
+    if (req.query && req.query.redirectUrl && req.query.redirectUrl.startsWith('/')) {
+      req.session.finalUrl = req.query.redirectUrl;
+    } else {
+      req.session.finalUrl = null;
+    }
+    if (req.user && req.user.isAdmin) {
+      res.json({ status: 200, redirect: '/admin', isAdmin: true });
+      console.log(` user and user.isAdmin: res.json ${res}`);
+    } else if (!req.user) {
+      res.json({ status: 403, message: 'Incorrect username or password' });
+      console.log(` not user: res.json ${res}`);
+    } else if (req.session.finalUrl) {
+      res.json({ redirect: req.session.finalUrl });
+      console.log(` finalUrl: finalUrl ${req.session.finalUrl}`);
+    */

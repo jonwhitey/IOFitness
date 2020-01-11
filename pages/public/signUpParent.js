@@ -59,24 +59,27 @@ class SignUpParent extends React.Component {
 
   static async getInitialProps({ req, res }) {
     // initialize headers obejct, if request object has a cookie, assign it to the headers object
-    const headers = {};
-    if (req && req.headers && req.headers.cookie) {
-      headers.cookie = req.headers.cookie;
-    }
-    if (headers.cookie.includes('remember_me')) {
-      const cookieStr = headers.cookie;
-      const rememberMeToken = cookieStr.substring(
-        cookieStr.indexOf('=') + 1,
-        cookieStr.indexOf(';'),
-      );
-      console.log(`signUpParent.js - rememberMeToken: ${rememberMeToken}`);
-      try {
-        const rememberMeEmail = await findEmailByToken({ rememberMeToken });
-        console.log(`signupParent: ${rememberMeEmail}`);
-        console.log(rememberMeEmail);
-        return { rememberMeEmail, rememberMeToken };
-      } catch (err) {
-        console.log(`signUpParent.js - no rememberMeEmail`);
+    if (!req.user) {
+      const headers = {};
+      if (req && req.headers && req.headers.cookie) {
+        headers.cookie = req.headers.cookie;
+      }
+      if (headers.cookie.includes('remember_me')) {
+        const cookieStr = headers.cookie;
+        const rememberMeToken = cookieStr.substring(
+          cookieStr.indexOf('=') + 1,
+          cookieStr.indexOf(';'),
+        );
+        console.log(`signUpParent.js - rememberMeToken: ${rememberMeToken}`);
+        try {
+          // if user - don't look for remeebermeemail
+          const rememberMeEmail = await findEmailByToken({ rememberMeToken });
+          console.log(`signupParent: ${rememberMeEmail}`);
+          console.log(rememberMeEmail);
+          return { rememberMeEmail, rememberMeToken };
+        } catch (err) {
+          console.log(`signUpParent.js - no rememberMeEmail`);
+        }
       }
     }
   }
@@ -102,8 +105,9 @@ class SignUpParent extends React.Component {
         if (signUpOrLogin === 'login') {
           console.log(data);
           await loginLocal(data);
-          console.log('LOGGING IN');
-          window.location.reload(true);
+
+          console.log('Logged IN');
+          //window.location.reload(true);
         }
         notify('Success!');
         NProgress.done();

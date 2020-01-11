@@ -8,6 +8,7 @@
     "start": "node server/app.js",
     "lint": "eslint components pages lib server",
     "test": "NODE_ENV=test mocha --exit --recursive ",
+    "test-one": "NODE_ENV=test mocha --exit --grep",
     "test-jest": "jest --coverage",
     "test-integration": "./node_modules/.bin/wdio wdio.conf.js",
     "now": "now && now alias && now rm builderbook --safe --yes",
