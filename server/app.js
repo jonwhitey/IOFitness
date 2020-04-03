@@ -36,6 +36,7 @@ const URL_MAP = {
   '/signup': '/public/signUpParent',
   '/my-books': '/customer/my-books',
   '/': '/customer/index',
+  '/logout': '/public/signUpParent',
 };
 
 const app = next({ dev });

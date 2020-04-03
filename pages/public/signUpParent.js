@@ -28,14 +28,16 @@ class SignUpParent extends React.Component {
     }),
     rememberMeEmail: PropTypes.string,
     rememberMeToken: PropTypes.string,
+    isFromServer: PropTypes.bool,
   };
 
   static defaultProps = {
     router: {
-      asPath: '',
+      asPath: '/login',
     },
     rememberMeEmail: '',
-    remembereToken: '',
+    rememberMeToken: '',
+    isFromServer: null,
   };
 
   constructor(props) {
@@ -64,7 +66,7 @@ class SignUpParent extends React.Component {
       if (req && req.headers && req.headers.cookie) {
         headers.cookie = req.headers.cookie;
       }
-      if (headers.cookie.includes('remember_me')) {
+      if (headers.cookie && headers.cookie.includes('remember_me')) {
         const cookieStr = headers.cookie;
         const rememberMeToken = cookieStr.substring(
           cookieStr.indexOf('=') + 1,
@@ -72,10 +74,10 @@ class SignUpParent extends React.Component {
         );
         console.log(`signUpParent.js - rememberMeToken: ${rememberMeToken}`);
         try {
-          // if user - don't look for remeebermeemail
-          const rememberMeEmail = await findEmailByToken({ rememberMeToken });
+          // if user - don't look for remeberMeEmail
+          let rememberMeEmail = await findEmailByToken({ rememberMeToken });
+          rememberMeEmail = rememberMeEmail.email;
           console.log(`signupParent: ${rememberMeEmail}`);
-          console.log(rememberMeEmail);
           return { rememberMeEmail, rememberMeToken };
         } catch (err) {
           console.log(`signUpParent.js - no rememberMeEmail`);
@@ -85,8 +87,7 @@ class SignUpParent extends React.Component {
   }
 
   componentDidMount() {
-    const { router, rememberMeEmail } = this.props;
-    router.prefetch('/dynamic');
+    const { rememberMeEmail } = this.props;
     if (rememberMeEmail) {
       this.setState({ email: rememberMeEmail, validEmail: true, rememberMe: true });
     }
@@ -107,7 +108,7 @@ class SignUpParent extends React.Component {
           await loginLocal(data);
 
           console.log('Logged IN');
-          //window.location.reload(true);
+          window.location.reload(true);
         }
         notify('Success!');
         NProgress.done();
@@ -115,8 +116,19 @@ class SignUpParent extends React.Component {
         NProgress.done();
         console.log('ERROR in validateForm');
         console.log(err);
-        notify(`Incorrect username or password.`);
-        this.setState({ formErrors: { password: 'Incorrect username or password.' } });
+        if (signUpOrLogin === 'login') {
+          notify(`Incorrect email or password.`);
+          this.setState({
+            formErrors: {
+              password: 'Incorrect email or password.',
+              email: 'Incorrect email or password.',
+            },
+          });
+        }
+        if (signUpOrLogin === 'signup') {
+          notify(`Email is already registered.`);
+          this.setState({ formErrors: { email: 'Email is already registered.' } });
+        }
       }
     } else {
       this.setState({ validForm: false });
@@ -146,32 +158,44 @@ class SignUpParent extends React.Component {
       case 'email':
         validEmail = EmailValidator.validate(value);
         if (validEmail) {
-          this.setState({ email: value, validEmail: true, formErrors: { email: '' } });
+          this.setState((prevState) => ({
+            email: value,
+            formErrors: {
+              ...prevState.formErrors,
+              email: '',
+            },
+            validEmail: true,
+          }));
         } else {
-          this.setState({
+          this.setState((prevState) => ({
+            formErrors: {
+              ...prevState.formErrors,
+              email: 'Your email is invalid',
+            },
             validEmail: false,
-            formErrors: { email: 'Your email is invalid' },
-          });
+          }));
         }
         break;
       case 'password':
         validPassword = schema.validate(value);
         if (validPassword) {
-          this.setState({
+          this.setState((prevState) => ({
             password: value,
-            validPassword: true,
             formErrors: {
+              ...prevState.formErrors,
               password: '',
             },
-          });
+            validPassword: true,
+          }));
         } else {
-          this.setState({
-            validPassword: false,
+          this.setState((prevState) => ({
             formErrors: {
+              ...prevState.formErrors,
               password:
-                'Your password must be greater than 8 characters, have at least one uppercase and lowercase character, and at least on digit. ',
+                'Your password must be greater than 8 characters, have at least one uppercase and lowercase character, and at least on digit.',
             },
-          });
+            validPassword: false,
+          }));
         }
         break;
       case 'firstName':
@@ -193,13 +217,17 @@ class SignUpParent extends React.Component {
   }
 
   render() {
-    const { router, rememberMeEmail, rememberMeToken } = this.props;
+    const { router, rememberMeEmail, rememberMeToken, isFromServer, asPath } = this.props;
     const redirectUrl = (router && router.query && router.query.redirectUrl) || '';
-    console.log(router.asPath);
-    if (router.asPath.substring(0, 6) === '/login') {
+    // console.log('SignUpParent.js this.state: ');
+    // console.log(this.state);
+    // console.log('SignUpParent.js this.props: ');
+    // console.log(this.props);
+    if (router.asPath.substr(0, 6) === '/login') {
       return (
         <section>
           <Login
+            isFromServer={isFromServer}
             rememberMeEmail={rememberMeEmail}
             rememberMeToken={rememberMeToken}
             {...this.state}
@@ -211,7 +239,7 @@ class SignUpParent extends React.Component {
       );
     }
 
-    if (router.asPath.substring(0, 7) === '/signup') {
+    if (router.asPath.substr(0, 7) === '/signup') {
       return (
         <section>
           <SignUp

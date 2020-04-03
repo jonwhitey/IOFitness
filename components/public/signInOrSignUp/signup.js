@@ -45,11 +45,11 @@ class SignUp extends React.Component {
         <CssBaseline />
         <div align="center">
           <Head>
-            <title>Cerate an Account for basics.fitness</title>
+            <title>Create an Account for basics.fitness</title>
             <meta name="description" content="Login page for basics.fitness" />
           </Head>
           <br />
-          <p style={styleTitle}>Sign up</p>
+          <h1 style={styleTitle}>Sign Up</h1>
           <form onSubmit={this.handleSubmit} style={styleForm}>
             <TextField
               autoComplete="fname"
@@ -59,7 +59,7 @@ class SignUp extends React.Component {
               id="firstName"
               label="First Name"
               autoFocus
-              onInput={this.handleUserInput}
+              onChange={this.handleUserInput}
               style={styleTextField}
             />
 
@@ -70,7 +70,7 @@ class SignUp extends React.Component {
               label="Last Name"
               name="lastName"
               autoComplete="lname"
-              onInput={this.handleUserInput}
+              onChange={this.handleUserInput}
               style={styleTextField}
               justify="right"
             />
@@ -82,8 +82,8 @@ class SignUp extends React.Component {
               label="Email Address"
               name="email"
               autoComplete="email"
-              onInput={this.handleUserInput}
-              error={formErrors.email}
+              onChange={this.handleUserInput}
+              error={!!formErrors.email}
               id="outlined-error-helper-text"
               helperText={formErrors.email}
               style={styleTextField}
@@ -97,8 +97,8 @@ class SignUp extends React.Component {
               label="Password"
               type="password"
               autoComplete="current-password"
-              onInput={this.handleUserInput}
-              error={formErrors.password}
+              onChange={this.handleUserInput}
+              error={!!formErrors.password}
               id="outlined-error-helper-text"
               helperText={formErrors.password}
               style={styleTextField}
@@ -146,14 +146,17 @@ class SignUp extends React.Component {
 }
 
 SignUp.propTypes = {
-  email: PropTypes.string,
-  password: PropTypes.string,
-  firstName: PropTypes.string,
-  lastName: PropTypes.string,
-  formErrors: { email: PropTypes.string, password: PropTypes.string },
-  validEmail: PropTypes.bool,
-  validPassword: PropTypes.bool,
-  validForm: PropTypes.bool,
+  email: PropTypes.string.isRequired,
+  password: PropTypes.string.isRequired,
+  firstName: PropTypes.string.isRequired,
+  lastName: PropTypes.string.isRequired,
+  formErrors: PropTypes.shape({
+    email: PropTypes.string,
+    password: PropTypes.string,
+  }).isRequired,
+  validEmail: PropTypes.bool.isRequired,
+  validPassword: PropTypes.bool.isRequired,
+  validForm: PropTypes.bool.isRequired,
   validateField: PropTypes.func.isRequired,
   validateForm: PropTypes.func.isRequired,
   redirectUrl: PropTypes.string,

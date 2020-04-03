@@ -39,17 +39,20 @@ class Login extends React.Component {
 
   render() {
     const { rememberMeEmail, redirectUrl, formErrors, rememberMe } = this.props;
+    console.log(this.props);
     console.log('Login.js - render login');
+    console.log(formErrors);
+
     return (
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <div align="center" width="360px">
           <Head>
-            <title>Log in to basics.fitness</title>
+            <title id="login-title">Log in to basics.fitness</title>
             <meta name="description" content="Login page for basics.fitness" />
           </Head>
           <br />
-          <p style={{ margin: '45px auto', fontSize: '44px', fontWeight: '400' }}>Log in</p>
+          <h1 style={{ margin: '45px auto', fontSize: '44px', fontWeight: '400' }}>Log in</h1>
           <p>You’ll be logged in for 14 days unless you log out manually.</p>
           <br />
           <form style={styleForm} noValidate onSubmit={this.handleSubmit}>

@@ -10,7 +10,7 @@ import { theme } from '../lib/theme';
 import Notifier from '../components/Notifier';
 import Header from '../components/Header';
 
-//adds nProgress to the next router
+// adds nProgress to the next router
 Router.onRouteChangeStart = () => NProgress.start();
 Router.onRouteChangeComplete = () => NProgress.done();
 Router.onRouteChangeError = () => NProgress.done();
@@ -32,6 +32,7 @@ class MyApp extends App {
   assign them to pageProps
   return the deconstructed pageProps object 
   */
+
   static async getInitialProps({ Component, ctx }) {
     const pageProps = {};
 
@@ -50,6 +51,7 @@ class MyApp extends App {
       jssStyles.parentNode.removeChild(jssStyles);
     }
   }
+
 
   render() {
     const { Component, pageProps } = this.props;

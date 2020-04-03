@@ -61,10 +61,10 @@ router.get(
 
 router.get('/logout', (req, res) => {
   console.log('logging out');
-  res.clearCookie('builderbook.sid');
-  res.json({ status: 200, message: 'logout successful' });
   req.logout();
-  res.redirect('/');
+  res.clearCookie('builderbook.sid');
+  res.status(200);
+  res.send({ status: 200, redirect: 'back' });
 });
 
 router.post(
@@ -77,6 +77,7 @@ router.post(
     let token = '';
     if (req.body.rememberMeToken) {
       await RememberMeToken.consumeToken(req.body.rememberMeToken);
+      console.log('token consumed');
     }
 
     if (req.body.rememberMe) {
@@ -95,16 +96,15 @@ router.post(
       res.clearCookie('remember_me');
     }
     console.log(token);
-    res.json({
+    res.send({
       status: 200,
       message: 'User logged in successfully',
       email: req.user.email,
       rememberMeToken: token,
     });
     console.log('/loginLocal Res');
-    res.send();
   },
-  (err, req, res, next) => {
+  (err, req, res) => {
     console.log(`ERROR!!!`);
   },
 );

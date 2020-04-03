@@ -5,42 +5,30 @@ import Grid from '@material-ui/core/Grid';
 import Hidden from '@material-ui/core/Hidden';
 import Button from '@material-ui/core/Button';
 import Avatar from '@material-ui/core/Avatar';
-import logout from '../lib//api/auth';
 
-import MenuDrop from './MenuDrop';
-
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import { logout } from '../lib/api/auth';
 import { styleToolbar, styleRaisedButton } from './SharedStyles';
 
 // Header component that is displayed on all pages
 
-// dropdown options for customer
-const optionsMenuCustomer = [
-  {
-    text: 'My books',
-    href: '/customer/my-books',
-    as: '/my-books',
-  },
-  {
-    text: 'Log out',
-    href: '/api/v1/auth/logout',
-    as: '/api/v1/auth/logout',
-  },
-];
-
-// dropdown menu for admin
-const optionsMenuAdmin = [
-  {
-    text: 'Admin',
-    href: '/admin',
-  },
-  {
-    text: 'Log out',
-    href: '/api/v1/auth/logout',
-    as: '/api/v1/auth/logout',
-  },
-];
-
 function Header({ user, hideHeader, redirectUrl }) {
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const handleLogout = async () => {
+    await logout();
+    window.location.reload(true);
+  };
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   return (
     <div
       style={{
@@ -77,21 +65,27 @@ function Header({ user, hideHeader, redirectUrl }) {
           </Grid>
           <Grid item sm={2} xs={3} style={{ textAlign: 'right' }}>
             {user ? (
-              <div style={{ whiteSpace: ' nowrap' }}>
-                {!user.isAdmin ? (
-                  <MenuDrop
-                    options={optionsMenuCustomer}
-                    src={user.avatarUrl}
-                    alt={user.displayName}
-                  />
-                ) : null}
-                {user.isAdmin ? (
-                  <MenuDrop
-                    options={optionsMenuAdmin}
-                    src={user.avatarUrl}
-                    alt={user.displayName}
-                  />
-                ) : null}
+              <div>
+                <Button
+                  id="menu-button"
+                  aria-controls="simple-menu"
+                  aria-haspopup="true"
+                  onClick={handleClick}
+                >
+                  Menu
+                </Button>
+                <Menu
+                  id="simple-menu"
+                  anchorEl={anchorEl}
+                  keepMounted
+                  open={Boolean(anchorEl)}
+                  onClose={handleClose}
+                >
+                  <MenuItem onClick={handleClose}>My account</MenuItem>
+                  <MenuItem id="logout-button" onClick={handleLogout}>
+                    Logout
+                  </MenuItem>
+                </Menu>
               </div>
             ) : (
               <Link

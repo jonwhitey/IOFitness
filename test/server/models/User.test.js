@@ -8,6 +8,12 @@ describe('User Model Method Tests:', () => {
     firstName: 'Jonathan',
     lastName: 'White',
   };
+  const user2 = {
+    email: 'joanthan.e.white@colorado.edu',
+    password: 'Start5432!',
+    firstName: 'Jonathan',
+    lastName: 'White',
+  };
   let returnedUser = {};
   after(async () => {
     await User.deleteOne({ email: 'jonathan.e.white@colorado.edu' });
@@ -15,7 +21,7 @@ describe('User Model Method Tests:', () => {
   });
 
   describe('signInOrSignUp', () => {
-    it('can SignUp a new User', async () => {
+    it('creates a new User', async () => {
       // set up
       // exercise
       returnedUser = await User.signInOrSignUp(user);
@@ -23,6 +29,13 @@ describe('User Model Method Tests:', () => {
       assert.equal(returnedUser.email, user.email);
       user.id = returnedUser.id;
       return { user, returnedUser };
+    });
+    it('ensures that email address is unique', async () => {
+      //set up
+      response = await User.signInOrSignUp(user2);
+      //exercise
+
+      //verify    
     });
   });
 
@@ -39,7 +52,7 @@ describe('User Model Method Tests:', () => {
   });
 
   describe('signInOrSignUp', () => {
-    it('signin an existing user', async () => {
+    it('signs in an existing user', async () => {
       // setup
       const userToSignin = { email: user.email, password: user.password };
       // exercise

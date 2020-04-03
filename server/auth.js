@@ -115,7 +115,7 @@ function auth({ ROOT_URL, server }) {
   const verifyLocal = async (req, email, password, done) => {
     console.log('verifyLocal running');
     console.log({ email, password });
-    const { firstName, lastName } = req.body;
+    const { firstName, lastName, signUpOrLogin } = req.body;
 
     try {
       // signInOrSign up the user to MongoDb
@@ -125,12 +125,8 @@ function auth({ ROOT_URL, server }) {
         password,
         firstName,
         lastName,
+        signUpOrLogin,
       });
-
-      if (!user) {
-        console.log('no user');
-        return done(null, false);
-      }
       console.log('return user auth.js');
       return done(null, user);
     } catch (err) {

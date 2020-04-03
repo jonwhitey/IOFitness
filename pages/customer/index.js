@@ -22,9 +22,10 @@ class Index extends React.Component {
 
   render() {
     const { user } = this.props;
+    console.log(this.props);
     return (
       <div style={{ padding: '10px 45px' }}>
-        <p>List of purchased books</p>
+        <p id="purchased-books">List of purchased books</p>
         <p>
           Email:&nbsp;
           {user.email}
