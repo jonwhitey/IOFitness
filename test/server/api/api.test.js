@@ -1,5 +1,11 @@
 const { assert } = require('chai');
-const { signUpLocal, loginLocal, findEmailByToken, logout } = require('../../../lib/api/auth');
+const {
+  signUpLocal,
+  loginLocal,
+  findEmailByToken,
+  logout,
+  deleteUser,
+} = require('../../../lib/api/auth');
 const RememberMeToken = require('../../../server/models/RememberMeToken');
 const User = require('../../../server/models/User');
 
@@ -11,30 +17,80 @@ const User = require('../../../server/models/User');
 
 describe('Login and Signup API Intergration Tests', () => {
   let token = {};
+  const signupValidUser = {
+    email: 'jonathan.e.white@colorado.edu',
+    firstName: 'Jonathan',
+    lastName: 'White',
+    password: 'Gogogo123!',
+    signUpOrLogin: 'signup',
+  };
+
+  const loginValidUser = {
+    email: 'jonathan.e.white@colorado.edu',
+    password: 'Gogogo123!',
+    signUpOrLogin: 'login',
+    rememberMe: true,
+  };
+
+  const invalidEmail = {
+    email: 'jonathan.e.whitecolorado.edu',
+    firstName: 'Jonathan',
+    lastName: 'White',
+    password: 'Gogogo123!',
+    signUpOrLogin: 'signup',
+  };
+
+  const invalidPassword = {
+    email: 'jonathan.e.white@colorado.edu',
+    firstName: 'Jonathan',
+    lastName: 'White',
+    password: 'gogogo123!',
+    signUpOrLogin: 'signup',
+  };
+  const successResponse = {
+    status: 200,
+    message: 'User logged in successfully',
+    email: 'jonathan.e.white@colorado.edu',
+    rememberMeToken: '',
+  };
+
+  const failResponse = {
+    status: 401,
+    message: 'Invalid email or password',
+  };
+
+  const currentUser = {
+    email: 'jonathan.e.white@colorado.edu',
+    password: 'Gogogo123!',
+  };
+
   after(async () => {
     await User.deleteOne({ email: 'jonathan.e.white@colorado.edu' });
     await RememberMeToken.deleteOne({ token });
   });
   describe('/signUpLocal', () => {
     it('should return a user', async () => {
-      // setup
-      const data = {
-        email: 'jonathan.e.white@colorado.edu',
-        firstName: 'Jonathan',
-        lastName: 'White',
-        password: 'Gogogo123!',
-      };
-      const responseShouldBe = {
-        status: 200,
-        message: 'User logged in successfully',
-        email: 'jonathan.e.white@colorado.edu',
-        rememberMeToken: '',
-      };
       // exercise
-      const res = await signUpLocal(data);
+      const res = await signUpLocal(signupValidUser);
       // verify
-      console.log(res);
-      assert.deepEqual(responseShouldBe, res);
+      assert.deepEqual(successResponse, res);
+    });
+    it('should deny a user that is already created', async () => {
+      // exercise
+      const res = await signUpLocal(signupValidUser);
+      // verify
+      assert.deepEqual(failResponse, res);
+    });
+    it('should deny an invalid username', async () => {
+      const res = await signUpLocal(invalidEmail);
+      // verify
+      assert.deepEqual(failResponse, res);
+    });
+    it('should deny an invalid password', async () => {
+      // exercise
+      const res = await signUpLocal(invalidPassword);
+      // verify
+      assert.deepEqual(failResponse, res);
     });
   });
   describe('logout', () => {
@@ -60,27 +116,19 @@ describe('Login and Signup API Intergration Tests', () => {
   describe('loginLocal', () => {
     it('should return a status code and email', async () => {
       // setup
-      const data = {
-        email: 'jonathan.e.white@colorado.edu',
-        password: 'Gogogo123!',
-        rememberMe: true,
-        rememberMeToken: '',
-      };
-      const responseShouldBe = {
-        status: 200,
-        message: 'User logged in successfully',
-        email: 'jonathan.e.white@colorado.edu',
-        rememberMeToken: '',
-      };
+
       // exercise
-      const res = await loginLocal(data);
+      const res = await loginLocal(loginValidUser);
+      console.log('TOKEN');
+      console.log(res);
       if (res.rememberMeToken) {
-        responseShouldBe.rememberMeToken = res.rememberMeToken;
-        token = responseShouldBe.rememberMeToken;
+        successResponse.rememberMeToken = res.rememberMeToken;
+        token = successResponse.rememberMeToken;
       }
       // verify
-      assert.deepEqual(responseShouldBe, res);
+      assert.deepEqual(successResponse, res);
     });
+    // it('should not login a user that does not exist', () => {});
   });
   describe('findEmailByToken', () => {
     it('should return an email', async () => {
@@ -96,6 +144,14 @@ describe('Login and Signup API Intergration Tests', () => {
       console.log('should be');
       console.log(responseShouldBe);
       assert.deepEqual(responseShouldBe, res);
+    });
+  });
+  describe('/deleteUser', () => {
+    it('should delete a current user', async () => {
+      // setup
+      const res = await deleteUser(currentUser);
+      const deleteSuccess = { status: 200, response: 'deleted user' };
+      assert.deepEqual(res, deleteSuccess);
     });
   });
 });

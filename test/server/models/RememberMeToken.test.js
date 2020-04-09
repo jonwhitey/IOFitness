@@ -9,11 +9,13 @@ describe('RememberMe Model Method Tests:', () => {
 
   before(async () => {
     // setup
+    await User.deleteOne({ email: 'jonathan.e.white@colorado.edu' });
     const user = {
       email: 'jonathan.e.white@colorado.edu',
       password: 'Gogogo123!',
       firstName: 'Jonathan',
       lastName: 'White',
+      signUpOrLogin: 'signup',
     };
     // exercise
     testUser = await User.signInOrSignUp(user);

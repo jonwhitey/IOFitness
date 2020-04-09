@@ -1,4 +1,6 @@
 /* eslint-disable func-names */
+const EmailValidator = require('email-validator');
+const PasswordValidator = require('password-validator');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 const LocalStrategy = require('passport-local').Strategy;
@@ -19,7 +21,7 @@ function auth({ ROOT_URL, server }) {
   const MongoStore = mongoSessionStore(session);
 
   const sess = {
-    name: 'builderbook.sid',
+    name: 'IOFitnes.sid',
     secret: process.env.SESS_SECRET,
     store: new MongoStore({
       mongooseConnection: mongoose.connection,
@@ -116,7 +118,31 @@ function auth({ ROOT_URL, server }) {
     console.log('verifyLocal running');
     console.log({ email, password });
     const { firstName, lastName, signUpOrLogin } = req.body;
+    const validEmail = EmailValidator.validate(email);
+    if (!validEmail) {
+      return done(null, false, { message: 'invalid username or password' });
+    }
+    const schema = new PasswordValidator();
+    schema
+      .is()
+      .min(8) // Minimum length 8
+      .is()
+      .max(100) // Maximum length 100
+      .has()
+      .uppercase() // Must have uppercase letters
+      .has()
+      .lowercase() // Must have lowercase letters
+      .has()
+      .digits() // Must have digits
+      .has()
+      .not()
+      .spaces();
 
+    const validPassword = schema.validate(password);
+    if (!validPassword) {
+      console.log('BAD PASSWORD');
+      return done(null, false, { message: 'invalid username or password' });
+    }
     try {
       // signInOrSign up the user to MongoDb
 
@@ -127,8 +153,15 @@ function auth({ ROOT_URL, server }) {
         lastName,
         signUpOrLogin,
       });
-      console.log('return user auth.js');
-      return done(null, user);
+
+      if (user) {
+        console.log(`/server/auth.js ${user}`);
+        console.log('return user auth.js');
+        return done(null, user);
+      }
+      console.log('NO USER RETURNED');
+      console.log(user);
+      return done(null, user, { message: 'invalid username or password' });
     } catch (err) {
       console.log('Error in /server/auth.js');
       console.log(err); // eslint-disable-line

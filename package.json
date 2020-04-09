@@ -1,5 +1,5 @@
 {
-  "name": "builderbook",
+  "name": "iofitness",
   "version": "0.0.1",
   "license": "MIT",
   "scripts": {
@@ -10,7 +10,7 @@
     "test": "NODE_ENV=test mocha --exit --recursive ",
     "test-one": "NODE_ENV=test mocha --exit --grep",
     "test-integration": "",
-    "now": "now && now alias && now rm builderbook --safe --yes",
+    "now": "now && now alias && now rm IOFitness --safe --yes",
     "now-upgrade": "npm install now -g",
     "processes": "ss -lptn 'sport = :8000'",
     "kill-pud": "kill -9 <pid>"
@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@material-ui/core": "4.1.3",
+    "@material-ui/icons": "^4.9.1",
     "@material-ui/styles": "^4.9.6",
     "@material-ui/system": "^4.9.6",
     "@moebius/http-graceful-shutdown": "^1.1.0",
@@ -37,7 +38,7 @@
     "express-session": "1.16.2",
     "front-matter": "3.0.2",
     "googleapis": "40.0.0",
-    "handlebars": "^4.7.3",
+    "handlebars": "^4.7.6",
     "he": "1.2.0",
     "helmet": "^3.22.0",
     "highlight.js": "9.15.8",
@@ -55,7 +56,7 @@
     "passport-remember-me": "0.0.1",
     "password-validator": "^5.0.2",
     "prop-types": "15.7.2",
-    "puppeteer": "^1.20.0",
+    "puppeteer": "^2.1.1",
     "qs": "6.7.0",
     "react": "^16.13.1",
     "react-cookie": "^4.0.3",

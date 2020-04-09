@@ -1,3 +1,5 @@
+const EmailValidator = require('email-validator');
+const PasswordValidator = require('password-validator');
 const mongoose = require('mongoose');
 const _ = require('lodash');
 const bcrypt = require('bcrypt');
@@ -46,7 +48,7 @@ const mongoSchema = new Schema({
 
   slug: {
     type: String,
-    required: true,
+    required: false,
     unique: true,
   },
   createdAt: {
@@ -97,6 +99,34 @@ class UserClass {
     }
   }
 
+  static async deleteUser(email, password) {
+    let response = 'error';
+    try {
+      const user = await this.findOne({ email });
+      if (user) {
+        const match = await bcrypt.compare(password, user.passwordHash);
+        if (user && match) {
+          try {
+            await this.deleteOne({ email });
+            response = 'deleted user';
+            return response;
+          } catch (e) {
+            return e;
+          }
+        }
+        // check for incorrect password
+        if (user && password && !match) {
+          response = 'incorrect password';
+        }
+      } else {
+        response = 'incorrect email';
+      }
+    } catch (e) {
+      return e;
+    }
+    return response;
+  }
+
   static async signInOrSignUp({
     email,
     password,
@@ -108,6 +138,32 @@ class UserClass {
     displayName,
     avatarUrl,
   }) {
+    // validate email and password
+    const validEmail = EmailValidator.validate(email);
+    if (!validEmail) {
+      return false;
+    }
+    const schema = new PasswordValidator();
+    schema
+      .is()
+      .min(8) // Minimum length 8
+      .is()
+      .max(100) // Maximum length 100
+      .has()
+      .uppercase() // Must have uppercase letters
+      .has()
+      .lowercase() // Must have lowercase letters
+      .has()
+      .digits() // Must have digits
+      .has()
+      .not()
+      .spaces();
+
+    const validPassword = schema.validate(password);
+    if (!validPassword) {
+      return false;
+    }
+
     const saltRounds = 10;
     const passwordHash = bcrypt.hashSync(password, saltRounds);
     // check if user exists with email
@@ -138,6 +194,7 @@ class UserClass {
       if (user) {
         // check for password match, if they match, return user
         const match = await bcrypt.compare(password, user.passwordHash);
+        console.log(match);
         if (user && password && match) {
           user = _.pick(user, UserClass.publicFields());
 
@@ -159,6 +216,7 @@ class UserClass {
     // if user does not exist, generate a slug and add the new user
     if (signUpOrLogin === 'signup') {
       if (user) {
+        console.log('user already exists');
         user = false;
         return user;
       }

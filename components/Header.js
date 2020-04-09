@@ -45,7 +45,7 @@ function Header({ user, hideHeader, redirectUrl }) {
             {!user ? (
               <Link href="/">
                 <Avatar
-                  src="https://storage.googleapis.com/builderbook/logo.svg"
+                  src="https://storage.googleapis.com/"
                   alt="Builder Book logo"
                   style={{ margin: '0px auto 0px 20px', cursor: 'pointer' }}
                 />
@@ -81,7 +81,11 @@ function Header({ user, hideHeader, redirectUrl }) {
                   open={Boolean(anchorEl)}
                   onClose={handleClose}
                 >
-                  <MenuItem onClick={handleClose}>My account</MenuItem>
+                  <MenuItem onClick={handleClose} id='my-account-button'>
+                    <Link href="/my-account" as="/my-account" >
+                      <a style={{ color: '#000' }}> My Account</a>
+                    </Link>
+                  </MenuItem>
                   <MenuItem id="logout-button" onClick={handleLogout}>
                     Logout
                   </MenuItem>

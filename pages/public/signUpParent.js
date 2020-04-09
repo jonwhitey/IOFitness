@@ -16,6 +16,7 @@ import withAuth from '../../lib/withAuth';
 import SignUp from '../../components/public/signInOrSignUp/signup';
 import Login from '../../components/public/signInOrSignUp/login';
 import { signUpLocal, loginLocal, findEmailByToken } from '../../lib/api/auth';
+import getCookie from '../../lib/getCookie';
 
 // eslint-disable-next-line react/prefer-stateless-function
 class SignUpParent extends React.Component {
@@ -60,6 +61,7 @@ class SignUpParent extends React.Component {
   }
 
   static async getInitialProps({ req, res }) {
+    console.log("getIntial Props Running");
     // initialize headers obejct, if request object has a cookie, assign it to the headers object
     if (!req.user) {
       const headers = {};
@@ -67,17 +69,22 @@ class SignUpParent extends React.Component {
         headers.cookie = req.headers.cookie;
       }
       if (headers.cookie && headers.cookie.includes('remember_me')) {
-        const cookieStr = headers.cookie;
-        const rememberMeToken = cookieStr.substring(
-          cookieStr.indexOf('=') + 1,
+
+        const cookieStr = headers.cookie; 
+
+        /*let rememberMeToken = cookieStr.substring(
+          cookieStr.indexOf('remember_me=') + 1,
           cookieStr.indexOf(';'),
-        );
-        console.log(`signUpParent.js - rememberMeToken: ${rememberMeToken}`);
+        );*/
+
+        const rememberMeToken = getCookie('remember_me', cookieStr);
+      
+        console.log(`signUpParent.js get inital props- rememberMeToken: ${rememberMeToken}`);
         try {
           // if user - don't look for remeberMeEmail
           let rememberMeEmail = await findEmailByToken({ rememberMeToken });
           rememberMeEmail = rememberMeEmail.email;
-          console.log(`signupParent: ${rememberMeEmail}`);
+          console.log(`signupParent rememberMe email: ${rememberMeEmail}`);
           return { rememberMeEmail, rememberMeToken };
         } catch (err) {
           console.log(`signUpParent.js - no rememberMeEmail`);

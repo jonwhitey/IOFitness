@@ -44,15 +44,15 @@ function insertTemplates() {
       subject: "You purchased a book a basics.fitness",
       message: `<%=userName %>,
         <p>
-          Thank you for purchasing our book! You will get a confirmation email from Stripe shortly.
+          Thank you for joining IO Fitness! You will get a confirmation email from Stripe shortly.
         </p>
-        <p> Start reading your book: <a href="{{bookUrl}}" target="_blank">
+        <p> Start improving now: <a href="{{bookUrl}}" target="_blank">
         </p>
         <p>
-          If you have any questions while reading the book, please fill out an issue on <a href="https://github.com/builderbook/builderbook/issues" target="blank">Github</a>
+          If you have any questions about the exercises, please ask them on our forums. 
         </p>
 
-        Kelly & Timur, Team Builder book
+        Jonathan White - IO Fitness
         `
     }
   ];

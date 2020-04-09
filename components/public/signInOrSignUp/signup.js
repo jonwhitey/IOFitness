@@ -39,7 +39,7 @@ class SignUp extends React.Component {
   render() {
     const { redirectUrl } = this.props;
     const { formErrors } = this.props;
-
+    const { firstName, lastName, email, password } = this.props;
     return (
       <Container component="main" maxWidth="xs">
         <CssBaseline />
@@ -60,6 +60,7 @@ class SignUp extends React.Component {
               label="First Name"
               autoFocus
               onChange={this.handleUserInput}
+              value={firstName}
               style={styleTextField}
             />
 
@@ -71,6 +72,7 @@ class SignUp extends React.Component {
               name="lastName"
               autoComplete="lname"
               onChange={this.handleUserInput}
+              value={lastName}
               style={styleTextField}
               justify="right"
             />
@@ -83,6 +85,8 @@ class SignUp extends React.Component {
               name="email"
               autoComplete="email"
               onChange={this.handleUserInput}
+              //value={email}
+              selector="emailAdress"
               error={!!formErrors.email}
               id="outlined-error-helper-text"
               helperText={formErrors.email}
@@ -96,9 +100,11 @@ class SignUp extends React.Component {
               name="password"
               label="Password"
               type="password"
+              selector="password"
               autoComplete="current-password"
               onChange={this.handleUserInput}
               error={!!formErrors.password}
+              //value={password}
               id="outlined-error-helper-text"
               helperText={formErrors.password}
               style={styleTextField}

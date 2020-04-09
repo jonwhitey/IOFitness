@@ -38,7 +38,7 @@ class Login extends React.Component {
   }
 
   render() {
-    const { rememberMeEmail, redirectUrl, formErrors, rememberMe } = this.props;
+    const { rememberMeEmail, redirectUrl, formErrors, rememberMe, email, password } = this.props;
     console.log(this.props);
     console.log('Login.js - render login');
     console.log(formErrors);
@@ -67,6 +67,7 @@ class Login extends React.Component {
               autoFocus
               onChange={this.handleUserInput}
               style={styleTextField}
+              //value={email}
               error={!!formErrors.email}
               id="outlined-error-helper-text"
               helperText={formErrors.email}
@@ -81,6 +82,7 @@ class Login extends React.Component {
               name="password"
               label="Password"
               type="password"
+              //value={password}
               autoComplete="current-password"
               onChange={this.handleUserInput}
               style={styleTextField}
@@ -98,6 +100,7 @@ class Login extends React.Component {
                   value={rememberMe}
                   onChange={this.handleUserInput}
                   checked={rememberMe}
+                  id="remember_me"
                 />
               }
               label="Remember me"
@@ -131,11 +134,7 @@ class Login extends React.Component {
             style={styleGoogleLoginButton}
             href={`/auth/google?redirectUrl=${redirectUrl}`}
           >
-            <img
-              src="https://storage.googleapis.com/builderbook/G.svg"
-              alt="Log in with Google"
-              style={{ marginRight: '10px' }}
-            />
+            <img src="" alt="Log in with Google" style={{ marginRight: '10px' }} />
             Log in with Google
           </Button>
         </div>

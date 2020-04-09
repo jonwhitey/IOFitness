@@ -1,6 +1,8 @@
 const express = require('express');
 const passport = require('passport');
 const RememberMeToken = require('../models/RememberMeToken');
+const User = require('../models/User');
+
 const randomString = require('../../lib/randomString');
 
 const router = express.Router();
@@ -12,9 +14,9 @@ router.get('/_next/static/*', (req, res, next) => {
 
 router.post('/findEmailByToken', async (req, res, next) => {
   console.log('POST REQUEST FOR /findEmailByToken');
-  console.log(req.body);
   try {
     const { rememberMeToken } = req.body;
+    console.log(req.body);
     console.log(rememberMeToken);
     const { email } = await RememberMeToken.findByToken(rememberMeToken);
     console.log(`authRoutes rememberMeEmail: ${email}`);
@@ -62,68 +64,78 @@ router.get(
 router.get('/logout', (req, res) => {
   console.log('logging out');
   req.logout();
-  res.clearCookie('builderbook.sid');
+  res.clearCookie('IOFitness.sid');
   res.status(200);
   res.send({ status: 200, redirect: 'back' });
 });
 
-router.post(
-  ['/loginLocal', '/signUpLocal'],
-  passport.authenticate('local', { failWithError: true }),
+router.post('/deleteUser', async (req, res) => {
+  console.log('deleting user');
+  try {
+    const { email } = req.body;
+    const { password } = req.body;
+    console.log('/deleteUser');
+    console.log(req.body);
+    console.log(email);
+    console.log(password);
+    const response = await User.deleteUser(email, password);
+    res.clearCookie('IOFitness.sid');
+    res.send({ status: 200, response });
+  } catch (e) {
+    console.log(e);
+  }
+});
 
-  async (req, res) => {
-    console.log(`post to loginLocal/signUpLocal - req.body.rememberMe`);
-    console.log(req.body.rememberMe);
-    let token = '';
-    if (req.body.rememberMeToken) {
-      await RememberMeToken.consumeToken(req.body.rememberMeToken);
-      console.log('token consumed');
+// eslint-disable-next-line func-names
+router.post(['/loginLocal', '/signUpLocal'], function(req, res, next) {
+  // eslint-disable-next-line func-names
+  passport.authenticate('local', function(err, user) {
+    if (err) {
+      return next(err);
     }
-
-    if (req.body.rememberMe) {
-      console.log('REMEMBER ME!');
-      token = randomString(64);
-      const uid = req.user.id;
-      console.log(`uid = ${uid}`);
-      // eslint-disable-next-line func-names
-      await RememberMeToken.saveToken(token, uid);
-      res.cookie('remember_me', token, {
-        path: '/',
-        httpOnly: true,
-        maxAge: 604800000,
-      }); // 7 days
-    } else {
-      res.clearCookie('remember_me');
+    if (!user) {
+      return res.status(401).send({ status: 401, message: 'Invalid email or password' });
     }
-    console.log(token);
-    res.send({
-      status: 200,
-      message: 'User logged in successfully',
-      email: req.user.email,
-      rememberMeToken: token,
+    // eslint-disable-next-line func-names
+    req.logIn(user, async function(err) {
+      if (err) {
+        return next(err);
+      }
+      console.log('req.login() - req.body:');
+      console.log(req.body);
+      let token = '';
+      if (req.body.rememberMeToken) {
+        await RememberMeToken.consumeToken(req.body.rememberMeToken);
+        console.log('token consumed');
+      }
+      if (req.body.rememberMe) {
+        console.log('REMEMBER ME!');
+        token = randomString(64);
+        const uid = req.user.id;
+        console.log(`uid = ${uid}`);
+        // eslint-disable-next-line func-names
+        await RememberMeToken.saveToken(token, uid);
+        res.clearCookie('remember_me');
+        
+        res.cookie('remember_me', token, {
+          path: '/',
+          httpOnly: true,
+          maxAge: 604800000,
+        }); // 7 days
+      } else {
+        await RememberMeToken.consumeToken(req.body.rememberMeToken);
+        res.clearCookie('remember_me');
+      }
+      console.log('TOKEN:');
+      console.log(token);
+      return res.send({
+        status: 200,
+        message: 'User logged in successfully',
+        email: req.user.email,
+        rememberMeToken: token,
+      });
     });
-    console.log('/loginLocal Res');
-  },
-  (err, req, res) => {
-    console.log(`ERROR!!!`);
-  },
-);
+  })(req, res, next);
+});
 
 module.exports = router;
-
-/*
-    if (req.query && req.query.redirectUrl && req.query.redirectUrl.startsWith('/')) {
-      req.session.finalUrl = req.query.redirectUrl;
-    } else {
-      req.session.finalUrl = null;
-    }
-    if (req.user && req.user.isAdmin) {
-      res.json({ status: 200, redirect: '/admin', isAdmin: true });
-      console.log(` user and user.isAdmin: res.json ${res}`);
-    } else if (!req.user) {
-      res.json({ status: 403, message: 'Incorrect username or password' });
-      console.log(` not user: res.json ${res}`);
-    } else if (req.session.finalUrl) {
-      res.json({ redirect: req.session.finalUrl });
-      console.log(` finalUrl: finalUrl ${req.session.finalUrl}`);
-    */
