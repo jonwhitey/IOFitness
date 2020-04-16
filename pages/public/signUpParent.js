@@ -61,7 +61,7 @@ class SignUpParent extends React.Component {
   }
 
   static async getInitialProps({ req, res }) {
-    console.log("getIntial Props Running");
+    console.log('getIntial Props Running');
     // initialize headers obejct, if request object has a cookie, assign it to the headers object
     if (!req.user) {
       const headers = {};
@@ -69,16 +69,15 @@ class SignUpParent extends React.Component {
         headers.cookie = req.headers.cookie;
       }
       if (headers.cookie && headers.cookie.includes('remember_me')) {
+        const cookieStr = headers.cookie;
 
-        const cookieStr = headers.cookie; 
-
-        /*let rememberMeToken = cookieStr.substring(
+        /* let rememberMeToken = cookieStr.substring(
           cookieStr.indexOf('remember_me=') + 1,
           cookieStr.indexOf(';'),
-        );*/
+        ); */
 
         const rememberMeToken = getCookie('remember_me', cookieStr);
-      
+
         console.log(`signUpParent.js get inital props- rememberMeToken: ${rememberMeToken}`);
         try {
           // if user - don't look for remeberMeEmail
@@ -259,6 +258,20 @@ class SignUpParent extends React.Component {
         </section>
       );
     }
+
+    return (
+      <section>
+        <Login
+          isFromServer={isFromServer}
+          rememberMeEmail={rememberMeEmail}
+          rememberMeToken={rememberMeToken}
+          {...this.state}
+          validateField={this.validateField}
+          validateForm={this.validateForm}
+          redirectUrl={!redirectUrl ? null : redirectUrl}
+        />
+      </section>
+    );
   }
 }
 

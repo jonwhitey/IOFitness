@@ -61,12 +61,17 @@ router.get(
   },
 );
 
-router.get('/logout', (req, res) => {
+router.get('/logout', async (req, res) => {
   console.log('logging out');
-  req.logout();
-  res.clearCookie('IOFitness.sid');
-  res.status(200);
-  res.send({ status: 200, redirect: 'back' });
+  console.log(req);
+  try {
+    await req.logout();
+    res.clearCookie('IOFitness.sid');
+    res.status(200);
+    res.send({ status: 200, redirect: 'back' });
+  } catch (e) {
+    console.log(e);
+  }
 });
 
 router.post('/deleteUser', async (req, res) => {
@@ -116,7 +121,7 @@ router.post(['/loginLocal', '/signUpLocal'], function(req, res, next) {
         // eslint-disable-next-line func-names
         await RememberMeToken.saveToken(token, uid);
         res.clearCookie('remember_me');
-        
+
         res.cookie('remember_me', token, {
           path: '/',
           httpOnly: true,

@@ -1,17 +1,19 @@
 const express = require('express');
 const logger = require('../logs.js');
-const Book = require('../models/Book.js');
+const Workout = require('../models/Workout.js');
 
 const router = express.Router();
 
-router.use((req, res, next) => {
+/*router.use((req, res, next) => {
   if (!req.user) {
+    console.log('no user');
+    console.log(req.user);
     res.status(401).json({ error: 'Unauthorized' });
     return;
   }
 
   next();
-});
+});*/
 
 // List of API:
 // 1. /buy-book
@@ -31,12 +33,14 @@ router.post('/buy-book', async (req, res) => {
 
 // GetMyBooks route
 
-router.get('/my-books', async (req, res) => {
+router.get('/workout', async (req, res) => {
+  console.log('HIT /workout');
+  console.log(req);
   try {
-    const { purchasedBookIds = [] } = req.user;
-    const { purchasedBooks } = await Book.getPurchasedBooks({ purchasedBookIds });
+    const uid = req.user;
+    const { workout } = await Workout.getNextWorkout({ uid });
 
-    res.json({ purchasedBooks });
+    res.json({ workout });
   } catch (err) {
     res.json({ error: err.message || err.toString() });
   }

@@ -1,3 +1,4 @@
+/* 
 const sm = require('sitemap');
 const path = require('path');
 const Chapter = require('./models/Chapter');
@@ -36,3 +37,4 @@ function setup({ server }) {
 }
 
 module.exports = setup;
+*/

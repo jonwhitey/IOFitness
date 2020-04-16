@@ -102,7 +102,6 @@ describe('Login and Signup API Intergration Tests', () => {
         const res = await logout();
         console.log(res);
         bool = true;
-        return bool;
       } catch (err) {
         console.log('ERROR');
         console.log(err);

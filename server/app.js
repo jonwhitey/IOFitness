@@ -24,6 +24,7 @@ const options = {
   useNewUrlParser: true,
   useCreateIndex: true,
   useFindAndModify: false,
+  useUnifiedTopology: true,
 };
 
 mongoose.connect(MONGO_URL, options);
@@ -34,7 +35,7 @@ const ROOT_URL = getRootUrl();
 const URL_MAP = {
   '/login': '/public/signUpParent',
   '/signup': '/public/signUpParent',
-  '/my-books': '/customer/my-books',
+  '/workout': '/customer/workout',
   '/my-account': '/customer/my-account',
   '/': '/customer/index',
   '/logout': '/public/signUpParent',
@@ -49,6 +50,8 @@ app.prepare().then(async () => {
   server.use(express.static(path.join(__dirname, '_next', 'static')));
   server.use(express.json());
 
+  auth({ ROOT_URL, server });
+
   server.get('/_next*', (req, res) => {
     handle(req, res);
   });
@@ -57,14 +60,13 @@ app.prepare().then(async () => {
     handle(req, res);
   });
 
-  auth({ ROOT_URL, server });
   api(server);
 
   await insertTemplates();
 
   setupGithub({ server });
   routesWithSlug({ server, app });
-  sitemapAndRobots({ server });
+  //sitemapAndRobots({ server });
 
   server.get('*', (req, res) => {
     const url = URL_MAP[req.path];
