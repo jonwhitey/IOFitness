@@ -95,14 +95,6 @@ describe('Customer Routes', () => {
   };
 
   describe('/getWorkout', () => {
-    /*it('should login a user', async () => {
-      // exercise
-      const res = await loginLocal(loginValidUser);
-      // verify
-      console.log('LOGGEDIN');
-      console.log(res);
-      assert.deepEqual(successResponse, res);
-    }); */
     it('should return a workout', async () => {
       /*
       I can't explain why you have to sign up first
