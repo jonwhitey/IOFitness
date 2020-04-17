@@ -9,7 +9,7 @@
     "lint": "eslint components pages lib server",
     "test": "NODE_ENV=test mocha --exit --recursive ",
     "test-one": "NODE_ENV=test mocha --exit --grep",
-    "test-integration": "",
+    "test-integration": "NODE_ENV=test mocha --exit ./test/server/api/customer.test.js",
     "now": "now && now alias && now rm IOFitness --safe --yes",
     "now-upgrade": "npm install now -g",
     "processes": "ss -lptn 'sport = :8000'",
