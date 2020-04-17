@@ -55,6 +55,7 @@ function auth({ ROOT_URL, server }) {
   // saves a user id into the session document at session.passport.user.id
   passport.serializeUser((user, done) => {
     console.log('serializeUser');
+    console.log(user.id);
     done(null, user.id);
   });
 

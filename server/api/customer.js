@@ -7,7 +7,7 @@ const router = express.Router();
 router.use((req, res, next) => {
   if (!req.user) {
     console.log('no user');
-    console.log(req);
+    console.log(req.sessionID);
     res.status(401).json({ error: 'Unauthorized' });
     return;
   }

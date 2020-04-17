@@ -61,6 +61,7 @@ describe('Customer Routes', () => {
       console.log(login);
       // get cookie off the request, pass the cookie set getWorkout header to 
       const res = await getWorkout();
+      const res2 = await getWorkout();
       // verify
       assert.deepEqual(successResponse, res);
     });
