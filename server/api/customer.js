@@ -4,16 +4,16 @@ const Workout = require('../models/Workout.js');
 
 const router = express.Router();
 
-/*router.use((req, res, next) => {
+router.use((req, res, next) => {
   if (!req.user) {
     console.log('no user');
-    console.log(req.user);
+    console.log(req);
     res.status(401).json({ error: 'Unauthorized' });
     return;
   }
 
   next();
-});*/
+});
 
 // List of API:
 // 1. /buy-book

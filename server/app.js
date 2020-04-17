@@ -50,8 +50,6 @@ app.prepare().then(async () => {
   server.use(express.static(path.join(__dirname, '_next', 'static')));
   server.use(express.json());
 
-  auth({ ROOT_URL, server });
-
   server.get('/_next*', (req, res) => {
     handle(req, res);
   });
@@ -60,6 +58,7 @@ app.prepare().then(async () => {
     handle(req, res);
   });
 
+  auth({ ROOT_URL, server });
   api(server);
 
   await insertTemplates();

@@ -46,7 +46,7 @@ describe('Customer Routes', () => {
   };
 
   describe('/getWorkout', () => {
-    /*it('should login a user', async () => {
+    /* it('should login a user', async () => {
       // exercise
       const res = await loginLocal(loginValidUser);
       // verify
@@ -57,12 +57,14 @@ describe('Customer Routes', () => {
     it('should return a workout', async () => {
       // exercise
       const login = await loginLocal(loginValidUser);
+      console.log('LOGIN');
       console.log(login);
+      // get cookie off the request, pass the cookie set getWorkout header to 
       const res = await getWorkout();
       // verify
       assert.deepEqual(successResponse, res);
     });
-    /*it('logs a user out and returns the correct message', async () => {
+    /* it('logs a user out and returns the correct message', async () => {
       // setup
       // exercise
       let bool = false;

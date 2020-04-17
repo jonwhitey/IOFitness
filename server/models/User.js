@@ -138,6 +138,12 @@ class UserClass {
     displayName,
     avatarUrl,
   }) {
+    console.log('SIGNINORSIGNUP');
+    console.log(email + password + signUpOrLogin);
+    if (!signUpOrLogin) {
+      // eslint-disable-next-line no-param-reassign
+      signUpOrLogin = 'login';
+    }
     // validate email and password
     const validEmail = EmailValidator.validate(email);
     if (!validEmail) {
@@ -191,6 +197,7 @@ class UserClass {
 
     // if login, match password and send correct responses
     if (signUpOrLogin === 'login') {
+      console.log('LOGIN');
       if (user) {
         // check for password match, if they match, return user
         const match = await bcrypt.compare(password, user.passwordHash);
@@ -203,11 +210,13 @@ class UserClass {
         }
         // check for incorrect password
         if (user && password && !match) {
+          console.log('incorrect passwor');
           user = false;
           return user;
         }
         if (!user) {
           user = false;
+          console.log('no user exists');
           return user;
         }
       }
