@@ -133,6 +133,7 @@ router.post(['/loginLocal', '/signUpLocal'], function(req, res, next) {
       }
       console.log('TOKEN:');
       console.log(token);
+
       return res.send({
         status: 200,
         message: 'User logged in successfully',

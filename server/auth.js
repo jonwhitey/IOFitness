@@ -13,7 +13,7 @@ const User = require('./models/User');
 
 function auth({ ROOT_URL, server }) {
   const dev = process.env.NODE_ENV !== 'production';
-
+  console.log('AUTH CALLED!');
   /* 
     initalize mongoSessionStore
      create session object with the cookie, secret, exipiration and MongoStore
