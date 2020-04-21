@@ -51,10 +51,14 @@ app.prepare().then(async () => {
   server.use(express.json());
 
   server.get('/_next*', (req, res) => {
+    console.log('/_next');
+    //console.log(req.route.stack);
     handle(req, res);
   });
 
   server.get('/static/*', (req, res) => {
+    console.log('/static');
+    //console.log(req.route);
     handle(req, res);
   });
 

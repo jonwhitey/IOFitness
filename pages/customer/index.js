@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Head from 'next/head';
+import Button from '@material-ui/core/Button';
+import { getWorkout } from '../../lib/api/customer';
 
 import withAuth from '../../lib/withAuth';
 
@@ -9,15 +11,11 @@ import withAuth from '../../lib/withAuth';
 
 // eslint-disable-next-line react/prefer-stateless-function
 class Index extends React.Component {
-  static propTypes = {
-    user: PropTypes.shape({
-      displayName: PropTypes.string,
-      email: PropTypes.string.isRequired,
-    }),
-  };
-
-  static defaultProps = {
-    user: null,
+  getWorkout = async () => {
+    console.log('GET WORKOUT');
+    const workout = await getWorkout();
+    console.log('got workout');
+    console.log(workout);
   };
 
   render() {
@@ -30,9 +28,29 @@ class Index extends React.Component {
           Email:&nbsp;
           {user.email}
         </p>
+        <Button
+          type="submit"
+          fullWidth
+          variant="contained"
+          color="primary"
+          id="delete-user-button"
+          onClick={this.getWorkout}
+        >
+          Get workout
+        </Button>
       </div>
     );
   }
 }
 
 export default withAuth(Index);
+Index.propTypes = {
+  user: PropTypes.shape({
+    displayName: PropTypes.string,
+    email: PropTypes.string.isRequired,
+  }),
+};
+
+Index.defaultProps = {
+  user: null,
+};

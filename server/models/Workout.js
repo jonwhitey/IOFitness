@@ -70,6 +70,7 @@ class WorkoutClass {
   }
 
   static async getNextWorkout({ uid }) {
+    console.log('models/workout get next workout called');
     try {
       const nextWorkout = await this.findOne({ uid });
       return nextWorkout;

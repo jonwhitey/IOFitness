@@ -1,6 +1,6 @@
-/* eslint-disable react/prefer-stateless-function */
 import React from 'react';
 import PropTypes from 'prop-types';
+import Link from 'next/link';
 import Head from 'next/head';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -17,11 +17,9 @@ import Checkbox from '@material-ui/core/Checkbox';
 
 import withAuth from '../../lib/withAuth';
 
-// Index is a little dashboard that shows the functionality of withAuth
-// withAuth passed the user object as a prop to Index
+import { getWorkout } from '../../lib/api/customer';
 
-// eslint-disable-next-line react/prefer-stateless-function
-const createData = (name, type, sets, reps, resistance) => {
+const createData = (name, type, sets, reps) => {
   return { name, type, sets, reps };
 };
 
@@ -52,7 +50,7 @@ const cupletFour = [
   createData('Single Leg Deadlift', 'Contralateral Kickstand', 3, 10, '16kg'),
 ];
 
-class Index extends React.Component {
+class Workout extends React.Component {
   static propTypes = {
     user: PropTypes.shape({
       displayName: PropTypes.string,
@@ -65,6 +63,22 @@ class Index extends React.Component {
   };
 
   static onSelectAllClick = () => {};
+
+  // generate MyBookList server-side
+  static async getInitialProps({ req, res }) {
+    // if not logged in, redirect to login page
+    if (req && !req.user) {
+      res.redirect('/login');
+    }
+
+    // initialize headers obejct, if request object has a cookie, assign it to the headers object
+    const headers = {};
+    if (req && req.headers && req.headers.cookie) {
+      headers.cookie = req.headers.cookie;
+    }
+
+    // send request to getMyBookList, assign response to purchasedBooks, return response
+  }
 
   render() {
     const { user } = this.props;
@@ -86,9 +100,9 @@ class Index extends React.Component {
                   <TableRow>
                     <TableCell padding="checkbox">
                       <Checkbox
-                        indeterminate={numSelected > 0 && numSelected < rowCount}
-                        checked={rowCount > 0 && numSelected === rowCount}
-                        onChange={onSelectAllClick}
+                        //indeterminate={numSelected > 0 && numSelected < rowCount}
+                        //checked={rowCount > 0 && numSelected === rowCount}
+                        //onChange={onSelectAllClick}
                         inputProps={{ 'aria-label': 'select all desserts' }}
                       />
                     </TableCell>
@@ -269,4 +283,11 @@ class Index extends React.Component {
   }
 }
 
-export default withAuth(Index);
+export default withAuth(Workout);
+
+/* eslint-disable react/prefer-stateless-function */
+
+// Index is a little dashboard that shows the functionality of withAuth
+// withAuth passed the user object as a prop to Index
+
+// eslint-disable-next-line react/prefer-stateless-function

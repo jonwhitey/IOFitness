@@ -1,14 +1,22 @@
 const { assert } = require('chai');
-const { getWorkout } = require('../../../lib/api/customer');
+const chai = require('chai');
+const { expect } = require('chai');
+const chaiHttp = require('chai-http');
+const { getWorkout, getIndex } = require('../../../lib/api/customer');
+
 const User = require('../../../server/models/User');
 const workoutOne = require('../../workoutOne.js');
 const { loginLocal, logout } = require('../../../lib/api/auth');
+
+chai.use(chaiHttp);
 
 // call signInOrSignup with user
 
 // see if a refresh token is given back / if the session is updated
 
 // define user (potential to remove to . in jonathanewhite@colorado.edu)
+
+// Log in
 
 describe('Customer Routes', () => {
   const validUid = '5e89272f55d4c037abf3f351';
@@ -56,14 +64,32 @@ describe('Customer Routes', () => {
     }); */
     it('should return a workout', async () => {
       // exercise
-      const login = await loginLocal(loginValidUser);
-      console.log('LOGIN');
-      console.log(login);
-      // get cookie off the request, pass the cookie set getWorkout header to 
-      const res = await getWorkout();
-      const res2 = await getWorkout();
-      // verify
-      assert.deepEqual(successResponse, res);
+      const agent = chai.request.agent('http://localhost:8000');
+
+      try {
+        await agent
+          .post('/api/v1/auth/loginLocal')
+          .send({ email: 'jonathan42white@gmail.com', password: 'Start!123' });
+        const workoutRes = await agent.get('/api/v1/customer/workout');
+        console.log(workoutRes);
+        assert.deepEqual(successResponse, workoutRes);
+      } catch (e) {
+        console.log(e);
+      }
+
+      /* let res2 ='';
+      try {
+        const login = await loginLocal(loginValidUser);
+        console.log('LOGIN.user');
+        console.log(login.user);
+        // get cookie off the request, pass the cookie set getWorkout header to
+        console.log('getWorkout');
+        res2 = await getWorkout();
+      } catch (e) {
+        console.log(e);
+      }
+      // verify */
+      // assert.deepEqual(successResponse, res2);
     });
     /* it('logs a user out and returns the correct message', async () => {
       // setup

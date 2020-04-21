@@ -7,11 +7,10 @@ const router = express.Router();
 router.use((req, res, next) => {
   if (!req.user) {
     console.log('no user');
-    console.log(req.sessionID);
+    console.log(req.user);
     res.status(401).json({ error: 'Unauthorized' });
     return;
   }
-
   next();
 });
 
@@ -35,12 +34,18 @@ router.post('/buy-book', async (req, res) => {
 
 router.get('/workout', async (req, res) => {
   console.log('HIT /workout');
-  console.log(req);
+  console.log(req.sessionID);
+  console.log(req.user);
   try {
-    const uid = req.user;
-    const { workout } = await Workout.getNextWorkout({ uid });
-
-    res.json({ workout });
+    const uid = req.user._id;
+    const workout = await Workout.getNextWorkout({ uid });
+    console.log('returned workout!');
+    console.log(workout);
+    res.send({
+      status: 200,
+      message: 'Got your workout!',
+      workout,
+    });
   } catch (err) {
     res.json({ error: err.message || err.toString() });
   }

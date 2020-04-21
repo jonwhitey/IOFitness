@@ -94,6 +94,8 @@ router.post('/deleteUser', async (req, res) => {
 // eslint-disable-next-line func-names
 router.post(['/loginLocal', '/signUpLocal'], function(req, res, next) {
   // eslint-disable-next-line func-names
+  console.log("INITIAL SESSION");
+  console.log(req.sessionID);
   passport.authenticate('local', function(err, user) {
     if (err) {
       return next(err);
@@ -106,8 +108,9 @@ router.post(['/loginLocal', '/signUpLocal'], function(req, res, next) {
       if (err) {
         return next(err);
       }
-      console.log('req.login() - req.body:');
-      console.log(req.body);
+      console.log('req.login() - req.headers:');
+      //console.log(req.headers);
+      console.log(req.headers);
       let token = '';
       if (req.body.rememberMeToken) {
         await RememberMeToken.consumeToken(req.body.rememberMeToken);
@@ -133,13 +136,17 @@ router.post(['/loginLocal', '/signUpLocal'], function(req, res, next) {
       }
       console.log('TOKEN:');
       console.log(token);
-
-      return res.send({
+      console.log('SESSIONID');
+      console.log(req.sessionID);
+      console.log('PASSPORT SESSION');
+      console.log(req._passport.session);
+      res.send({
         status: 200,
         message: 'User logged in successfully',
         email: req.user.email,
         rememberMeToken: token,
       });
+      next();
     });
   })(req, res, next);
 });
