@@ -54,14 +54,6 @@ describe('Customer Routes', () => {
   };
 
   describe('/getWorkout', () => {
-    /* it('should login a user', async () => {
-      // exercise
-      const res = await loginLocal(loginValidUser);
-      // verify
-      console.log('LOGGEDIN');
-      console.log(res);
-      assert.deepEqual(successResponse, res);
-    }); */
     it('should return a workout', async () => {
       // exercise
       const agent = chai.request.agent('http://localhost:8000');
@@ -76,38 +68,6 @@ describe('Customer Routes', () => {
       } catch (e) {
         console.log(e);
       }
-
-      /* let res2 ='';
-      try {
-        const login = await loginLocal(loginValidUser);
-        console.log('LOGIN.user');
-        console.log(login.user);
-        // get cookie off the request, pass the cookie set getWorkout header to
-        console.log('getWorkout');
-        res2 = await getWorkout();
-      } catch (e) {
-        console.log(e);
-      }
-      // verify */
-      // assert.deepEqual(successResponse, res2);
     });
-    /* it('logs a user out and returns the correct message', async () => {
-      // setup
-      // exercise
-      let bool = false;
-      try {
-        const res = await logout();
-        console.log(res);
-        bool = true;
-      } catch (err) {
-        console.log('ERROR');
-        console.log(err);
-        bool = false;
-      }
-      // verify
-      console.log(bool);
-      assert.equal(bool, true);
-    });
-    */
   });
 });

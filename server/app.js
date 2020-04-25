@@ -35,7 +35,7 @@ const ROOT_URL = getRootUrl();
 const URL_MAP = {
   '/login': '/public/signUpParent',
   '/signup': '/public/signUpParent',
-  '/workout': '/customer/workout',
+  '/workout': '/customer/workoutParent',
   '/my-account': '/customer/my-account',
   '/': '/customer/index',
   '/logout': '/public/signUpParent',

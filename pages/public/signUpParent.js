@@ -64,6 +64,7 @@ class SignUpParent extends React.Component {
     console.log('getIntial Props Running');
     console.log(req.user);
     console.log(req.headers);
+
     // initialize headers obejct, if request object has a cookie, assign it to the headers object
     if (!req.user) {
       console.log('NO USER');

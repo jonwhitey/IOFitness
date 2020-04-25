@@ -24,32 +24,31 @@ const mongoSchema = new Schema({
   },
   training: [
     {
-      setName: {
-        name: String,
-        exercises: [
-          {
-            eid: String,
-            name: String,
-            // options come from the exercise
-            options: [
-              {
-                progression: String,
-              },
-            ],
-            set: [
-              {
-                number: Number,
-                reps: Array,
-                resistance: Array,
-              },
-            ],
-            equipment: String,
-            workTime: Number,
-            restTime: Number,
-            complete: Boolean,
-          },
-        ],
-      },
+      name: String,
+      exercises: [
+        {
+          eid: String,
+          name: String,
+          // options come from the exercise
+          options: [
+            {
+              progression: String,
+            },
+          ],
+          set: [
+            {
+              sets: Number,
+              reps: Array,
+              units: String,
+              resistance: Array,
+            },
+          ],
+          equipment: String,
+          workTime: Number,
+          restTime: Number,
+          complete: Boolean,
+        },
+      ],
     },
   ],
 });
@@ -91,12 +90,11 @@ class WorkoutClass {
     }
   }
 
-  static async saveWorkout({ name, date, uid, training }) {
+  static async saveWorkout(workout) {
     console.log('Workout.saveWorkout');
-    console.log(uid);
     try {
       console.log('attempt to save workout');
-      const newWorkout = await this.create({ name, date, uid, training });
+      const newWorkout = await this.create(workout);
       console.log('new workout =');
       console.log(newWorkout);
       return newWorkout;

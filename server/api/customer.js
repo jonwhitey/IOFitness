@@ -34,13 +34,9 @@ router.post('/buy-book', async (req, res) => {
 
 router.get('/workout', async (req, res) => {
   console.log('HIT /workout');
-  console.log(req.sessionID);
-  console.log(req.user);
   try {
     const uid = req.user._id;
     const workout = await Workout.getNextWorkout({ uid });
-    console.log('returned workout!');
-    console.log(workout);
     res.send({
       status: 200,
       message: 'Got your workout!',
