@@ -21,25 +21,27 @@ class Index extends React.Component {
   render() {
     const { user } = this.props;
     console.log(this.props);
-    return (
-      <div style={{ padding: '10px 45px' }}>
-        <p id="purchased-books">List of purchased books</p>
-        <p>
-          Email:&nbsp;
-          {user.email}
-        </p>
-        <Button
-          type="submit"
-          fullWidth
-          variant="contained"
-          color="primary"
-          id="delete-user-button"
-          onClick={this.getWorkout}
-        >
-          Get workout
-        </Button>
-      </div>
-    );
+    if (user) {
+      return (
+        <div style={{ padding: '10px 45px' }}>
+          <p id="purchased-books">List of purchased books</p>
+          <p>
+            Email:&nbsp;
+            {user.email}
+          </p>
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            color="primary"
+            id="delete-user-button"
+            onClick={this.getWorkout}
+          >
+            Get workout
+          </Button>
+        </div>
+      );
+    }
   }
 }
 
