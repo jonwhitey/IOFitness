@@ -32,7 +32,7 @@ router.post('/buy-book', async (req, res) => {
 
 // GetMyBooks route
 
-router.get('/workout', async (req, res) => {
+router.get('/newWorkout', async (req, res) => {
   console.log('HIT /workout');
   try {
     const uid = req.user._id;

@@ -1,7 +1,8 @@
 import React from 'react';
 import Document, { Head, Main, NextScript } from 'next/document';
-import { ServerStyleSheets } from '@material-ui/styles';
+import { ServerStyleSheets } from '@material-ui/core/styles';
 import htmlescape from 'htmlescape';
+import { theme } from '../lib/theme';
 
 const { StripePublishableKey } = process.env;
 const env = { StripePublishableKey };
@@ -20,7 +21,6 @@ Rednered page sent from server includes proper styles
 No flash of style
 
 */
-
 
 class MyDocument extends Document {
   render() {
@@ -96,7 +96,7 @@ class MyDocument extends Document {
         >
           <Main />
           {/* eslint-disable-next-line ract/no-danger */}
-          <script dangerouslySetInnerHTML={{ __html: `__ENV__ = ${htmlescape(env)}`}}/>
+          <script dangerouslySetInnerHTML={{ __html: `__ENV__ = ${htmlescape(env)}` }} />
           <NextScript />
         </body>
       </html>
@@ -141,12 +141,7 @@ MyDocument.getInitialProps = async (ctx) => {
   return {
     ...initialProps,
     // Styles fragment is rendered after the app and page rendering finish.
-    styles: (
-      <React.Fragment>
-        {initialProps.styles}
-        {sheets.getStyleElement()}
-      </React.Fragment>
-    ),
+    styles: [...React.Children.toArray(initialProps.styles), sheets.getStyleElement()],
   };
 };
 

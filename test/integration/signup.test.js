@@ -4,7 +4,7 @@ const { assert } = require('chai');
 let browser;
 let page;
 
-describe('Sign Up and Log In Flow', () => {
+describe('Puppeteer Sign Up and Log In Flow', () => {
   before(async () => {
     console.log('launching browser');
     browser = await puppeteer.launch({ headless: false });
@@ -26,7 +26,7 @@ describe('Sign Up and Log In Flow', () => {
     page.keyboard.press('Enter');
 
     // Wait for the results page to load and display the results
-    const works = await page.waitForSelector('#purchased-books');
+    const works = await page.waitForSelector('#login-success');
     assert.exists(works, 'it works!');
   });
 
@@ -45,7 +45,7 @@ describe('Sign Up and Log In Flow', () => {
     await page.type('[name="password"]', 'Start!123!');
     await page.click('#remember_me');
     page.keyboard.press('Enter');
-    const works = await page.waitForSelector('#purchased-books');
+    const works = await page.waitForSelector('#login-success');
     assert.exists(works, 'it works!');
   });
 
@@ -63,7 +63,7 @@ describe('Sign Up and Log In Flow', () => {
     await page.type('[name="password"]', 'Start!123!');
     await page.click('#remember_me');
     page.keyboard.press('Enter');
-    const works = await page.waitForSelector('#purchased-books');
+    const works = await page.waitForSelector('#login-success');
     assert.exists(works, 'it works!');
   });
 
@@ -81,7 +81,7 @@ describe('Sign Up and Log In Flow', () => {
     await page.type('[name="email"]', 'jonathan.e.white@colorado.edu');
     await page.type('[name="password"]', 'Start!123!');
     page.keyboard.press('Enter');
-    const works = await page.waitForSelector('#purchased-books');
+    const works = await page.waitForSelector('#login-success');
     assert.exists(works, 'it works!');
   });
 

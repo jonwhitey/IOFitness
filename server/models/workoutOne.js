@@ -4,7 +4,7 @@ const Workout = require('./Workout');
 require('dotenv').config();
 
 const workoutOne = {
-  uid: '5e89272f55d4c037abf3f351',
+  uid: '5edd746c6aad0f540c07018f',
   name: 'Workout One',
   date: new Date(),
   training: [
@@ -106,7 +106,7 @@ const workoutOne = {
           set: {
             sets: 3,
             reps: [3, 3, 3],
-            resistance: ['bodyweight', 'bodyweight', 'bodyweight'],
+            resistance: ['0', '0', '0'],
           },
           equipment: 'Slider',
           workTime: 60,
@@ -566,7 +566,7 @@ the reps and resistance arrays to populate the table
           'set': {
             'sets': 3,
             'reps': [10, 11, 12],
-            'resistance': [0, 'bodyweight', 'bodyweight'],
+            'resistance': [0, '0', '0'],
           },
           'equipment': 'None',
           'workTime': 30,
@@ -584,7 +584,7 @@ the reps and resistance arrays to populate the table
           'set': {
             'sets': 3,
             'reps': [10, 11, 12],
-            'resistance': ['bodyweight', 'bodyweight', 'bodyweight'],
+            'resistance': ['0', '0', '0'],
           },
           'equipment': 'None',
           'workTime': 30,
@@ -607,7 +607,7 @@ the reps and resistance arrays to populate the table
           'set': {
             'sets': 3,
             'reps': [10, 10, 10],
-            'resistance': ['bodyweight', 'bodyweight', 'bodyweight'],
+            'resistance': ['0', '0', '0'],
           },
           'equipment': 'None',
           'workTime': 30,
@@ -625,7 +625,7 @@ the reps and resistance arrays to populate the table
           'set': {
             'sets': 3,
             'reps': ['20s', '20s', '20s'],
-            'resistance': ['bodyweight', 'bodyweight', 'bodyweight'],
+            'resistance': ['0', '0', '0'],
           },
           'equipment': 'Pullup Bar',
           'workTime': 20,
@@ -649,7 +649,7 @@ the reps and resistance arrays to populate the table
           'set': {
             'sets': 3,
             'reps': [3, 3, 3],
-            'resistance': ['bodyweight', 'bodyweight', 'bodyweight'],
+            'resistance': ['0', '0', '0'],
           },
           'equipment': 'Slider',
           'workTime': 60,
@@ -667,7 +667,7 @@ the reps and resistance arrays to populate the table
           'set': {
             'sets': 3,
             'reps': ['20s', '20s', '20s'],
-            'resistance': ['bodyweight', 'bodyweight', 'bodyweight'],
+            'resistance': ['0', '0', '0'],
           },
           'equipment': 'None',
           'workTime': 30,

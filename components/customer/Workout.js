@@ -18,119 +18,89 @@ import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Checkbox from '@material-ui/core/Checkbox';
-import AppBar from '@material-ui/core/AppBar';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
-import { buyBook } from '../../lib/api/customer';
 import notify from '../../lib/notifier';
 
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`vertical-tabpanel-${index}`}
-      aria-labelledby={`vertical-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box p={3}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
-    </div>
-  );
-}
-
-function a11yProps(index) {
-  console.log('INDEX');
-  console.log(index);
-  return {
-    id: `vertical-tab-${index}`,
-    'aria-controls': `vertical-tabpanel-${index}`,
-  };
-}
-
 const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-    backgroundColor: theme.palette.background.paper,
-    display: 'flex',
-    height: 448,
-    width: '100%',
+  table: {
+    minWidth: 650,
+    size: 'small',
+    maxWidth: 800,
   },
-  tabs: {
-    borderRight: `1px solid ${theme.palette.divider}`,
+  exercise: {
+    colspan: '2',
+    align: 'right',
+    size: 'small',
+  },
+  setName: {
+    padding: 'none',
+    colspan: '5',
+    align: 'center',
   },
 }));
 
 export default function Workout(props) {
-  const classes = useStyles();
   const [value, setValue] = React.useState(0);
   const { workoutName, date, training } = props;
+  const classes = useStyles();
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+  if (training === undefined || training.length === 0) {
+    return (
+      <div>
+        <p> No training!</p>
+      </div>
+    );
+  }
   return (
     <div>
       <h1>{workoutName}</h1>
-      <h2>{date}</h2>
-      <div className={classes.root}>
-        <Tabs
-          orientation="vertical"
-          variant="scrollable"
-          value={value}
-          onChange={handleChange}
-          aria-label="Vertical tabs example"
-          className={classes.tabs}
-        >
-          {training.map((t) => (
-            <Tab label={t.name} {...a11yProps(training.findIndex((i) => i.name === t.name))} />
-          ))}
-        </Tabs>
-
-        {training.map((t) => (
-          <TabPanel value={value} index={training.findIndex((i) => i.name === t.name)}>
-            <TableContainer>
-              <Table aria-label="simple table">
-                <TableHead>
+      <p>{date}</p>
+      {training.map((t) => (
+        <TableContainer>
+          <Table className={classes.table} aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                <TableCell className={classes.setName}>{t.name}</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell className={classes.exercise}>Exercise</TableCell>
+                <TableCell align="right" padding="none" size="small">
+                  Sets
+                </TableCell>
+                <TableCell align="right" padding="none" size="small">
+                  Reps
+                </TableCell>
+                <TableCell align="right" padding="none" size="small">
+                  Resistance
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            {t.exercises.map((exercise) => (
+              <TableBody>
+                {exercise.set.map((row) => (
                   <TableRow>
-                    <TableCell colspan={2}>Exercise</TableCell>
-                    <TableCell align="right">Sets&nbsp;</TableCell>
-                    <TableCell align="right">Reps&nbsp;</TableCell>
-                    <TableCell align="right">Resistance&nbsp;</TableCell>
+                    <TableCell padding="checkbox">
+                      <Checkbox
+                        // indeterminate={numSelected > 0 && numSelected < rowCount}
+                        // checked={rowCount > 0 && numSelected === rowCount}
+                        // onChange={onSelectAllClick}
+                        inputProps={{ 'aria-label': 'select all desserts' }}
+                      />
+                    </TableCell>
+                    <TableCell align="left">{exercise.name}</TableCell>
+                    <TableCell align="right">{row.sets}</TableCell>
+                    <TableCell align="right">{row.reps.join(', ')}</TableCell>
+                    <TableCell align="right">{row.resistance.join(', ')}</TableCell>
                   </TableRow>
-                </TableHead>
-                {t.exercises.map((exercise) => (
-                  <TableBody>
-                    {exercise.set.map((row) => (
-                      <TableRow>
-                        <TableCell padding="checkbox">
-                          <Checkbox
-                            // indeterminate={numSelected > 0 && numSelected < rowCount}
-                            // checked={rowCount > 0 && numSelected === rowCount}
-                            // onChange={onSelectAllClick}
-                            inputProps={{ 'aria-label': 'select all desserts' }}
-                          />
-                        </TableCell>
-                        <TableCell align="left">{exercise.name}</TableCell>
-                        <TableCell align="right">{row.sets}</TableCell>
-                        <TableCell align="right">{row.reps.join(', ')}</TableCell>
-                        <TableCell align="right">{row.resistance.join(', ')}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
                 ))}
-              </Table>
-            </TableContainer>
-          </TabPanel>
-        ))}
-      </div>
+              </TableBody>
+            ))}
+          </Table>
+        </TableContainer>
+      ))}
     </div>
   );
 }
@@ -174,11 +144,4 @@ Workout.defaultProps = {
   date: '',
   workoutName: '',
   training: [],
-};
-
-TabPanel.propTypes = {
-  // eslint-disable-next-line react/require-default-props
-  children: PropTypes.node,
-  index: PropTypes.any.isRequired,
-  value: PropTypes.any.isRequired,
 };

@@ -118,7 +118,7 @@ class SignUpParent extends React.Component {
           await loginLocal(data);
 
           console.log('Logged IN');
-          //window.location.reload(true);
+          window.location.reload(true);
         }
         notify('Success!');
         NProgress.done();

@@ -37,7 +37,7 @@ const URL_MAP = {
   '/signup': '/public/signUpParent',
   '/workout': '/customer/workoutParent',
   '/my-account': '/customer/my-account',
-  '/': '/customer/index',
+  '/': '/customer/landing',
   '/logout': '/public/signUpParent',
 };
 
@@ -58,7 +58,7 @@ app.prepare().then(async () => {
 
   server.get('/static/*', (req, res) => {
     console.log('/static');
-    //console.log(req.route);
+    console.log(req.route);
     handle(req, res);
   });
 
@@ -74,6 +74,7 @@ app.prepare().then(async () => {
   server.get('*', (req, res) => {
     const url = URL_MAP[req.path];
     console.log(`app.js - GET request req.url: ${url}`);
+    console.log(req.path);
     if (url) {
       console.log(url);
       app.render(req, res, url);

@@ -3,7 +3,7 @@
 tmp/
 npm-debug.log
 .DS_Store
-
+*report
 
 .build/*
 .next
