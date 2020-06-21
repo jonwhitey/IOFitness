@@ -5,7 +5,7 @@ import Router from 'next/router';
 import NProgress from 'nprogress';
 import Head from 'next/head';
 import PropTypes from 'prop-types';
-import { theme } from '../lib/theme';
+import theme from '../lib/theme';
 
 import Notifier from '../components/Notifier';
 import Header from '../components/Header';

@@ -55,7 +55,7 @@ app.prepare().then(async () => {
     //console.log(req.route.stack);
     handle(req, res);
   });
-
+  
   server.get('/static/*', (req, res) => {
     console.log('/static');
     console.log(req.route);
