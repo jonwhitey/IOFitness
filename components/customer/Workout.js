@@ -15,36 +15,32 @@ import TableRow from '@material-ui/core/TableRow';
 import Checkbox from '@material-ui/core/Checkbox';
 import { makeStyles, ThemeProvider } from '@material-ui/core/styles';
 import notify from '../../lib/notifier';
-import { theme } from '../../lib/theme';
+import theme from '../../lib/theme';
 
 const useStyles = makeStyles((theme) => ({
   table: {
     align: 'center',
-    maxWidth: 850,
+    maxWidth: 500,
     minWidth: 300,
   },
-  exercise: {
-    paddingLeft: '10',
-    size: 'small',
-    color: 'red',
-  },
   header: {
-    backgroundColor: theme.primary.main.blue,
+    backgroundColor: theme.palette.primary.main,
+  },
+  headerCell: {
+    color: 'white',
+  },
+  lowerHeaderCell: {
+    backgroundColor: theme.palette.secondary.main,
+    color: 'white',
   },
 }));
 
 export default function Workout(props) {
   const classes = useStyles();
   // const { workout } = props;
-  const { completeExercise } = props;
-  const [{ workout }, setWorkout] = React.useState(props);
-  /*
-  React.useEffect(() => {
-    setWorkout(props);
-  }, [props]);
-  */
-  // console.log('training!');
-  // console.log(workoutState.training);
+  const { completeExercise, workout } = props;
+  console.log(theme);
+
   function handleCheck(e) {
     console.log(e.target.value);
     console.log('HandleCheck!');
@@ -74,24 +70,34 @@ export default function Workout(props) {
                   align="center"
                   padding="none"
                   size="small"
-                  className={classes.setName}
+                  className={classes.headerCell}
                 >
                   {t.name}
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell align="center">Complete</TableCell>
-                <TableCell align="center">Exercise</TableCell>
-                <TableCell align="center">Sets</TableCell>
-                <TableCell align="center">Reps</TableCell>
-                <TableCell align="center">Resistance</TableCell>
+                <TableCell align="left" padding="checkbox" className={classes.lowerHeaderCell}>
+                  Complete
+                </TableCell>
+                <TableCell align="center" className={classes.lowerHeaderCell}>
+                  Exercise
+                </TableCell>
+                <TableCell align="center" className={classes.lowerHeaderCell}>
+                  Sets
+                </TableCell>
+                <TableCell align="center" className={classes.lowerHeaderCell}>
+                  Reps
+                </TableCell>
+                <TableCell align="center" className={classes.lowerHeaderCell}>
+                  Resistance
+                </TableCell>
               </TableRow>
             </TableHead>
             {t.exercises.map((exercise, exerciseIndex) => (
               <TableBody>
                 {exercise.set.map((row) => (
                   <TableRow>
-                    <TableCell padding="checkbox" width="20%">
+                    <TableCell align="left" padding="checkbox" width="20%">
                       <Checkbox
                         // indeterminate={numSelected > 0 && numSelected < rowCount}
                         checked={exercise.complete}

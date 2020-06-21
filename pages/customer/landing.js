@@ -23,12 +23,13 @@ function Landing(props) {
   const [workoutState, setWorkoutState] = useState(workout);
   const classes = useStyles();
 
-  const callGetWorkout = async () => {
+  /* const callGetWorkout = async () => {
     console.log('GET WORKOUT');
     const response = await getWorkout({ headers });
     const { workout } = response;
     console.log(workout);
   };
+  */
 
   function completeExercise(setIndex, exerciseIndex, complete) {
     console.log('landing page handleChange');
@@ -54,16 +55,6 @@ function Landing(props) {
         Email:&nbsp;
         {user.email}
       </p>
-      <Button
-        type="submit"
-        fullWidth
-        variant="contained"
-        color="primary"
-        id="get-workout-button"
-        onClick={callGetWorkout}
-      >
-        Get workout
-      </Button>
       <Workout
         workout={workoutState}
         completeExercise={completeExercise}
