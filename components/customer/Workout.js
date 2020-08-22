@@ -37,16 +37,16 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Workout(props) {
   const classes = useStyles();
-  // const { workout } = props;
   const { completeExercise, workout } = props;
   console.log(theme);
 
   function handleCheck(e) {
     console.log(e.target.value);
     console.log('HandleCheck!');
+    const { uid } = workout;
+    
     const workoutString = e.target.value;
     const workoutArray = workoutString.split('/');
-    // const { setName, exerciseName, complete } = e.target;
     completeExercise(workoutArray[0], workoutArray[1], workoutArray[2]);
   }
   if (workout.training === undefined || workout.training.length === 0) {

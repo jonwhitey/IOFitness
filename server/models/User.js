@@ -5,7 +5,7 @@ const _ = require('lodash');
 const bcrypt = require('bcrypt');
 const generateSlug = require('../utils/slugify');
 const sendEmail = require('../aws');
-const { getEmailTemplate } = require('./EmailTemplate');
+const { getEmailTemplate } = require('./BBmodels/EmailTemplate');
 
 const logger = require('../logs');
 

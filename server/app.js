@@ -10,7 +10,7 @@ const { setupGithub } = require('./github');
 const api = require('./api/index');
 
 const logger = require('./logs');
-const { insertTemplates } = require('./models/EmailTemplate');
+const { insertTemplates } = require('./models/BBmodels/EmailTemplate');
 const routesWithSlug = require('./routesWithSlug');
 const getRootUrl = require('../lib/api/getRootUrl');
 
@@ -39,6 +39,7 @@ const URL_MAP = {
   '/my-account': '/customer/my-account',
   '/': '/customer/landing',
   '/logout': '/public/signUpParent',
+  '/add-exercise': '/admin/add-exercise',
 };
 
 const app = next({ dev });

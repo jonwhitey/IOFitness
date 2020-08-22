@@ -1,5 +1,5 @@
 const express = require('express');
-const Book = require('../models/Book');
+const Book = require('../models/BBmodels/Book');
 const User = require('../models/User');
 const { getRepos } = require('../github');
 const logger = require('../logs');

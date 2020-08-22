@@ -4,6 +4,15 @@ const styleBigAvatar = {
   margin: '0px auto 15px',
 };
 
+const styleSelectInput = {
+  font: '15px Muli',
+  color: '#222',
+  fontWeight: '300',
+  width: '100%',
+  paddingBottom: 10,
+  minWidth: '360px',
+};
+
 const styleRaisedButton = {
   margin: '15px 15px 30px 15px',
   font: '15px Muli',
@@ -62,4 +71,5 @@ module.exports = {
   styleTextField,
   styleForm,
   styleGrid,
+  styleSelectInput,
 };

@@ -5,7 +5,7 @@ const marked = require('marked');
 const he = require('he');
 const hljs = require('highlight.js');
 // const Book = require('./Book');
-const generateSlug = require('../utils/slugify');
+const generateSlug = require('../../utils/slugify');
 const Purchase = require('./Purchase');
 
 const { Schema } = mongoose;

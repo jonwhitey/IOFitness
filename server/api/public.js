@@ -1,6 +1,6 @@
 const express = require('express');
-const Book = require('../models/Book');
-const Chapter = require('../models/Chapter');
+const Book = require('../models/BBmodels/Book');
+const Chapter = require('../models/BBmodels/Chapter');
 
 const router = express.Router();
 
@@ -36,7 +36,5 @@ router.get('/get-chapter-detail', async (req, res) => {
     res.json({ error: err.message || err.toString() });
   }
 });
-
-
 
 module.exports = router;

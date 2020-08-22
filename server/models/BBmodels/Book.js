@@ -2,17 +2,17 @@
 
 const mongoose = require('mongoose');
 const frontmatter = require('front-matter');
-const generateSlug = require('../utils/slugify');
+const generateSlug = require('../../utils/slugify');
 // const Chapter = require('./Chapter');
-const { getCommits, getContent } = require('../github');
-const logger = require('../logs');
+const { getCommits, getContent } = require('../../github');
+const logger = require('../../logs');
 const Purchase = require('./Purchase');
 const { getEmailTemplate } = require('./EmailTemplate');
-const { stripeCharge } = require('../stripe');
-const sendEmail = require('../aws');
-const User = require('./User');
-const { subscribe } = require('../mailchimp');
-const getRootUrl = require('../../lib/api/getRootUrl');
+const { stripeCharge } = require('../../stripe');
+const sendEmail = require('../../aws');
+const User = require('../User');
+const { subscribe } = require('../../mailchimp');
+const getRootUrl = require('../../../lib/api/getRootUrl');
 
 const { Schema } = mongoose;
 
