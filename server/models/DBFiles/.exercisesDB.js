@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
-const Exercise = require('./Exercise');
+const Exercise = require('../Exercise');
+const updateDB = require('../../../lib/updateDB');
 
 require('dotenv').config();
 
@@ -861,17 +862,6 @@ exerciseDB = [
     equipment: [],
   },
   {
-    name: 'Elevated Scap Pushup',
-    type: 'Strength',
-    strengthType: 'Isometric',
-    movementType: 'Pushup',
-    level: 3,
-    uniOrBi: 'Bilateral',
-    spinalCompression: false,
-    spinalRotation: false,
-    equipment: [],
-  },
-  {
     name: 'Elevated Side Plank Scap Pushup',
     type: 'Strength',
     strengthType: 'Isometric',
@@ -1038,17 +1028,6 @@ exerciseDB = [
     equipment: ['foam roller'],
   },
   {
-    name: 'Quadruped Hold',
-    type: 'Isometric',
-    strengthType: 'Isometric',
-    movementType: 'Spine Quadruped',
-    level: 1,
-    uniOrBi: 'Bilateral',
-    spinalCompression: false,
-    spinalRotation: false,
-    equipment: [],
-  },
-  {
     name: 'Quadruped Pelivic Tilt',
     type: 'Mobility',
     mobilityType: 'Active',
@@ -1157,17 +1136,6 @@ exerciseDB = [
     spinalCompression: false,
     spinalRotation: false,
     equipment: ['medicine ball'],
-  },
-  {
-    name: 'Bracing Sequence',
-    type: 'Strength',
-    mobilityType: 'Isometric',
-    movementType: 'Spine Awareness',
-    level: 1,
-    uniOrBi: 'Bilateral',
-    spinalCompression: false,
-    spinalRotation: false,
-    equipment: [],
   },
   {
     name: 'Standing Pelvic Tilt',
@@ -1569,7 +1537,7 @@ exerciseDB = [
     name: 'Staggered Dorsiflexion',
     type: 'Strength',
     stregnthType: 'Movement',
-    movementType: 'Calf',
+    movementType: 'Sagital',
     level: 1,
     uniOrBi: 'Unilateral',
     spinalCompression: false,
@@ -1580,7 +1548,7 @@ exerciseDB = [
     name: 'Staggered Stance Step',
     type: 'Strength',
     stregnthType: 'Movement',
-    movementType: 'Calf',
+    movementType: 'Sagital',
     level: 1,
     uniOrBi: 'Unilateral',
     spinalCompression: false,
@@ -1591,18 +1559,7 @@ exerciseDB = [
     name: 'Lateral Step',
     type: 'Strength',
     stregnthType: 'Movement',
-    movementType: 'Calf',
-    level: 1,
-    uniOrBi: 'Unilateral',
-    spinalCompression: false,
-    spinalRotation: false,
-    equipment: [],
-  },
-  {
-    name: 'High Knee',
-    type: 'Strength',
-    stregnthType: 'Movement',
-    movementType: 'Calf',
+    movementType: 'Frontal',
     level: 1,
     uniOrBi: 'Unilateral',
     spinalCompression: false,
@@ -1922,16 +1879,6 @@ exerciseDB = [
     equipment: ['slider', 'sock','wall', 'dowel'],
   },
   {
-    name: 'Single Leg Deadlift',
-    type: 'Strength',
-    stregnthType: 'Movement',
-    level: 1,
-    uniOrBi: 'Unilateral',
-    spinalCompression: false,
-    spinalRotation: false,
-    equipment: ['slider', 'sock','wall', 'dowel'],
-  },
-  {
     name: 'Single Leg Deadlift to High Knee',
     type: 'Strength',
     stregnthType: 'Movement',
@@ -2073,32 +2020,6 @@ exerciseDB = [
   },
 ]
 
-const updateDB = async (exerciseDB) => {
-  const dev = process.env.NODE_ENV !== 'production';
 
-  const MONGO_URL = dev ? process.env.MONGO_URL_TEST : process.env.MONGO_URL;
 
-  const options = {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useFindAndModify: false,
-    useUnifiedTopology: true,
-  };
-
-  await mongoose.connect(MONGO_URL, options);
-  console.log('Mongoose connection open');
-
-  try {
-    console.log('call saveworkout');
-    await Exercise.insertMany(exerciseDB);
-    console.log('success!');
-    await mongoose.connection.close();
-    return true;
-  } catch (e) {
-    console.log(e);
-    await mongoose.connection.close();
-    return e;
-  }
-};
-
-updateDB(exerciseDB);
+updateDB(Exercise, exerciseDB);

@@ -8,9 +8,10 @@ const styleSelectInput = {
   font: '15px Muli',
   color: '#222',
   fontWeight: '300',
-  width: '100%',
+  width: '90%',
   paddingBottom: 10,
-  minWidth: '360px',
+  minWidth: '90%',
+  align: 'center',
 };
 
 const styleRaisedButton = {
@@ -39,12 +40,11 @@ const styleTextField = {
   color: '#222',
   fontWeight: '300',
   width: '100%',
-  paddingBottom: 10,
 };
 
 const styleForm = {
   margin: 'auto',
-  width: '360px',
+  width: '100%',
 };
 
 const styleGrid = {
@@ -53,7 +53,12 @@ const styleGrid = {
   color: '#222',
   fontWeight: '300',
   lineHeight: '1.5em',
+  align: 'center',
 };
+
+const stylePaper = {
+
+}
 
 const styleSubmitButton = {
   padding: 10,

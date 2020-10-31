@@ -25,6 +25,7 @@ const mongoSchema = new Schema({
 class ExerciseClass {
   static async findExercise({ name }) {
     try {
+      console.log("FINDEXERCISE");
       const exercise = await this.findOne({ name });
       return exercise;
     } catch (e) {
@@ -48,5 +49,6 @@ class ExerciseClass {
 mongoSchema.loadClass(ExerciseClass);
 
 const Exercise = mongoose.model('Exercise', mongoSchema);
+
 
 module.exports = Exercise;

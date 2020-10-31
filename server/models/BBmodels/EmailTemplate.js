@@ -1,6 +1,5 @@
-const mongoose = require("mongoose");
-const _ = require("lodash");
-const logger = require("../../logs");
+const mongoose = require('mongoose');
+const _ = require('lodash');
 
 const { Schema } = mongoose;
 
@@ -8,25 +7,25 @@ const mongoSchema = new Schema({
   name: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
   },
   subject: {
     type: String,
-    required: true
+    required: true,
   },
   message: {
     type: String,
-    required: true
-  }
+    required: true,
+  },
 });
 
-const EmailTemplate = mongoose.model("EmailTemplate", mongoSchema);
+const EmailTemplate = mongoose.model('EmailTemplate', mongoSchema);
 
 function insertTemplates() {
   const templates = [
     {
-      name: "welcome",
-      subject: "Welcome to basics.fitness",
+      name: 'welcome',
+      subject: 'Welcome to basics.fitness',
       message: `<%= userName %>,
         <p>
           At Builder Book, we are excited to help you build useful, production-ready web apps from scratch.
@@ -37,11 +36,11 @@ function insertTemplates() {
 
         Kelly & Timur,
         Team BB
-      `
+      `,
     },
     {
-      name: "purchase",
-      subject: "You purchased a book a basics.fitness",
+      name: 'purchase',
+      subject: 'You purchased a book a basics.fitness',
       message: `<%=userName %>,
         <p>
           Thank you for joining IO Fitness! You will get a confirmation email from Stripe shortly.
@@ -53,20 +52,13 @@ function insertTemplates() {
         </p>
 
         Jonathan White - IO Fitness
-        `
-    }
+        `,
+    },
   ];
 
-  templates.forEach(async template => {
-    if (
-      (await EmailTemplate.find({ name: template.name }).countDocuments()) > 0
-    ) {
-      return;
+  templates.forEach(async (template) => {
+    if ((await EmailTemplate.find({ name: template.name }).countDocuments()) > 0) {
     }
-
-    EmailTemplate.create(template).catch(error => {
-      logger.error("EmailTemplate insertion error:", error);
-    });
   });
 }
 

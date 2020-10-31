@@ -1,5 +1,5 @@
 import React from 'react';
-import Document, { Head, Main, NextScript } from 'next/document';
+import Document, { Html, Head, Main, NextScript } from 'next/document';
 import { ServerStyleSheets } from '@material-ui/core/styles';
 import htmlescape from 'htmlescape';
 import theme from '../lib/theme';
@@ -25,7 +25,7 @@ No flash of style
 class MyDocument extends Document {
   render() {
     return (
-      <html
+      <Html
         lang="en"
         style={{
           height: '100%',
@@ -33,7 +33,6 @@ class MyDocument extends Document {
       >
         <Head>
           <meta charSet="utf-8" />
-          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
           <meta name="google" content="notranslate" />
           <meta name="theme-color" content={theme.palette.primary.main} />
           <link
@@ -52,7 +51,7 @@ class MyDocument extends Document {
           <script dangerouslySetInnerHTML={{ __html: `__ENV__ = ${htmlescape(env)}` }} />
           <NextScript />
         </body>
-      </html>
+      </Html>
     );
   }
 }

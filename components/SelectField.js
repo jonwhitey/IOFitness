@@ -4,10 +4,8 @@ import PropTypes from 'prop-types';
 import { styleSelectInput } from './SharedStyles';
 
 function SelectField({ label, defaultValue, name, array, control, handleMultiChange, errors }) {
-  console.log(handleMultiChange);
-
   return (
-    <FormControl className="formInput" error={Boolean(errors.wordlevel)}>
+    <FormControl className="formInput" error={Boolean(errors.wordlevel)} style={styleSelectInput}>
       <InputLabel shrink id="demo-simple-select-placeholder-label-label">
         {label}
       </InputLabel>
@@ -25,7 +23,6 @@ function SelectField({ label, defaultValue, name, array, control, handleMultiCha
         name={name}
         rules={{ required: 'this is required' }}
         control={control}
-        style={styleSelectInput}
       />
     </FormControl>
   );

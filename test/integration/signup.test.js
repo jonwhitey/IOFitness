@@ -15,7 +15,7 @@ describe('Puppeteer Sign Up and Log In Flow', () => {
 
   it('takes input and creates a new user', async () => {
     console.log('visiting page');
-    await page.goto('http://localhost:8000/signup' /* { waitUntil: 'networkidle0' } */);
+    await page.goto('http://localhost:3000/signup' /* { waitUntil: 'networkidle0' } */);
     console.log('at page');
     // Type a keyword into the search box and press enter
     await page.type('#firstName', 'Jonathan');
@@ -31,7 +31,7 @@ describe('Puppeteer Sign Up and Log In Flow', () => {
   });
 
   it('logs a user out', async () => {
-    await page.goto('http://localhost:8000');
+    await page.goto('http://localhost:3000');
     await page.click('#menu-button');
     console.log('clicked menu');
     await page.click('#logout-button');
@@ -40,7 +40,7 @@ describe('Puppeteer Sign Up and Log In Flow', () => {
   });
 
   it('log an existing user into the site', async () => {
-    await page.goto('http://localhost:8000/login');
+    await page.goto('http://localhost:3000/login');
     await page.type('[name="email"]', 'jonathan.e.white@colorado.edu');
     await page.type('[name="password"]', 'Start!123!');
     await page.click('#remember_me');
@@ -50,7 +50,7 @@ describe('Puppeteer Sign Up and Log In Flow', () => {
   });
 
   it('logs a user out', async () => {
-    await page.goto('http://localhost:8000');
+    await page.goto('http://localhost:3000');
     await page.click('#menu-button');
     console.log('clicked menu');
     await page.click('#logout-button');
@@ -59,7 +59,7 @@ describe('Puppeteer Sign Up and Log In Flow', () => {
   });
 
   it('log an existing user into the site w/ remember_me and deselects reember_me', async () => {
-    await page.goto('http://localhost:8000/login');
+    await page.goto('http://localhost:3000/login');
     await page.type('[name="password"]', 'Start!123!');
     await page.click('#remember_me');
     page.keyboard.press('Enter');
@@ -68,7 +68,7 @@ describe('Puppeteer Sign Up and Log In Flow', () => {
   });
 
   it('logs a user out', async () => {
-    await page.goto('http://localhost:8000');
+    await page.goto('http://localhost:3000');
     await page.click('#menu-button');
     console.log('clicked menu');
     await page.click('#logout-button');
@@ -77,7 +77,7 @@ describe('Puppeteer Sign Up and Log In Flow', () => {
   });
 
   it('login and check that remember_me is gone', async () => {
-    await page.goto('http://localhost:8000/login');
+    await page.goto('http://localhost:3000/login');
     await page.type('[name="email"]', 'jonathan.e.white@colorado.edu');
     await page.type('[name="password"]', 'Start!123!');
     page.keyboard.press('Enter');
@@ -86,7 +86,7 @@ describe('Puppeteer Sign Up and Log In Flow', () => {
   });
 
   it('navigates to the  my account with the menu drop down', async () => {
-    await page.goto('http://localhost:8000');
+    await page.goto('http://localhost:3000');
     await page.click('#menu-button');
     console.log('clicked menu');
     await page.click('#my-account-button');
@@ -95,7 +95,7 @@ describe('Puppeteer Sign Up and Log In Flow', () => {
   });
 
   it('navigates to the my account page and fills out the delete user form', async () => {
-    await page.goto('http://localhost:8000/my-account');
+    await page.goto('http://localhost:3000/my-account');
     await page.click('#panel1a-header');
     await page.type('[name="email"]', 'jonathan.e.white@colorado.edu');
     await page.type('[name="password"]', 'Start!123!');
@@ -106,7 +106,7 @@ describe('Puppeteer Sign Up and Log In Flow', () => {
   });
 
   it('fails to login after the account has been deleted', async () => {
-    await page.goto('http://localhost:8000/login');
+    await page.goto('http://localhost:3000/login');
     await page.type('[name="email"]', 'jonathan.e.white@colorado.edu');
     await page.type('[name="password"]', 'Start!123!');
     page.keyboard.press('Enter');

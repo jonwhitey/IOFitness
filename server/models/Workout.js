@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
-// const logger = require('../logs');
-const User = require('./User');
+const User = require('./LocalUser');
 
 const { Schema } = mongoose;
 
@@ -22,6 +21,7 @@ const mongoSchema = new Schema({
     required: true,
     unique: false,
   },
+
   training: [
     {
       name: String,
@@ -35,13 +35,12 @@ const mongoSchema = new Schema({
               progression: String,
             },
           ],
-          set: [
+          sets: [
             {
-              sets: Number,
-              reps: Array,
+              numReps: Number,
               units: String,
-              resistance: Array,
-            },
+              resistance: Number,
+            }, 
           ],
           equipment: String,
           workTime: Number,
@@ -72,6 +71,7 @@ class WorkoutClass {
 
   static async getNextWorkout({ uid }) {
     console.log('models/workout get next workout called');
+    console.log(uid);
     try {
       const nextWorkout = await this.findOne({ uid });
       return nextWorkout;
@@ -132,6 +132,4 @@ class WorkoutClass {
 
 mongoSchema.loadClass(WorkoutClass);
 
-const Workout = mongoose.model('Workout', mongoSchema);
-
-module.exports = Workout;
+module.exports = mongoose.models.Workout || mongoose.model('Workout', mongoSchema);

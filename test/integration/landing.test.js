@@ -14,7 +14,7 @@ describe('Landing Page', () => {
   });
 
   it('logs an existing user into the site', async () => {
-    await page.goto('http://localhost:8000/login');
+    await page.goto('http://localhost:3000/login');
     await page.type('[name="email"]', 'jonwhitey42@icloud.com');
     await page.type('[name="password"]', 'Start!123');
     await page.click('#remember_me');
@@ -24,7 +24,7 @@ describe('Landing Page', () => {
   });
 
   it('logs a user out', async () => {
-    await page.goto('http://localhost:8000');
+    await page.goto('http://localhost:3000');
     await page.click('#menu-button');
     console.log('clicked menu');
     await page.click('#logout-button');

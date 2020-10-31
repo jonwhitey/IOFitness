@@ -1,11 +1,13 @@
 const mongoose = require('mongoose');
 const Progression = require('../Progression');
+const updateDB = require('../../../lib/updateDB');
 
 require('dotenv').config();
 
 const progressionDB = [
     {
     name: 'Deadlift', 
+    type: 'Deadlift',
     progression: [
         'Quadruped Hip Hinge', 
         'Dowel Hip Hinge',
@@ -30,6 +32,7 @@ const progressionDB = [
     ]},
     { 
     name: 'Single Leg Deadlift',
+    type: 'Single Leg Deadlift',
     progression: [
         'Supported Kickstand Hip Hinge', 
         'Kickstand Hip Hinge', 
@@ -43,6 +46,7 @@ const progressionDB = [
     ]},
     {
         name: 'Squat', 
+        type: 'Squat',
         progression: [
             'Assisted Box Squat', 
             'Banded Assisted Box Squat', 
@@ -68,6 +72,7 @@ const progressionDB = [
     },
     {
         name: 'Lunge', 
+        type: 'Single Leg Squat',
         progression: [
             'Assisted Split Squat',
             'Assisted Reverse Lunge Slide',
@@ -82,8 +87,8 @@ const progressionDB = [
         faultList: [
             'anklePronation',
             'ankleSupination',
-            'externalHipRotaiton',
-            'internalHipRoation',
+            'externalHipRotation',
+            'internalHipRotation',
             'lumbarFlexion',
             'lumbarExtension',
             'thoracicFlexion',
@@ -134,6 +139,7 @@ const progressionDB = [
     ]},
     {
     name: 'Overhead Press', 
+    type: 'Vertical Press',
     progression: [
         'Standing Down Dog',
         'Supine Arm Raises',
@@ -143,8 +149,8 @@ const progressionDB = [
         'Single Arm Overhead Press',
         'Double Arm Overhead Press',
     ],
-    eccentricMovement: ['shoulderFlexion', 'elbowExtension'],
-    concentricMovement: ['shoulderExtension', 'elbowFlexion'],
+    eccentricMovement: ['shoulderFlexion', 'elbowFlexion'],
+    concentricMovement: ['shoulderExtension', 'elbowExtension'],
     faultList: [
         'anklePronation',
         'ankleSupination',
@@ -160,6 +166,7 @@ const progressionDB = [
 },
     {
     name: 'Row',
+    type: 'Horizontal Row',
     progression: [
         'Single Arm Scap Row',
         'Double Arm Scap Row',
@@ -183,6 +190,7 @@ const progressionDB = [
 },
     {
     name: 'Pushup',
+    type: ' Horizontal Press',
     progression: [
         'Quadruped Hold',
         'Quadruped Shoulder Taps',
@@ -211,6 +219,7 @@ const progressionDB = [
     },
     { 
     name: 'Pullup',
+    type: 'Vertical Row',
     progression: [
         'Assisted Hang',
         'Assisted Scap Pullup',
@@ -231,6 +240,7 @@ const progressionDB = [
     },
     {
     name: 'Dip',
+    type: 'Vertical Press',
     progression: [
         'Assisted Dip Hold',
         'Assisted Scap Dip',
@@ -409,33 +419,5 @@ const progressionDB = [
     ]},
 ];
 
+updateDB(Progression, progressionDB);
 
-const updateDB = async (DB) => {
-    const dev = process.env.NODE_ENV !== 'production';
-  
-    const MONGO_URL = dev ? process.env.MONGO_URL_TEST : process.env.MONGO_URL;
-  
-    const options = {
-      useNewUrlParser: true,
-      useCreateIndex: true,
-      useFindAndModify: false,
-      useUnifiedTopology: true,
-    };
-  
-    await mongoose.connect(MONGO_URL, options);
-    console.log('Mongoose connection open');
-  
-    try {
-      console.log('call saveworkout');
-      await Progression.insertMany(DB);
-      console.log('success!');
-      await mongoose.connection.close();
-      return true;
-    } catch (e) {
-      console.log(e);
-      await mongoose.connection.close();
-      return e;
-    }
-  };
-  
-  updateDB(progressionDB);

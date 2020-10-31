@@ -9,6 +9,7 @@ const mongoSchema = new Schema({
   eccentricMovement: Array,
   concentricMovement: Array,
   faultList: Array,
+  type: String,
 });
 
 class ProgressionClass {
@@ -18,6 +19,19 @@ class ProgressionClass {
       return Progression;
     } catch (e) {
       console.log(`Exercise.js findExercise error -  ${e}`);
+      return e;
+    }
+  }
+
+  static async getAll() {
+    try {
+      console.log("Hit getAll()");
+      const progressions = await this.find({}, 'name progression type');
+      console.log(progressions);
+
+      return progressions;
+    } catch (e) {
+      console.log(`Progression.js getAll error - ${e}`);
       return e;
     }
   }
@@ -36,6 +50,4 @@ class ProgressionClass {
 
 mongoSchema.loadClass(ProgressionClass);
 
-const Progression = mongoose.model('Progression', mongoSchema);
-
-module.exports = Progression;
+module.exports = mongoose.models.Progression || mongoose.model('Progression', mongoSchema);
