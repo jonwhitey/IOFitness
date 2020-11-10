@@ -10,7 +10,8 @@ const workoutSchema = new Schema({
     {
       exercise: String,
       numReps: Number,
-      resistance: Number,
+      resistance: Schema.Types.Mixed,
+      resistanceType: String,
       exerciseIntensity: String,
       set: Number,
       sets: Number,

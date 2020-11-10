@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { styleSelectInput } from './SharedStyles';
 
 function SelectField({ label, defaultValue, name, array, control, handleMultiChange, errors }) {
+  console.log(array);
   return (
     <FormControl className="formInput" error={Boolean(errors.wordlevel)} style={styleSelectInput}>
       <InputLabel shrink id="demo-simple-select-placeholder-label-label">

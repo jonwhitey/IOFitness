@@ -17,6 +17,18 @@ import SelectField from '../components/SelectField';
 import { styleForm, styleTextField } from '../components/SharedStyles';
 import BuildWorkout from '../components/BuildWorkout';
 import { buildProgram, getAllProgressions, loginLocal } from '../lib/api/customer';
+import {
+  movement,
+  hypertrophyRepsArray,
+  strengthRepsArray,
+  enduranceRepsArray,
+  repsArray,
+  resistanceTypeArray,
+  workouts,
+  arraySelect,
+  finisher,
+  warmup,
+} from '../server/models/DBFiles/buildWorkoutDefaults';
 
 const useStyles = makeStyles((theme) => ({
   email: {
@@ -41,53 +53,6 @@ const useStyles = makeStyles((theme) => ({
     padding: '10px',
   },
 }));
-const lowerbody = [
-  'Back Squat',
-  'Goblet Squat',
-  'Deadlift',
-  'Single Leg Squat',
-  'Lunge',
-  'RDL',
-  'Single Leg Squat',
-  'Single Leg Deadlift',
-];
-const pull = ['Pullups', 'Crossover Row', 'Australians', 'Bent Over Row'];
-const push = ['Overhead Press', 'Dips', 'Pushups'];
-
-const movement = ['push', 'pull', 'lowerbody'];
-
-const arraySelect = (str) => {
-  if (str === 'push') {
-    return push;
-  }
-  if (str === 'pull') {
-    return pull;
-  }
-  return lowerbody;
-};
-
-// make workouts array of objects 
-
-const workouts = [
-  {
-    day: 'Lower Body Strength',
-    strength: ['lowerbody', 'Back Squat', 'Deadlift'],
-    hypertrophy: ['pull', 'Australians', 'Pullups'],
-    endurance: ['push', 'Pushups', 'Overhead Press'],
-  },
-  {
-    day: 'Row Strength',
-    strength: ['pull', 'Pullups', 'Bent Over Row'],
-    hypertrophy: ['push', 'Dips', 'Overhead Press'],
-    endurance: ['lowerbody', 'Goblet Squat', 'Single Leg Deadlift'],
-  },
-  {
-    day: 'Push Strength',
-    strength: ['push', 'Overhead Press', 'Dips'],
-    hypertrophy: ['lowerbody', 'RDL', 'Lunge'],
-    endurance: ['pull', 'Australians', 'Crossover Row'],
-  },
-];
 
 function BuildProgram(props) {
   const { user } = props;
@@ -111,9 +76,13 @@ function BuildProgram(props) {
     const newProgram = data;
     console.log('onSubmit localUser');
     console.log(localUser);
-    const response = await buildProgram({ localUser, newProgram });
-    console.log(response);
-    router.push({ pathname: '/workout', as: '/workout' });
+    try {
+      const response = await buildProgram({ localUser, newProgram });
+      console.log(response);
+      router.push({ pathname: '/workout', as: '/workout' });
+    } catch (e) {
+      return e;
+    }
   };
 
   const handleMultiChange = (selectedOption) => {
@@ -159,106 +128,517 @@ function BuildProgram(props) {
           </section>
         </section>
         <Grid container className={classes.root} spacing={2}>
-          {workouts.map((workout, index) => (
+          {workouts.map((workout, workoutIndex) => (
             <Grid item xs={4} key={workout.day}>
+              
               <Paper align="center" className={classes.paper}>
-                <h1 align="center">{`Workout ${index + 1}`}</h1>
-                <SelectField
-                  label="Strength"
-                  defaultValue={workout.strength[0]}
-                  name={`program[${index}].strength[0]`}
-                  array={movement}
-                  control={control}
-                  handleMultiChange={handleMultiChange}
-                  errors={errors}
-                />
-                <SelectField
-                  label="Hypertrophy"
-                  defaultValue={workout.hypertrophy[0]}
-                  name={`program[${index}].hypertrophy[0]`}
-                  array={movement}
-                  control={control}
-                  handleMultiChange={handleMultiChange}
-                  errors={errors}
-                />
-                <SelectField
-                  label="Endurance"
-                  defaultValue={workout.endurance[0]}
-                  name={`program[${index}].endurance[0]`}
-                  array={movement}
-                  control={control}
-                  handleMultiChange={handleMultiChange}
-                  errors={errors}
-                />
+              <h2 align="center">Warmup</h2>
+                <Grid container className={classes.root} spacing={0}>
+                  <Grid item xs={4}>
+                    <SelectField
+                      label="Warmup"
+                      defaultValue={workout.warmup[1].exerciseName}
+                      name={`program[${workoutIndex}].warmup[1].exerciseName`}
+                      array={arraySelect(warmup)}
+                      control={control}
+                      handleMultiChange={handleMultiChange}
+                      errors={errors}
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <SelectField
+                      label="Type"
+                      defaultValue={workout.warmup[1].resistanceType}
+                      name={`program[${workoutIndex}].warmup[1].resistanceType`}
+                      array={resistanceTypeArray}
+                      control={control}
+                      handleMultiChange={handleMultiChange}
+                      errors={errors}
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <SelectField
+                      label="Resistance"
+                      defaultValue={workout.warmup[1].resistance}
+                      name={`program[${workoutIndex}].warmup[1].resistance`}
+                      array={arraySelect(program[`${workoutIndex}`].warmup[1].resistanceType)}
+                      control={control}
+                      handleMultiChange={handleMultiChange}
+                      errors={errors}
+                    />
+                  </Grid>
+                  <Grid item xs={2}>
+                    <SelectField
+                      label="Reps"
+                      defaultValue={workout.warmup[1].numReps}
+                      name={`program[${workoutIndex}].warmup[1].numReps`}
+                      array={repsArray}
+                      control={control}
+                      handleMultiChange={handleMultiChange}
+                      errors={errors}
+                    />
+                  </Grid>
+                </Grid>
+                <Grid container className={classes.root} spacing={0}>
+                  <Grid item xs={4}>
+                    <SelectField
+                      label="warmup"
+                      defaultValue={workout.warmup[2].exerciseName}
+                      name={`program[${workoutIndex}].warmup[2].exerciseName`}
+                      array={arraySelect(program[`${workoutIndex}`].warmup[0])}
+                      control={control}
+                      handleMultiChange={handleMultiChange}
+                      errors={errors}
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <SelectField
+                      label="Type"
+                      defaultValue={workout.warmup[2].resistanceType}
+                      name={`program[${workoutIndex}].warmup[2].resistanceType`}
+                      array={resistanceTypeArray}
+                      control={control}
+                      handleMultiChange={handleMultiChange}
+                      errors={errors}
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <SelectField
+                      label="Resistance"
+                      defaultValue={workout.warmup[2].resistance}
+                      name={`program[${workoutIndex}].warmup[2].resistance`}
+                      array={arraySelect(program[`${workoutIndex}`].warmup[2].resistanceType)}
+                      control={control}
+                      handleMultiChange={handleMultiChange}
+                      errors={errors}
+                    />
+                  </Grid>
+                  <Grid item xs={2}>
+                    <SelectField
+                      label="Reps"
+                      defaultValue={workout.warmup[2].numReps}
+                      name={`program[${workoutIndex}].warmup[2].numReps`}
+                      array={repsArray}
+                      control={control}
+                      handleMultiChange={handleMultiChange}
+                      errors={errors}
+                    />
+                  </Grid>
+                </Grid>
+                <h1 align="center">{`Workout ${workoutIndex + 1}`}</h1>
+                <Grid container className={classes.root} spacing={1}>
+                  <Grid item xs={4}>
+                    <SelectField
+                      label="Strength"
+                      defaultValue={workout.strength[0]}
+                      name={`program[${workoutIndex}].strength[0]`}
+                      array={movement}
+                      control={control}
+                      handleMultiChange={handleMultiChange}
+                      errors={errors}
+                    />
+                  </Grid>
+                  <Grid item xs={4}>
+                    <SelectField
+                      label="Hypertrophy"
+                      defaultValue={workout.hypertrophy[0]}
+                      name={`program[${workoutIndex}].hypertrophy[0]`}
+                      array={movement}
+                      control={control}
+                      handleMultiChange={handleMultiChange}
+                      errors={errors}
+                    />
+                  </Grid>
+                  <Grid item xs={4}>
+                    <SelectField
+                      label="Endurance"
+                      defaultValue={workout.endurance[0]}
+                      name={`program[${workoutIndex}].endurance[0]`}
+                      array={movement}
+                      control={control}
+                      handleMultiChange={handleMultiChange}
+                      errors={errors}
+                    />
+                  </Grid>
+                </Grid>
                 <h2 align="center">First Set</h2>
-                <SelectField
-                  label="Strength Exercise 1"
-                  defaultValue={workout.strength[1]}
-                  name={`program[${index}].strength[1]`}
-                  array={arraySelect(program[`${index}`].strength[0])}
-                  control={control}
-                  handleMultiChange={handleMultiChange}
-                  errors={errors}
-                />
-                <SelectField
-                  label="Strength Exercise 1"
-                  defaultValue={workout.strength[1]}
-                  name={`program[${index}].strength[1]`}
-                  array={arraySelect(program[`${index}`].strength[0])}
-                  control={control}
-                  handleMultiChange={handleMultiChange}
-                  errors={errors}
-                />
-
-                <SelectField
-                  label="Hypertrophy Exercise 1"
-                  defaultValue={workout.hypertrophy[1]}
-                  name={`program[${index}].hypertrophy[1]`}
-                  array={arraySelect(program[`${index}`].hypertrophy[0])}
-                  control={control}
-                  handleMultiChange={handleMultiChange}
-                  errors={errors}
-                />
+                <Grid container className={classes.root} spacing={0}>
+                  <Grid item xs={4}>
+                    <SelectField
+                      label="Strength"
+                      defaultValue={workout.strength[1].exerciseName}
+                      name={`program[${workoutIndex}].strength[1].exerciseName`}
+                      array={arraySelect(program[`${workoutIndex}`].strength[0])}
+                      control={control}
+                      handleMultiChange={handleMultiChange}
+                      errors={errors}
+                      align="left"
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <SelectField
+                      label="Type"
+                      defaultValue={workout.strength[1].resistanceType}
+                      name={`program[${workoutIndex}].strength[1].resistanceType`}
+                      array={resistanceTypeArray}
+                      control={control}
+                      handleMultiChange={handleMultiChange}
+                      errors={errors}
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <SelectField
+                      label="Resistance"
+                      defaultValue={workout.strength[1].resistance}
+                      name={`program[${workoutIndex}].strength[1].resistance`}
+                      array={arraySelect(program[`${workoutIndex}`].strength[1].resistanceType)}
+                      control={control}
+                      handleMultiChange={handleMultiChange}
+                      errors={errors}
+                    />
+                  </Grid>
+                  <Grid item xs={2}>
+                    <SelectField
+                      label="Reps"
+                      defaultValue={workout.strength[1].numReps}
+                      name={`program[${workoutIndex}].strength[1].numReps`}
+                      array={strengthRepsArray}
+                      control={control}
+                      handleMultiChange={handleMultiChange}
+                      errors={errors}
+                    />
+                  </Grid>
+                </Grid>
+                <Grid container className={classes.root} spacing={0}>
+                  <Grid item xs={4}>
+                    <SelectField
+                      label="Hypertrophy"
+                      defaultValue={workout.hypertrophy[1].exerciseName}
+                      name={`program[${workoutIndex}].hypertrophy[1].exerciseName`}
+                      array={arraySelect(program[`${workoutIndex}`].hypertrophy[0])}
+                      control={control}
+                      handleMultiChange={handleMultiChange}
+                      errors={errors}
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <SelectField
+                      label="Type"
+                      defaultValue={workout.hypertrophy[1].resistanceType}
+                      name={`program[${workoutIndex}].hypertrophy[1].resistanceType`}
+                      array={resistanceTypeArray}
+                      control={control}
+                      handleMultiChange={handleMultiChange}
+                      errors={errors}
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <SelectField
+                      label="Resistance"
+                      defaultValue={workout.hypertrophy[1].resistance}
+                      name={`program[${workoutIndex}].hypertrophy[1].resistance`}
+                      array={arraySelect(
+                        program[`${workoutIndex}`].hypertrophy[1].resistanceType,
+                        `program[${workoutIndex}].hypertrophy[1].exerciseName`,
+                      )}
+                      control={control}
+                      handleMultiChange={handleMultiChange}
+                      errors={errors}
+                    />
+                  </Grid>
+                  <Grid item xs={2}>
+                    <SelectField
+                      label="Reps"
+                      defaultValue={workout.hypertrophy[1].numReps}
+                      name={`program[${workoutIndex}].hypertrophy[1].numReps`}
+                      array={hypertrophyRepsArray}
+                      control={control}
+                      handleMultiChange={handleMultiChange}
+                      errors={errors}
+                    />
+                  </Grid>
+                </Grid>
 
                 <h2 align="center">Second Set</h2>
-                <SelectField
-                  label="Strength Exercise 2"
-                  defaultValue={workout.strength[2]}
-                  name={`program[${index}].strength[2]`}
-                  array={arraySelect(program[`${index}`].strength[0])}
-                  control={control}
-                  handleMultiChange={handleMultiChange}
-                  errors={errors}
-                />
-                <SelectField
-                  label="Endurance Exercise 1"
-                  defaultValue={workout.endurance[1]}
-                  name={`program[${index}].endurance[1]`}
-                  array={arraySelect(program[`${index}`].endurance[0])}
-                  control={control}
-                  handleMultiChange={handleMultiChange}
-                  errors={errors}
-                />
+                <Grid container className={classes.root} spacing={0}>
+                  <Grid item xs={4}>
+                    <SelectField
+                      label="Strength"
+                      defaultValue={workout.strength[2].exerciseName}
+                      name={`program[${workoutIndex}].strength[2].exerciseName`}
+                      array={arraySelect(program[`${workoutIndex}`].strength[0])}
+                      control={control}
+                      handleMultiChange={handleMultiChange}
+                      errors={errors}
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <SelectField
+                      label="Type"
+                      defaultValue={workout.strength[2].resistanceType}
+                      name={`program[${workoutIndex}].strength[2].resistanceType`}
+                      array={resistanceTypeArray}
+                      control={control}
+                      handleMultiChange={handleMultiChange}
+                      errors={errors}
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <SelectField
+                      label="Resistance"
+                      defaultValue={workout.strength[2].resistance}
+                      name={`program[${workoutIndex}].strength[2].resistance`}
+                      array={arraySelect(program[`${workoutIndex}`].strength[2].resistanceType)}
+                      control={control}
+                      handleMultiChange={handleMultiChange}
+                      errors={errors}
+                    />
+                  </Grid>
+                  <Grid item xs={2}>
+                    <SelectField
+                      label="Reps"
+                      defaultValue={workout.strength[2].numReps}
+                      name={`program[${workoutIndex}].strength[2].numReps`}
+                      array={strengthRepsArray}
+                      control={control}
+                      handleMultiChange={handleMultiChange}
+                      errors={errors}
+                    />
+                  </Grid>
+                </Grid>
+                <Grid container className={classes.root} spacing={0}>
+                  <Grid item xs={4}>
+                    <SelectField
+                      label="Endurance"
+                      defaultValue={workout.endurance[1].exerciseName}
+                      name={`program[${workoutIndex}].endurance[1].exerciseName`}
+                      array={arraySelect(program[`${workoutIndex}`].endurance[0])}
+                      control={control}
+                      handleMultiChange={handleMultiChange}
+                      errors={errors}
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <SelectField
+                      label="Type"
+                      defaultValue={workout.endurance[1].resistanceType}
+                      name={`program[${workoutIndex}].endurance[1].resistanceType`}
+                      array={resistanceTypeArray}
+                      control={control}
+                      handleMultiChange={handleMultiChange}
+                      errors={errors}
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <SelectField
+                      label="Resistance"
+                      defaultValue={workout.endurance[1].resistance}
+                      name={`program[${workoutIndex}].endurance[1].resistance`}
+                      array={arraySelect(program[`${workoutIndex}`].endurance[1].resistanceType)}
+                      control={control}
+                      handleMultiChange={handleMultiChange}
+                      errors={errors}
+                    />
+                  </Grid>
+                  <Grid item xs={2}>
+                    <SelectField
+                      label="Reps"
+                      defaultValue={workout.endurance[1].numReps}
+                      name={`program[${workoutIndex}].endurance[1].numReps`}
+                      array={enduranceRepsArray}
+                      control={control}
+                      handleMultiChange={handleMultiChange}
+                      errors={errors}
+                    />
+                  </Grid>
+                </Grid>
 
                 <h2 align="center">Set 3</h2>
-                <SelectField
-                  label="Hypertrophy Excercise 2"
-                  defaultValue={workout.hypertrophy[2]}
-                  name={`program[${index}].hypertrophy[2]`}
-                  array={arraySelect(program[`${index}`].hypertrophy[0])}
-                  control={control}
-                  handleMultiChange={handleMultiChange}
-                  errors={errors}
-                />
-                <SelectField
-                  label="Endurance Exercise 2"
-                  defaultValue={workout.endurance[2]}
-                  name={`program[${index}].endurance[2]`}
-                  array={arraySelect(program[`${index}`].endurance[0])}
-                  control={control}
-                  handleMultiChange={handleMultiChange}
-                  errors={errors}
-                />
+                <Grid container className={classes.root} spacing={0}>
+                  <Grid item xs={4}>
+                    <SelectField
+                      label="Hypertrophy"
+                      defaultValue={workout.hypertrophy[2].exerciseName}
+                      name={`program[${workoutIndex}].hypertrophy[2].exerciseName`}
+                      array={arraySelect(program[`${workoutIndex}`].hypertrophy[0])}
+                      control={control}
+                      handleMultiChange={handleMultiChange}
+                      errors={errors}
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <SelectField
+                      label="Type"
+                      defaultValue={workout.hypertrophy[2].resistanceType}
+                      name={`program[${workoutIndex}].hypertrophy[2].resistanceType`}
+                      array={resistanceTypeArray}
+                      control={control}
+                      handleMultiChange={handleMultiChange}
+                      errors={errors}
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <SelectField
+                      label="Resistance"
+                      defaultValue={workout.hypertrophy[2].resistance}
+                      name={`program[${workoutIndex}].hypertrophy[2].resistance`}
+                      array={arraySelect(program[`${workoutIndex}`].hypertrophy[2].resistanceType)}
+                      control={control}
+                      handleMultiChange={handleMultiChange}
+                      errors={errors}
+                    />
+                  </Grid>
+                  <Grid item xs={2}>
+                    <SelectField
+                      label="Reps"
+                      defaultValue={workout.hypertrophy[2].numReps}
+                      name={`program[${workoutIndex}].hypertrophy[2].numReps`}
+                      array={hypertrophyRepsArray}
+                      control={control}
+                      handleMultiChange={handleMultiChange}
+                      errors={errors}
+                    />
+                  </Grid>
+                </Grid>
+                <Grid container className={classes.root} spacing={0}>
+                  <Grid item xs={4}>
+                    <SelectField
+                      label="Endurance"
+                      defaultValue={workout.endurance[2].exerciseName}
+                      name={`program[${workoutIndex}].endurance[2].exerciseName`}
+                      array={arraySelect(program[`${workoutIndex}`].endurance[0])}
+                      control={control}
+                      handleMultiChange={handleMultiChange}
+                      errors={errors}
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <SelectField
+                      label="Type"
+                      defaultValue={workout.endurance[2].resistanceType}
+                      name={`program[${workoutIndex}].endurance[2].resistanceType`}
+                      array={resistanceTypeArray}
+                      control={control}
+                      handleMultiChange={handleMultiChange}
+                      errors={errors}
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <SelectField
+                      label="Resistance"
+                      defaultValue={workout.endurance[2].resistance}
+                      name={`program[${workoutIndex}].endurance[2].resistance`}
+                      array={arraySelect(program[`${workoutIndex}`].endurance[2].resistanceType)}
+                      control={control}
+                      handleMultiChange={handleMultiChange}
+                      errors={errors}
+                    />
+                  </Grid>
+                  <Grid item xs={2}>
+                    <SelectField
+                      label="Reps"
+                      defaultValue={workout.endurance[2].numReps}
+                      name={`program[${workoutIndex}].endurance[2].numReps`}
+                      array={enduranceRepsArray}
+                      control={control}
+                      handleMultiChange={handleMultiChange}
+                      errors={errors}
+                    />
+                  </Grid>
+                </Grid>
+                <h2 align="center">Finisher</h2>
+                <Grid container className={classes.root} spacing={0}>
+                  <Grid item xs={4}>
+                    <SelectField
+                      label="Finisher"
+                      defaultValue={workout.finisher[1].exerciseName}
+                      name={`program[${workoutIndex}].finisher[1].exerciseName`}
+                      array={arraySelect(finisher)}
+                      control={control}
+                      handleMultiChange={handleMultiChange}
+                      errors={errors}
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <SelectField
+                      label="Type"
+                      defaultValue={workout.finisher[1].resistanceType}
+                      name={`program[${workoutIndex}].finisher[1].resistanceType`}
+                      array={resistanceTypeArray}
+                      control={control}
+                      handleMultiChange={handleMultiChange}
+                      errors={errors}
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <SelectField
+                      label="Resistance"
+                      defaultValue={workout.finisher[1].resistance}
+                      name={`program[${workoutIndex}].finisher[1].resistance`}
+                      array={arraySelect(program[`${workoutIndex}`].finisher[1].resistanceType)}
+                      control={control}
+                      handleMultiChange={handleMultiChange}
+                      errors={errors}
+                    />
+                  </Grid>
+                  <Grid item xs={2}>
+                    <SelectField
+                      label="Reps"
+                      defaultValue={workout.finisher[1].numReps}
+                      name={`program[${workoutIndex}].finisher[1].numReps`}
+                      array={repsArray}
+                      control={control}
+                      handleMultiChange={handleMultiChange}
+                      errors={errors}
+                    />
+                  </Grid>
+                </Grid>
+                <Grid container className={classes.root} spacing={0}>
+                  <Grid item xs={4}>
+                    <SelectField
+                      label="Finisher"
+                      defaultValue={workout.finisher[2].exerciseName}
+                      name={`program[${workoutIndex}].finisher[2].exerciseName`}
+                      array={arraySelect(program[`${workoutIndex}`].finisher[0])}
+                      control={control}
+                      handleMultiChange={handleMultiChange}
+                      errors={errors}
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <SelectField
+                      label="Type"
+                      defaultValue={workout.finisher[2].resistanceType}
+                      name={`program[${workoutIndex}].finisher[2].resistanceType`}
+                      array={resistanceTypeArray}
+                      control={control}
+                      handleMultiChange={handleMultiChange}
+                      errors={errors}
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <SelectField
+                      label="Resistance"
+                      defaultValue={workout.finisher[2].resistance}
+                      name={`program[${workoutIndex}].finisher[2].resistance`}
+                      array={arraySelect(program[`${workoutIndex}`].finisher[2].resistanceType)}
+                      control={control}
+                      handleMultiChange={handleMultiChange}
+                      errors={errors}
+                    />
+                  </Grid>
+                  <Grid item xs={2}>
+                    <SelectField
+                      label="Reps"
+                      defaultValue={workout.finisher[2].numReps}
+                      name={`program[${workoutIndex}].finisher[2].numReps`}
+                      array={repsArray}
+                      control={control}
+                      handleMultiChange={handleMultiChange}
+                      errors={errors}
+                    />
+                  </Grid>
+                </Grid>
               </Paper>
             </Grid>
           ))}

@@ -3,6 +3,9 @@ import connectToDb from '../../server/middleware/database';
 import LocalUser from '../../server/models/LocalUser';
 import Program from '../../server/models/Program';
 
+const strengthReps = 5;
+const hypertrophyReps = 7;
+const enduranceReps = 12;
 export default async (req, res) => {
   await connectToDb();
   const { localUser } = req.body;
@@ -10,9 +13,7 @@ export default async (req, res) => {
   console.log('hit buildProgram');
   // console.log(newProgram);
   const exercises = newProgram.program;
-  const strengthReps = 5;
-  const hypertrophyReps = 7;
-  const enduranceReps = 12;
+
   console.log('localUser');
   console.log(localUser);
   const workouts = exercises.map((workout) => {
@@ -22,54 +23,60 @@ export default async (req, res) => {
       uid: localUser._id,
       exercises: [
         {
-          exercise: workout.strength[1],
-          numReps: strengthReps,
-          resistance: 1,
+          exercise: workout.strength[1].exerciseName,
+          numReps: workout.strength[1].numReps,
+          resistanceType: workout.strength[1].resistanceType,
+          resistance: workout.strength[1].resistance,
           intensity: 'Strength',
           set: 1,
           sets: 3,
           exerciseCompleted: false,
         },
         {
-          exercise: workout.hypertrophy[1],
-          numReps: hypertrophyReps,
-          resistance: 1,
+          exercise: workout.hypertrophy[1].exerciseName,
+          numReps: workout.hypertrophy[1].numReps,
+          resistanceType: workout.hypertrophy[1].resistanceType,
+          resistance: workout.hypertrophy[1].resistance,
           intensity: 'Hypertrophy',
           set: 1,
           sets: 3,
           exerciseCompleted: false,
         },
         {
-          exercise: workout.strength[2],
-          numReps: strengthReps,
-          resistance: 1,
+          exercise: workout.strength[2].exerciseName,
+          numReps: workout.strength[2].numReps,
+          resistanceType: workout.strength[2].resistanceType,
+          resistance: workout.strength[2].resistance,
           intensity: 'Strength',
           set: 2,
           sets: 3,
           exerciseCompleted: false,
         },
         {
-          exercise: workout.endurance[1],
-          numReps: enduranceReps,
-          resistance: 1,
+          exercise: workout.endurance[1].exerciseName,
+          numReps: workout.endurance[1].numReps,
+          resistanceType: workout.endurance[1].resistanceType,
+          resistance: workout.endurance[1].resistance,
           intensity: 'Endurance',
           set: 2,
           sets: 3,
           exerciseCompleted: false,
         },
         {
-          exercise: workout.hypertrophy[2],
-          numReps: hypertrophyReps,
-          resistance: 1,
+          exercise: workout.hypertrophy[2].exerciseName,
+          numReps: workout.hypertrophy[2].numReps,
+          resistanceType: workout.hypertrophy[2].resistanceType,
+          resistance: workout.hypertrophy[2].resistance,
           intensity: 'Hypertrophy',
           set: 3,
           sets: 3,
           exerciseCompleted: false,
         },
         {
-          exercise: workout.endurance[2],
-          numReps: enduranceReps,
-          resistance: 1,
+          exercise: workout.endurance[2].exerciseName,
+          numReps: workout.endurance[2].numReps,
+          resistanceType: workout.endurance[2].resistanceType,
+          resistance: workout.endurance[2].resistance,
           intensity: 'Endurance',
           set: 3,
           sets: 3,

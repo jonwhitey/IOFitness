@@ -8,10 +8,10 @@ const styleSelectInput = {
   font: '15px Muli',
   color: '#222',
   fontWeight: '300',
-  width: '90%',
+  width: '100%',
   paddingBottom: 10,
   minWidth: '90%',
-  align: 'center',
+  textAlign: 'left',
 };
 
 const styleRaisedButton = {

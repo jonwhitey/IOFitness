@@ -53,6 +53,7 @@ function Workout({ user, program }) {
   const loading = false;
 
   const [currentSet, setCurrentSet] = useState(0);
+  const [timer, setTime] = useState(0);
 
   const currentWorkout = program.workouts.find((nextWorkout) => nextWorkout.completed === false);
   console.log(currentWorkout);
@@ -84,19 +85,20 @@ function Workout({ user, program }) {
   return (
     <Layout user={user} currentWorkout={currentWorkout} loading={false}>
       <h1>Workout Page</h1>
-      <p> {currentSet} </p>
-      <p> {totalSets} </p>
+      <h3>{currentSet}</h3>
+      <h3>{totalSets}</h3>
       <Button onClick={() => changeSet(-1)}>Prev Set!</Button>
       <Button onClick={() => changeSet(1)}>Next Set!</Button>
 
       {loading && <p>Loading login info...</p>}
+      {!currentWorkout && <p> no workout</p>}
       <TableContainer component={Paper}>
         <Table className={classes.table} aria-label="simple table">
           <TableHead>
             <TableRow>
               <TableCell>Exercisess</TableCell>
-              <TableCell align="right">Reps</TableCell>
               <TableCell align="right">Sets</TableCell>
+              <TableCell align="right">Reps</TableCell>
               <TableCell align="right">Resistance</TableCell>
               <TableCell align="right">Complete</TableCell>
             </TableRow>
@@ -108,10 +110,10 @@ function Workout({ user, program }) {
                   {set.exercise}
                 </TableCell>
                 <TableCell align="right" className={classes.tCell}>
-                  {set.numReps}
+                  {set.sets}
                 </TableCell>
                 <TableCell align="right" className={classes.tCell}>
-                  {set.sets}
+                  {set.numReps}
                 </TableCell>
                 <TableCell align="right" className={classes.tCell}>
                   {set.resistance}
@@ -132,7 +134,11 @@ export async function getServerSideProps({ req, res }) {
   const session = await auth0.getSession(req);
   if (!session || !session.user) {
     console.log('no sesssion and no user');
-    return { props: { user: null } };
+    res.writeHead(302, {
+      Location: '/',
+    });
+    res.end();
+    return;
   }
 
   const { user } = session;
@@ -142,6 +148,10 @@ export async function getServerSideProps({ req, res }) {
     console.log('calling getCurrentWorkout');
     const { program } = await getProgram({ localUser });
     console.log(program);
+    if (!session || !session.user) {
+      console.log('no sesssion and no user');
+      return { props: { user: null } };
+    }
     return {
       props: {
         user: session.user,
