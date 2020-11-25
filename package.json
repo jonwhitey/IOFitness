@@ -34,7 +34,7 @@
     "handlebars": "^4.7.6",
     "he": "1.2.0",
     "helmet": "^3.23.3",
-    "highlight.js": "9.18.1",
+    "highlight.js": "10.1.2",
     "htmlescape": "1.1.1",
     "isomorphic-unfetch": "3.0.0",
     "jss": "^10.4.0",
