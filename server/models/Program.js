@@ -8,14 +8,17 @@ const workoutSchema = new Schema({
   completed: Boolean,
   exercises: [
     {
-      exercise: String,
+      exerciseName: String,
       numReps: Number,
       resistance: Schema.Types.Mixed,
       resistanceType: String,
+      exerciseType: String,
       exerciseIntensity: String,
       set: Number,
       sets: Number,
-      exerciseCompleted: false,
+      complete: false,
+      workTime: Number,
+      restTime: Number,
     },
   ],
 });
@@ -36,7 +39,7 @@ const mongoSchema = new Schema({
     type: Number,
     required: true,
     unique: false,
-    default: 8,
+    default: 1,
   },
   programName: {
     type: String,

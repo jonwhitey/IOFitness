@@ -44,7 +44,7 @@ const styleTextField = {
 
 const styleForm = {
   margin: 'auto',
-  width: '100%',
+  width: '80%',
 };
 
 const styleGrid = {
