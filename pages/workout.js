@@ -1,103 +1,20 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Button from '@material-ui/core/Button';
-import Paper from '@material-ui/core/Paper';
-import { CountdownCircleTimer } from 'react-countdown-circle-timer';
-import Grid from '@material-ui/core/Grid';
-import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import Typography from '@material-ui/core/Typography';
 import { Howl } from 'howler';
+import Grid from '@material-ui/core/Grid';
+import PropTypes from 'prop-types';
 import auth0 from '../lib/auth0';
 import Layout from '../components/layout';
 import { loginLocal, getProgram } from '../lib/api/customer';
 import sound1 from '../public/sounds/hero1.mp3';
-
-// import Workout from '../components/Workout';
-
-const useStyles = makeStyles((theme) => ({
-  button: {
-    margin: theme.spacing(1),
-  },
-  input: {
-    display: 'none',
-  },
-  1: {
-    backgroundColor: '#011f4b',
-    color: 'white',
-  },
-  2: {
-    backgroundColor: '#03396c',
-    color: 'white',
-  },
-  3: {
-    backgroundColor: '#005b96',
-    color: 'white',
-  },
-  4: {
-    backgroundColor: '#6497b1',
-    color: 'white',
-  },
-  5: {
-    backgroundColor: '#011f4b',
-    color: 'white',
-  },
-  6: {
-    backgroundColor: '#03396c',
-    color: 'white',
-  },
-  7: {
-    backgroundColor: '#005b96',
-    color: 'white',
-  },
-  8: {
-    backgroundColor: '#6497b1',
-    color: 'white',
-  },
-  9: {
-    backgroundColor: '#011f4b',
-    color: 'white',
-  },
-  10: {
-    backgroundColor: '#03396c',
-    color: 'white',
-  },
-  11: {
-    backgroundColor: '#005b96',
-    color: 'white',
-  },
-  12: {
-    backgroundColor: '#6497b1',
-    color: 'white',
-  },
-  liveSetStyle: {
-    backgroundColor: '#02C769',
-  },
-  tCell: {
-    color: 'white',
-  },
-  work: {
-    color: 'green',
-    width: '100%',
-  },
-  rest: {
-    color: 'red',
-    width: '100%',
-  },
-}));
+import ExerciseCard from '../components/workout/ExerciseCard';
+import WorkoutTimer from '../components/workout/WorkoutTimer';
+import TimerControl from '../components/workout/TimerControl';
+import WorkoutTable from '../components/workout/WorkoutTable';
 
 /* to do: 
   clean this up
-  make the workout card a component
-  make the timer and the buttons a component
-  make the workout grid a component
+  get currentWorkout not currentProgram
   make the buttons work to reverse and more the sets forward
   make the updateLiveGroup a lib function
   push to github
@@ -105,10 +22,10 @@ const useStyles = makeStyles((theme) => ({
   */
 
 function Workout({ user, currentWorkout }) {
-  const classes = useStyles();
   const loading = false;
+  const { exercises } = currentWorkout;
+
   const [key, setKey] = useState(1);
-  const [timer, setTime] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [liveGroup, setLiveGroup] = useState({
     liveGroupNumber: 0,
@@ -116,23 +33,25 @@ function Workout({ user, currentWorkout }) {
     numberOfExercisesInGroup: 0,
     setsRemaining: 0,
     liveExerciseIndex: 0,
-    liveExercise: {},
+    liveExercise: { exerciseName: 'undefined' },
     duration: 5,
     workOrRest: 'start',
   });
   const sound = new Howl({
     src: [sound1],
     volume: 1,
-    onend() {
-      console.log('Finished!');
-    },
+    onend() {},
   });
-  console.log(liveGroup);
-
-  const { exercises } = currentWorkout;
-  const findNextGroup = () => {
-    return exercises.filter((exercises) => exercises.set === liveGroup.liveGroupNumber + 1);
+  const handleKey = () => {
+    setKey(key + 1);
   };
+  const findNextGroup = () => {
+    return exercises.filter((exercise) => exercise.set === liveGroup.liveGroupNumber + 1);
+  };
+  // switch to first exercise in group
+  // switch to next exercise within group
+  // switch work to rest
+  // switch group or intialize first group
 
   const updateLiveGroup = () => {
     sound.play();
@@ -182,7 +101,6 @@ function Workout({ user, currentWorkout }) {
         liveGroup.workOrRest === 'rest')
     ) {
       const newLiveGroup = findNextGroup();
-      console.log(newLiveGroup);
       return setLiveGroup({
         ...liveGroup,
         liveGroupNumber: liveGroup.liveGroupNumber + 1,
@@ -197,39 +115,6 @@ function Workout({ user, currentWorkout }) {
     }
     return liveGroup;
   };
-
-  // conditionally renders set rows by returning classes.set
-  const setClass = (liveClass) => {
-    if (liveClass === liveGroup.liveGroupNumber) {
-      return classes.liveSetStyle;
-    }
-    return classes[liveClass];
-  };
-
-  const setWorkOrRest = (workOrRest) => {
-    if (workOrRest === 'work') {
-      return classes.work;
-    }
-    if (workOrRest === 'rest') {
-      return classes.rest;
-    }
-    return null;
-  };
-
-  // timer settings
-  const renderTime = ({ remainingTime }) => {
-    if (remainingTime === 0) {
-      return <div className="timer">Next Set!</div>;
-    }
-    return (
-      <div className="timer">
-        <div className="text">Remaining</div>
-        <div className="value">{remainingTime}</div>
-        <div className="text">seconds</div>
-      </div>
-    );
-  };
-
   // pause timer;
   const pause = () => {
     if (isPlaying) {
@@ -238,125 +123,30 @@ function Workout({ user, currentWorkout }) {
     return setIsPlaying(true);
   };
 
+  const timerProps = {
+    key,
+    isPlaying,
+    duration: liveGroup.duration,
+    updateLiveGroup,
+    handleKey,
+  };
+
   return (
     <Layout user={user} currentWorkout={currentWorkout} loading={false}>
       <h1 align="center">Workout Page</h1>
+      {loading && <p>Loading login info...</p>}
+      {!currentWorkout && <p> no workout</p>}
       <Grid container alignItems="center" spacing={5}>
         <Grid item xs={4} align="center">
-          <CountdownCircleTimer
-            key={key}
-            isPlaying={isPlaying}
-            duration={liveGroup.duration}
-            colors={[['#004777', 0.33], ['#F7B801', 0.33], ['#A30000']]}
-            onComplete={() => {
-              updateLiveGroup();
-              setKey(key + 1);
-              return [true, 1000];
-            }}
-          >
-            {renderTime}
-          </CountdownCircleTimer>
-        </Grid>
-        <Grid item xs={4} align="center">
-          <Button fullWidth variant="outlined" onClick={pause}>
-            {isPlaying ? 'Pause' : 'Play'}
-          </Button>
-          <Button fullWidth variant="outlined" onClick={updateLiveGroup}>
-            Prev Set!
-          </Button>
-          <Button fullWidth variant="outlined" onClick={updateLiveGroup}>
-            Next Set!
-          </Button>
-          <Button
-            fullWidth
-            variant="outlined"
-            onClick={() => {
-              sound.play();
-            }}
-          >
-            Play Sound
-          </Button>
+          <WorkoutTimer timerProps={timerProps} />
+          <TimerControl pause={pause} isPlaying={isPlaying} updateLiveGroup={updateLiveGroup} />
         </Grid>
         <Grid item xs={4}>
-          <Card className={setWorkOrRest(liveGroup.workOrRest)}>
-            <CardContent>
-              <Typography className={classes.title} color="textSecondary" gutterBottom />
-              <Typography variant="h5" component="h2">
-                {liveGroup.liveExercise.exerciseName}
-              </Typography>
-              <Typography className={classes.pos} color="textSecondary">
-                Sets Remaining:
-                {liveGroup.setsRemaining}
-              </Typography>
-              <Typography className={classes.pos} color="textSecondary">
-                Reps:
-                {liveGroup.liveExercise.numReps}
-              </Typography>
-              <Typography className={classes.pos} color="textSecondary">
-                Resistance:
-                {liveGroup.liveExercise.resistance}
-              </Typography>
-              <Typography variant="body2" component="p">
-                Queues: Lift dowel over head...
-                <br />
-                Nope, you fucked it up.
-              </Typography>
-            </CardContent>
-            <CardActions>
-              <Button size="small">Edit Workout</Button>
-            </CardActions>
-          </Card>
+          <ExerciseCard liveGroup={liveGroup} />
         </Grid>
       </Grid>
       <br />
-      {loading && <p>Loading login info...</p>}
-      {!currentWorkout && <p> no workout</p>}
-      <TableContainer component={Paper}>
-        <Table className={classes.table} aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell>Set</TableCell>
-              <TableCell>Exercisess</TableCell>
-              <TableCell align="right">Sets</TableCell>
-              <TableCell align="right">Reps</TableCell>
-              <TableCell align="right">Resistance</TableCell>
-              <TableCell align="right">Complete</TableCell>
-              <TableCell>Work Time</TableCell>
-              <TableCell>Rest Time</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {currentWorkout.exercises.map((set) => (
-              <TableRow key={set.exerciseName} className={setClass(set.set)}>
-                <TableCell component="th" scope="row" className={classes.tCell}>
-                  {set.set}
-                </TableCell>
-                <TableCell component="th" scope="row" className={classes.tCell}>
-                  {set.exerciseName}
-                </TableCell>
-                <TableCell align="right" className={classes.tCell}>
-                  {set.sets}
-                </TableCell>
-                <TableCell align="right" className={classes.tCell}>
-                  {set.numReps}
-                </TableCell>
-                <TableCell align="right" className={classes.tCell}>
-                  {set.resistance}
-                </TableCell>
-                <TableCell align="right" className={classes.tCell}>
-                  {set.complete}
-                </TableCell>
-                <TableCell component="th" scope="row" className={classes.tCell}>
-                  {set.workTime}
-                </TableCell>
-                <TableCell component="th" scope="row" className={classes.tCell}>
-                  {set.restTime}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <WorkoutTable currentWorkout={currentWorkout} liveGroupNumber={liveGroup.liveGroupNumber} />
     </Layout>
   );
 }
@@ -374,13 +164,10 @@ export async function getServerSideProps({ req, res }) {
 
   const { user } = session;
   try {
-    console.log('Workout SSP');
     const { localUser } = await loginLocal({ user });
-    console.log('calling getProgram');
     const { program } = await getProgram({ localUser });
     const currentWorkout = program.workouts.find((nextWorkout) => nextWorkout.completed === false);
-
-    console.log(program);
+    
     if (!session || !session.user) {
       console.log('no sesssion and no user');
       // eslint-disable-next-line consistent-return
@@ -390,8 +177,6 @@ export async function getServerSideProps({ req, res }) {
     return {
       props: {
         user: session.user,
-        localUser,
-        program,
         currentWorkout,
       },
     };
@@ -400,5 +185,42 @@ export async function getServerSideProps({ req, res }) {
     return { props: { user: session.user } };
   }
 }
+
+Workout.propTypes = {
+  user: PropTypes.shape({
+    given_name: PropTypes.string,
+    family_name: PropTypes.string,
+    nickname: PropTypes.string,
+    name: PropTypes.string,
+    picture: PropTypes.string,
+    locale: PropTypes.string,
+    updated_at: PropTypes.string,
+    email: PropTypes.string,
+    email_verified: PropTypes.bool,
+    sub: PropTypes.string,
+  }),
+
+  currentWorkout: PropTypes.shape({
+    exercises: PropTypes.arrayOf(
+      PropTypes.shape({
+        _id: PropTypes.string,
+        exerciseName: PropTypes.string,
+        sets: PropTypes.number,
+        set: PropTypes.number,
+        numReps: PropTypes.number,
+        resistance: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+        resistanceType: PropTypes.string,
+        complete: PropTypes.bool,
+        workTime: PropTypes.number,
+        restTime: PropTypes.number,
+      }),
+    ),
+  }),
+};
+
+Workout.defaultProps = {
+  user: null,
+  currentWorkout: null,
+};
 
 export default Workout;
