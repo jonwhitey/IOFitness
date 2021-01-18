@@ -71,11 +71,8 @@ class ProgramClass {
   }
 
   static async getProgram(uid) {
-    console.log('hit Program getProgram');
-    console.log(uid);
     try {
       const program = await this.findOne({ uid });
-      console.log(program);
       return program;
     } catch (e) {
       console.log('could not find new program');
@@ -86,13 +83,6 @@ class ProgramClass {
   // search for a program with a users uid
   // find the next workout in the workouts Array where completed = false
   // return just that workout and the program _id
-
-  static async getNextWorkout(uid) {
-    console.log('git getNextWorkout');
-    try {
-      const nextWorkout = await this.findOne({ uid })
-    }
-  }
 }
 
 mongoSchema.loadClass(ProgramClass);
