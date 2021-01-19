@@ -82,6 +82,13 @@ program creation
 // user to workouts 
     == one 100's
 
+
+// Program should have a user
+  a constrcutor
+    - User want to work on these areas
+      - Squat progression
+    - App looks up user to figure out where they are at and creates a new workout
+
 /* program document
 
     uid
