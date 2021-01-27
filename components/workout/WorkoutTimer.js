@@ -21,7 +21,7 @@ export default function WorkoutTimer({ timerProps }) {
   const { key } = timerProps;
   const { handleKey } = timerProps;
   const { duration } = timerProps;
-  console.log(duration);
+  // console.log(duration);
   // timer settings
   const renderTime = ({ remainingTime }) => {
     if (remainingTime === 0) {
