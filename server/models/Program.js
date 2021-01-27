@@ -8,14 +8,17 @@ const workoutSchema = new Schema({
   completed: Boolean,
   exercises: [
     {
-      exercise: String,
+      exerciseName: String,
       numReps: Number,
       resistance: Schema.Types.Mixed,
       resistanceType: String,
+      exerciseType: String,
       exerciseIntensity: String,
       set: Number,
       sets: Number,
-      exerciseCompleted: false,
+      complete: false,
+      workTime: Number,
+      restTime: Number,
     },
   ],
 });
@@ -36,7 +39,7 @@ const mongoSchema = new Schema({
     type: Number,
     required: true,
     unique: false,
-    default: 8,
+    default: 1,
   },
   programName: {
     type: String,
@@ -68,17 +71,18 @@ class ProgramClass {
   }
 
   static async getProgram(uid) {
-    console.log('hit Program getProgram');
-    console.log(uid);
     try {
       const program = await this.findOne({ uid });
-      console.log(program);
       return program;
     } catch (e) {
       console.log('could not find new program');
       return e;
     }
   }
+
+  // search for a program with a users uid
+  // find the next workout in the workouts Array where completed = false
+  // return just that workout and the program _id
 }
 
 mongoSchema.loadClass(ProgramClass);
