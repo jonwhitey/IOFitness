@@ -12,118 +12,119 @@ import WorkoutTimer from '../components/workout/WorkoutTimer';
 import TimerControl from '../components/workout/TimerControl';
 import WorkoutTable from '../components/workout/WorkoutTable';
 
-/* to do: 
-  clean this up
-  get currentWorkout not currentProgram
-  make the buttons work to reverse and more the sets forward
-  make the updateLiveGroup a lib function
-  push to github
-  kill it, you got this
-  */
+/* 
 
+I got it worked out. Wasn't working becuase:
+- setNum and liveSetNum track which exercise you're on within a group, not which set you're on
+- js doesn't like the accumulators on non-initialized variables
+- needed to create another variable to track sets - called completedRounds and liveCompletedRounds
+
+Problems to fix:
+- need to get groups, sets, and rounds figured out
+- need to write some logic for increasing reps and resistance - find my rules
+  - 2x2
+  - increase a rep until you hit strength, hypertrophy, endurance threshold
+  - then increase resistance
+  - rules for isometric exercises
+  - rest week
+- then create a final-ish data model
+- load in my workout x 2
+- get ui working
+- save and create next workout / training session  
+
+
+*/
 function Workout({ user, currentWorkout }) {
   const loading = false;
   const { exercises: dbExcercises } = currentWorkout;
+  // console.log({ dbExcercises });
 
-  /* Create an exercise object where each key is the ID of the exercise and it's respective properties
-
-  */
-  // const exercises = dbExcercises.reduce((accum, {
-  //   _id,
-  //   exerciseName,
-  //   resistanceType
-  // }) => {
-  //   return {
-  //     ...accum,
-  //     [_id]: {exerciseName, resistanceType}
-  //   }
-  // },
-  // {})
-  console.log({dbExcercises})
-
-  const groupedBySets = dbExcercises.reduce((acc, ex)=>{
-    const {set: group, sets: numSets} = ex
-    const {sets: currSets = []} = acc[group] || [] 
+  const groupedBySets = dbExcercises.reduce((acc, ex) => {
+    const { set: group, sets: numSets } = ex;
+    const { sets: currSets = [] } = acc[group] || [];
     return {
       ...acc,
-      [group] : {
+      [group]: {
         numSets,
-        sets: [...currSets, ex]
-      }
-    }
-  }, {})
+        sets: [...currSets, ex],
+      },
+    };
+  }, {});
 
-  // const groupedBySetsAndSet = Object.entries(groupedBySets).map(([numSets, sets]) => {
+  // console.log({ groupedBySets });
 
-  // })
-
-  console.log({groupedBySets})
-
-  // In order for the timer to work, you need to know 
-  //  - group num 
+  // In order for the timer to work, you need to know
+  //  - group num
   //  - set num
   //  - exer
-  
+
   //  - next()
   //    - isGroupComplete()
   //    - isSetComplete()
 
   const getFirstExercise = () => {
-    return dbExcercises[0]
-  }
+    return dbExcercises[0];
+  };
 
   const [liveGroup, setLiveGroup] = useState({
     groupNum: 1,
-    setNum: 1,
+    setNum: 0,
     exercise: dbExcercises[0],
-    workOrRest: 'rest'
+    workOrRest: 'work',
+    completedRounds: 0,
   });
-
+  console.log(groupedBySets);
+  // setNum is really exerciseNum
+  // setsComplete 
   const updateLiveGroup = () => {
     const {
       groupNum: liveGroupNum,
       setNum: liveSetNum,
       exercise: liveExercise,
-      workOrRest: liveWorkOrRest
+      workOrRest: liveWorkOrRest,
+      completedRounds: liveCompletedRounds,
     } = liveGroup;
+    const totalNumSets = groupedBySets[liveGroupNum].numSets;
+    const isLastRound = liveCompletedRounds === totalNumSets;
 
-    const totalNumSets = groupedBySets[liveSetNum].numSets
-    const isLastSet = liveSetNum == totalNumSets
-
-    const {_id: liveExcID} = liveExercise
-    console.log({liveSetNum: groupedBySets[liveSetNum].sets})
-    const setLength = groupedBySets[liveSetNum].sets.length
-    const isLastExc = groupedBySets[liveSetNum].sets[setLength-1]._id == liveExcID;
-
-    const isRest = liveWorkOrRest == "rest"
+    const { _id: liveExcID } = liveExercise;
+    // console.log({ liveSetNum: groupedBySets[liveSetNum].sets });
+    // numExercises
+    const setLength = groupedBySets[liveGroupNum].sets.length;
+    console.log(setLength);
+    const isLastExc = groupedBySets[liveGroupNum].sets[setLength - 1]._id === liveExcID;
+    console.log(groupedBySets[liveGroupNum].sets[setLength - 1]._id);
+    const isRest = liveWorkOrRest === 'rest';
 
     const isGroupComplete = () => {
       console.log({
-        isLastSet,
+        isLastRound,
         isLastExc,
-        isRest
-      })
-      return isLastSet && isLastExc && isRest
-    }
-    
+        isRest,
+      });
+      return isLastRound && isLastExc && isRest;
+    };
     // add is last group
-    const groupNum = isGroupComplete() ? liveGroupNum++ : liveGroupNum
-    
-    const setNum = !isRest ? liveSetNum : (isGroupComplete ? 1 : liveSetNum++)
+    const groupNum = isGroupComplete() ? liveGroupNum + 1 : liveGroupNum;
+    console.log(liveSetNum);
+    const setNum = !isRest ? liveSetNum : isLastExc ? 0 : liveSetNum + 1;
+    console.log(setNum);
+    const exercise = groupedBySets[groupNum].sets[setNum];
+    console.log(exercise);
+    const completedRounds = isRest && isLastExc ? liveCompletedRounds + 1 : liveCompletedRounds
 
-    const exercise = groupedBySets[groupNum].sets[setNum]
+    const workOrRest = liveWorkOrRest === 'rest' ? 'work' : 'rest';
 
-    const workOrRest = liveWorkOrRest == "rest" ? "work" : "rest"
+    //
 
-     return setLiveGroup({
-       groupNum,
-       setNum,
-       exercise,
-       workOrRest,     
-     })
-  }
-  
-
+    return setLiveGroup({
+      groupNum,
+      setNum,
+      exercise,
+      workOrRest,
+      completedRounds,
+    });
+  };
 
   const [key, setKey] = useState(1);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -133,14 +134,14 @@ function Workout({ user, currentWorkout }) {
     volume: 1,
     onend() {},
   });
-  
+
   const handleKey = () => {
     setKey(key + 1);
   };
-  
+
   // pause timer;
   const pause = () => {
-    return setIsPlaying(!isPlaying)
+    return setIsPlaying(!isPlaying);
   };
 
   const timerProps = {
@@ -154,7 +155,6 @@ function Workout({ user, currentWorkout }) {
 
   return (
     <Layout user={user} currentWorkout={currentWorkout} loading={false}>
-      
       <h1 align="center">Workout Page</h1>
       {loading && <p>Loading login info...</p>}
       {!currentWorkout && <p> no workout</p>}
@@ -189,7 +189,7 @@ export async function getServerSideProps({ req, res }) {
     const { localUser } = await loginLocal({ user });
     const { program } = await getProgram({ localUser });
     const currentWorkout = program.workouts.find((nextWorkout) => nextWorkout.completed === false);
-    
+
     if (!session || !session.user) {
       console.log('no sesssion and no user');
       // eslint-disable-next-line consistent-return
@@ -247,84 +247,21 @@ Workout.defaultProps = {
 
 export default Workout;
 
-  
+/* Create an exercise object where each key is the ID of the exercise and it's respective properties
 
+  */
+// const exercises = dbExcercises.reduce((accum, {
+//   _id,
+//   exerciseName,
+//   resistanceType
+// }) => {
+//   return {
+//     ...accum,
+//     [_id]: {exerciseName, resistanceType}
+//   }
+// },
+// {})
 
+// const groupedBySetsAndSet = Object.entries(groupedBySets).map(([numSets, sets]) => {
 
-
-
-
-
-
-
-
-  // const findNextGroup = () => {
-  //   return exercises.filter((exercise) => exercise.set === liveGroup.liveGroupNumber + 1);
-  // };
-  // switch to first exercise in group
-  // switch to next exercise within group
-  // switch work to rest
-  // switch group or intialize first group
-
-  // const updateLiveGroup = () => {
-  //   sound.play();
-  //   // if on rest and last exercise in group, decrease sets remaining, and switch to starting exercise
-  //   if (
-  //     liveGroup.setsRemaining > 1 &&
-  //     liveGroup.workOrRest === 'rest' &&
-  //     liveGroup.liveExerciseIndex + 1 === liveGroup.numberOfExercisesInGroup
-  //   ) {
-  //     return setLiveGroup({
-  //       ...liveGroup,
-  //       liveExerciseIndex: 0,
-  //       setsRemaining: liveGroup.setsRemaining - 1,
-  //       liveExercise: liveGroup.group[0],
-  //       workOrRest: 'work',
-  //       duration: liveGroup.group[0].workTime,
-  //     });
-  //   }
-  //   // if rest and not last exercise in group and not last set and  in the group, switch exercise
-  //   if (
-  //     liveGroup.workOrRest === 'rest' &&
-  //     liveGroup.setsRemaining >= 1 &&
-  //     liveGroup.liveExerciseIndex + 1 !== liveGroup.numberOfExercisesInGroup
-  //   ) {
-  //     return setLiveGroup({
-  //       ...liveGroup,
-  //       liveExerciseIndex: liveGroup.liveExerciseIndex + 1,
-  //       liveExercise: liveGroup.group[liveGroup.liveExerciseIndex + 1],
-  //       workOrRest: 'work',
-  //       duration: liveGroup.group[liveGroup.liveExerciseIndex + 1].workTime,
-  //     });
-  //   }
-  //   // if work switch to rest
-  //   if (liveGroup.setsRemaining > 0 && liveGroup.workOrRest === 'work') {
-  //     return setLiveGroup({
-  //       ...liveGroup,
-  //       duration: liveGroup.group[liveGroup.liveExerciseIndex].restTime,
-  //       workOrRest: 'rest',
-  //     });
-  //   }
-  //   // if workOrRest === start, set the new live group
-  //   // if setsRemaining === 1 and it is the last excercise in the group, and on rest, switch to a new group
-  //   if (
-  //     liveGroup.workOrRest === 'start' ||
-  //     (liveGroup.setsRemaining === 1 &&
-  //       liveGroup.liveExerciseIndex + 1 === liveGroup.numberOfExercisesInGroup &&
-  //       liveGroup.workOrRest === 'rest')
-  //   ) {
-  //     const newLiveGroup = findNextGroup();
-  //     return setLiveGroup({
-  //       ...liveGroup,
-  //       liveGroupNumber: liveGroup.liveGroupNumber + 1,
-  //       group: newLiveGroup,
-  //       liveExerciseIndex: 0,
-  //       liveExercise: newLiveGroup[0],
-  //       setsRemaining: newLiveGroup[0].sets,
-  //       workOrRest: 'work',
-  //       duration: newLiveGroup[0].workTime,
-  //       numberOfExercisesInGroup: newLiveGroup.length,
-  //     });
-  //   }
-  //   return liveGroup;
-  // };
+// })

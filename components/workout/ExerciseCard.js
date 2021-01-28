@@ -26,7 +26,6 @@ export default function ExerciseCard(props) {
     exercise
     
   } = props;
-  console.log({props});
   const setWorkOrRest = (workOrRest) => {
     if (workOrRest === 'work') {
       return classes.work;
