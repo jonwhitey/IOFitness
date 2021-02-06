@@ -13,15 +13,15 @@ import auth0 from '../lib/auth0';
 import Layout from '../components/layout';
 import SelectField from '../components/SelectField';
 import { styleForm, styleTextField } from '../components/SharedStyles';
-import { buildProgram, getAllProgressions, loginLocal } from '../lib/api/customer';
+import { createMultipleTrainingSessions, loginLocal } from '../lib/api/customer';
 import {
-  setsArray,
-  setArray,
+  groupArray,
+  totalSetsArray,
   timeArray,
   resistanceTypeArray,
   arraySelect,
 } from '../server/models/DBFiles/buildWorkoutDefaults';
-import workouts from '../server/models/DBFiles/workoutsTry';
+import { trainingSessions } from '../server/models/DBFiles/trainingSessions';
 
 const useStyles = makeStyles((theme) => ({
   email: {
@@ -50,28 +50,24 @@ const useStyles = makeStyles((theme) => ({
 function BuildProgram(props) {
   const { user } = props;
   const { localUser } = props;
-  const { progressions } = props;
-  const { exercises } = props;
   const classes = useStyles(props);
-  const { form, formInput } = classes;
   const { register, handleSubmit, setValue, errors, control, watch } = useForm({
     defaultValues: {
       uid: user ? user.id : '',
-      programName: 'Workout',
-      cycles: 8,
-      program: workouts,
+      newTrainingSessions: trainingSessions,
     },
   });
 
   const router = useRouter();
 
   const onSubmit = async (data) => {
-    const newProgram = data;
+    console.log('onSubmit!');
+    const newTrainingSessions = data;
     console.log('onSubmit localUser');
     try {
-      const response = await buildProgram({ localUser, newProgram });
+      const response = await createMultipleTrainingSessions({ localUser, newTrainingSessions });
       console.log(response);
-      router.push({ pathname: '/workout', as: '/workout' });
+      router.push({ pathname: '/train', as: '/train' });
       return response;
     } catch (e) {
       return e;
@@ -80,58 +76,33 @@ function BuildProgram(props) {
   const handleMultiChange = (selectedOption) => {
     setValue('reactSelect', selectedOption);
   };
-  const { program } = watch();
+  const { newTrainingSessions } = watch();
 
   return (
     <Layout user={user} loading={false}>
-      <h1 id="add-exercise">Build Your Program</h1>
-      <p>Program:</p>
+      <h1 id="add-exercise">Build Your Training Session</h1>
       <form style={styleForm} onSubmit={handleSubmit(onSubmit)}>
-        <section className={classes.textInput}>
-          <TextField
-            style={styleTextField}
-            required
-            name="programName"
-            label="Program Name"
-            defaultValue=""
-            autoFocus
-            inputRef={register}
-          />
-          <section>
-            <label>Cycles</label>
-            <Controller
-              name="cycles"
-              control={control}
-              defaultValue={0}
-              render={(props) => (
-                <Slider
-                  {...props}
-                  onChange={(_, value) => {
-                    props.onChange(value);
-                  }}
-                  valueLabelDisplay="auto"
-                  max={12}
-                  min={0}
-                  step={1}
-                  marks
-                />
-              )}
-            />
-          </section>
-        </section>
         <Grid container className={classes.root} spacing={2}>
-          {workouts.map((workout, workoutIndex) => (
-            <Grid item xs={12} key={workout.day}>
+          {trainingSessions.map((trainingSession, trainingSessionIndex) => (
+            <Grid item xs={12}>
               <Paper align="center" className={classes.paper}>
-                <h2 align="center">Workout {workoutIndex + 1}</h2>
-                {workout.map((exercise, exerciseIndex) => (
+                <TextField
+                  style={styleTextField}
+                  required
+                  name={`newTrainingSessions[${trainingSessionIndex}].trainingSessionName`}
+                  label="Session Name"
+                  defaultValue={`Session ${trainingSessionIndex + 1}`}
+                  autoFocus
+                  inputRef={register}
+                />
+                {trainingSession.map((exercise, exerciseIndex) => (
                   <Grid container className={classes.root} spacing={0}>
                     <Grid item xs={1}>
                       <SelectField
-                        label="Set"
-                        defaultValue={exercise.set}
-                        name={`program[${workoutIndex}][${exerciseIndex}].set`}
-                        array={setArray}
+                        label="Group"
+                        defaultValue={exercise.groupNumber}
+                        name={`newTrainingSessions[${trainingSessionIndex}][${exerciseIndex}].groupNumber`}
+                        array={groupArray}
                         control={control}
                         handleMultiChange={handleMultiChange}
                         errors={errors}
@@ -141,7 +112,7 @@ function BuildProgram(props) {
                       <SelectField
                         label={exercise.exerciseIntensity}
                         defaultValue={exercise.exerciseName}
-                        name={`program[${workoutIndex}][${exerciseIndex}].exerciseName`}
+                        name={`newTrainingSessions[${trainingSessionIndex}][${exerciseIndex}].exerciseName`}
                         array={arraySelect(exercise.exerciseType)}
                         control={control}
                         handleMultiChange={handleMultiChange}
@@ -152,7 +123,7 @@ function BuildProgram(props) {
                       <SelectField
                         label="Type"
                         defaultValue={exercise.resistanceType}
-                        name={`program[${workoutIndex}][${exerciseIndex}].resistanceType`}
+                        name={`newTrainingSessions[${trainingSessionIndex}][${exerciseIndex}].resistanceType`}
                         array={resistanceTypeArray}
                         control={control}
                         handleMultiChange={handleMultiChange}
@@ -163,7 +134,7 @@ function BuildProgram(props) {
                       <SelectField
                         label="Resistance"
                         defaultValue={exercise.resistance}
-                        name={`program[${workoutIndex}][${exerciseIndex}].resistance`}
+                        name={`newTrainingSessions[${trainingSessionIndex}][${exerciseIndex}].resistance`}
                         array={arraySelect(exercise.resistanceType)}
                         control={control}
                         handleMultiChange={handleMultiChange}
@@ -172,10 +143,10 @@ function BuildProgram(props) {
                     </Grid>
                     <Grid item xs={1}>
                       <SelectField
-                        label="Sets"
-                        defaultValue={exercise.sets}
-                        name={`program[${workoutIndex}][${exerciseIndex}].sets`}
-                        array={setsArray}
+                        label="totalSets"
+                        defaultValue={exercise.totalSets}
+                        name={`newTrainingSessions[${trainingSessionIndex}][${exerciseIndex}].totalSets`}
+                        array={totalSetsArray}
                         control={control}
                         handleMultiChange={handleMultiChange}
                         errors={errors}
@@ -185,7 +156,7 @@ function BuildProgram(props) {
                       <SelectField
                         label="Reps"
                         defaultValue={exercise.numReps}
-                        name={`program[${workoutIndex}][${exerciseIndex}].numReps`}
+                        name={`newTrainingSessions[${trainingSessionIndex}][${exerciseIndex}].numReps`}
                         array={arraySelect(exercise.exerciseIntensity)}
                         control={control}
                         handleMultiChange={handleMultiChange}
@@ -196,7 +167,7 @@ function BuildProgram(props) {
                       <SelectField
                         label="Work"
                         defaultValue={exercise.workTime}
-                        name={`program[${workoutIndex}][${exerciseIndex}].workTime`}
+                        name={`newTrainingSessions[${trainingSessionIndex}][${exerciseIndex}].workTime`}
                         array={timeArray}
                         control={control}
                         handleMultiChange={handleMultiChange}
@@ -207,7 +178,7 @@ function BuildProgram(props) {
                       <SelectField
                         label="Rest"
                         defaultValue={exercise.restTime}
-                        name={`program[${workoutIndex}][${exerciseIndex}].restTime`}
+                        name={`newTrainingSessions[${trainingSessionIndex}][${exerciseIndex}].restTime`}
                         array={timeArray}
                         control={control}
                         handleMultiChange={handleMultiChange}
@@ -263,15 +234,12 @@ export async function getServerSideProps({ req, res }) {
 
 BuildProgram.propTypes = {
   user: PropTypes.shape({
+    id: PropTypes.string,
     displayName: PropTypes.string,
     email: PropTypes.string.isRequired,
   }),
-  workoutProgram: PropTypes.shape({
-    uid: PropTypes.string,
-    programName: PropTypes.string,
-    cycles: PropTypes.number,
-    sets: PropTypes.number,
-    program: PropTypes.arrayOf(
+  trainingSessions: PropTypes.shape({
+    trainingSession: PropTypes.arrayOf(
       PropTypes.shape({
         strength: PropTypes.array,
         hypertrophy: PropTypes.array,
@@ -283,7 +251,7 @@ BuildProgram.propTypes = {
 
 BuildProgram.defaultProps = {
   user: null,
-  workoutProgram: null,
+  trainingSessions: null,
   // progressions: null,
 };
 

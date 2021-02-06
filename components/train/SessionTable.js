@@ -67,10 +67,10 @@ const useStyles = makeStyles((theme) => ({
 export default function WorkoutTable(props) {
   const classes = useStyles();
   // liveGroup props
-  const { currentWorkout } = props;
+  const { trainingSession } = props;
   const { liveGroupNumber } = props;
   // timer settings
-
+  console.log({ liveGroupNumber });
   // conditionally renders set rows by returning classes.set
   const handleLiveGroupStyle = (realGroupNumber) => {
     if (realGroupNumber === liveGroupNumber) {
@@ -84,9 +84,9 @@ export default function WorkoutTable(props) {
       <Table className={classes.table} aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableCell>Set</TableCell>
-            <TableCell>Exercisess</TableCell>
-            <TableCell align="right">Sets</TableCell>
+            <TableCell>Group Number</TableCell>
+            <TableCell>Exercise Name</TableCell>
+            <TableCell align="right">Total Sets</TableCell>
             <TableCell align="right">Reps</TableCell>
             <TableCell align="right">Resistance</TableCell>
             <TableCell align="right">Complete</TableCell>
@@ -95,31 +95,34 @@ export default function WorkoutTable(props) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {currentWorkout.exercises.map((set) => (
-            <TableRow key={set.exerciseName} className={handleLiveGroupStyle(set.set)}>
+          {trainingSession.exercises.map((exercise) => (
+            <TableRow
+              key={exercise.exerciseName}
+              className={handleLiveGroupStyle(exercise.groupNumber)}
+            >
               <TableCell component="th" scope="row" className={classes.tCell}>
-                {set.set}
-              </TableCell>
-              <TableCell component="th" scope="row" className={classes.tCell}>
-                {set.exerciseName}
-              </TableCell>
-              <TableCell align="right" className={classes.tCell}>
-                {set.sets}
-              </TableCell>
-              <TableCell align="right" className={classes.tCell}>
-                {set.numReps}
-              </TableCell>
-              <TableCell align="right" className={classes.tCell}>
-                {set.resistance}
-              </TableCell>
-              <TableCell align="right" className={classes.tCell}>
-                {set.complete}
+                {exercise.groupNumber}
               </TableCell>
               <TableCell component="th" scope="row" className={classes.tCell}>
-                {set.workTime}
+                {exercise.exerciseName}
+              </TableCell>
+              <TableCell align="right" className={classes.tCell}>
+                {exercise.totalSets}
+              </TableCell>
+              <TableCell align="right" className={classes.tCell}>
+                {exercise.numReps}
+              </TableCell>
+              <TableCell align="right" className={classes.tCell}>
+                {exercise.resistance}
+              </TableCell>
+              <TableCell align="right" className={classes.tCell}>
+                {exercise.complete}
               </TableCell>
               <TableCell component="th" scope="row" className={classes.tCell}>
-                {set.restTime}
+                {exercise.workTime}
+              </TableCell>
+              <TableCell component="th" scope="row" className={classes.tCell}>
+                {exercise.restTime}
               </TableCell>
             </TableRow>
           ))}
@@ -130,16 +133,18 @@ export default function WorkoutTable(props) {
 }
 WorkoutTable.propTypes = {
   liveGroupNumber: PropTypes.number,
-  currentWorkout: PropTypes.shape({
+  trainingSession: PropTypes.shape({
     exercises: PropTypes.arrayOf(
       PropTypes.shape({
         _id: PropTypes.string,
+        exerciseNumber: PropTypes.number,
         exerciseName: PropTypes.string,
-        sets: PropTypes.number,
-        set: PropTypes.number,
-        numReps: PropTypes.number,
+        totalSets: PropTypes.number,
+        groupNumber: PropTypes.number,
+        numReps: PropTypes.array,
         resistance: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
         resistanceType: PropTypes.string,
+        setsCompleted: PropTypes.number,
         complete: PropTypes.bool,
         workTime: PropTypes.number,
         restTime: PropTypes.number,
@@ -150,5 +155,5 @@ WorkoutTable.propTypes = {
 
 WorkoutTable.defaultProps = {
   liveGroupNumber: 0,
-  currentWorkout: null,
+  trainingSession: null,
 };

@@ -1,20 +1,19 @@
 import connectToDb from '../../server/middleware/database';
 
 import LocalUser from '../../server/models/LocalUser';
-import Program from '../../server/models/Program';
+import TrainingSession from '../../server/models/TrainingSession';
 
 export default async (req, res) => {
   await connectToDb();
   const { localUser } = req.body;
-  console.log('hit getProgram');
-  // console.log(newProgram);
+  console.log('hit getTrainingSesssion');
 
   try {
     console.log('call get program');
     console.log(localUser._id);
-    const program = await Program.getProgram(localUser._id);
-    console.log('Program!');
-    res.json({ program });
+    const trainingSession = await TrainingSession.getTrainingSession(localUser._id);
+    console.log('trainingSession!');
+    res.json({ trainingSession });
   } catch (e) {
     res.json(e);
   }

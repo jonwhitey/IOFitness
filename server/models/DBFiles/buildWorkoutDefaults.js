@@ -1,4 +1,4 @@
-import workouts from './workoutsTry';
+import {trainingSessions} from './trainingSessions';
 
 const lowerBody = [
   'Back Squat',
@@ -134,9 +134,9 @@ const arraySelect = (str, exerciseName) => {
   }
   return str;
 };
-const setArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
+const groupArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
 
-const setsArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+const totalSetsArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 const timeArray = [
   5,
   10,
@@ -165,8 +165,8 @@ const timeArray = [
 ];
 
 export {
-  setArray,
-  setsArray,
+  groupArray,
+  totalSetsArray,
   timeArray,
   lowerBody,
   warmup,
@@ -183,7 +183,6 @@ export {
   loopBandResistanceArray,
   crossOverCordsArray,
   hipBandArray,
-  workouts,
   arraySelect,
   repsArray,
 };

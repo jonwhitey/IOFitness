@@ -2,6 +2,9 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
+// group: what other exercises are you grouped with
+// totalSets: total sets to complete
+// setsCompleted
 const workoutSchema = new Schema({
   uid: String,
   date: Date,
@@ -14,8 +17,9 @@ const workoutSchema = new Schema({
       resistanceType: String,
       exerciseType: String,
       exerciseIntensity: String,
-      set: Number,
-      sets: Number,
+      group: Number,
+      toalSets: Number,
+      setsCompleted: Number,
       complete: false,
       workTime: Number,
       restTime: Number,

@@ -43,7 +43,7 @@ export default function WorkoutTimer({ timerProps }) {
       duration={duration}
       colors={[['#004777', 0.33], ['#F7B801', 0.33], ['#A30000']]}
       onComplete={() => {
-        updateLiveGroup();
+        updateLiveGroup(1);
         handleKey();
         return [true, 1000];
       }}

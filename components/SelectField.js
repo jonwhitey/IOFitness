@@ -34,9 +34,9 @@ SelectField.propTypes = {
     email: PropTypes.string.isRequired,
   }),
   label: PropTypes.string.isRequired,
-  defaultValue: PropTypes.string.isRequired,
+  defaultValue: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   name: PropTypes.string.isRequired,
-  array: PropTypes.arrayOf(PropTypes.string).isRequired,
+  array: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])).isRequired,
   // eslint-disable-next-line react/forbid-prop-types
   control: PropTypes.object.isRequired,
   handleMultiChange: PropTypes.func.isRequired,

@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Howl } from 'howler';
@@ -5,22 +6,25 @@ import Grid from '@material-ui/core/Grid';
 import PropTypes from 'prop-types';
 import auth0 from '../lib/auth0';
 import Layout from '../components/layout';
-import { loginLocal, getProgram } from '../lib/api/customer';
+import { loginLocal, getTrainingSession } from '../lib/api/customer';
 import sound1 from '../public/sounds/hero1.mp3';
-import ExerciseCard from '../components/workout/ExerciseCard';
-import WorkoutTimer from '../components/workout/WorkoutTimer';
-import TimerControl from '../components/workout/TimerControl';
-import WorkoutTable from '../components/workout/WorkoutTable';
+import ExerciseCard from '../components/train/ExerciseCard';
+import WorkoutTimer from '../components/train/SessionTimer';
+import TimerControl from '../components/train/TimerControl';
+import WorkoutTable from '../components/train/SessionTable';
+import { executeTimerLogic } from '../lib/trainPage/timerLogic';
 
 /* 
+need to:
+- go back through the logic of update liveGroup and work it out
+
 
 I got it worked out. Wasn't working becuase:
-- setNum and liveSetNum track which exercise you're on within a group, not which set you're on
+- setNum and liveSetNumber track which exercise you're on within a group, not which set you're on
 - js doesn't like the accumulators on non-initialized variables
 - needed to create another variable to track sets - called completedRounds and liveCompletedRounds
 
 Problems to fix:
-- need to get groups, sets, and rounds figured out
 - need to write some logic for increasing reps and resistance - find my rules
   - 2x2
   - increase a rep until you hit strength, hypertrophy, endurance threshold
@@ -34,27 +38,24 @@ Problems to fix:
 
 
 */
-function Workout({ user, currentWorkout }) {
+function Train({ user, trainingSession }) {
   const loading = false;
-  const { exercises: dbExcercises } = currentWorkout;
+  const { exercises: dbExcercises } = trainingSession;
   // console.log({ dbExcercises });
 
-  const groupedBySets = dbExcercises.reduce((acc, ex) => {
-    const { set: group, sets: numSets } = ex;
-    const { sets: currSets = [] } = acc[group] || [];
+  const groupedExercises = dbExcercises.reduce((acc, exercise) => {
+    const { groupNumber, totalSets } = exercise;
+    const { exercises: currExercise = [] } = acc[groupNumber] || [];
     return {
       ...acc,
-      [group]: {
-        numSets,
-        sets: [...currSets, ex],
+      [groupNumber]: {
+        totalSets,
+        exercises: [...currExercise, exercise],
       },
     };
   }, {});
 
-  // console.log({ groupedBySets });
-
-  // In order for the timer to work, you need to know
-  //  - group num
+  // In order for the timer to work, you need to know  //  - group num
   //  - set num
   //  - exer
 
@@ -62,67 +63,19 @@ function Workout({ user, currentWorkout }) {
   //    - isGroupComplete()
   //    - isSetComplete()
 
-  const getFirstExercise = () => {
-    return dbExcercises[0];
-  };
-
   const [liveGroup, setLiveGroup] = useState({
     groupNum: 1,
-    setNum: 0,
-    exercise: dbExcercises[0],
-    workOrRest: 'work',
-    completedRounds: 0,
+    exerciseIndex: 0,
+    workOrRest: 'start',
+    setNumber: 1,
+    totalSets: 3,
+    exercise: groupedExercises[1].exercises[0],
   });
-  console.log(groupedBySets);
-  // setNum is really exerciseNum
-  // setsComplete 
-  const updateLiveGroup = () => {
-    const {
-      groupNum: liveGroupNum,
-      setNum: liveSetNum,
-      exercise: liveExercise,
-      workOrRest: liveWorkOrRest,
-      completedRounds: liveCompletedRounds,
-    } = liveGroup;
-    const totalNumSets = groupedBySets[liveGroupNum].numSets;
-    const isLastRound = liveCompletedRounds === totalNumSets;
 
-    const { _id: liveExcID } = liveExercise;
-    // console.log({ liveSetNum: groupedBySets[liveSetNum].sets });
-    // numExercises
-    const setLength = groupedBySets[liveGroupNum].sets.length;
-    console.log(setLength);
-    const isLastExc = groupedBySets[liveGroupNum].sets[setLength - 1]._id === liveExcID;
-    console.log(groupedBySets[liveGroupNum].sets[setLength - 1]._id);
-    const isRest = liveWorkOrRest === 'rest';
-
-    const isGroupComplete = () => {
-      console.log({
-        isLastRound,
-        isLastExc,
-        isRest,
-      });
-      return isLastRound && isLastExc && isRest;
-    };
-    // add is last group
-    const groupNum = isGroupComplete() ? liveGroupNum + 1 : liveGroupNum;
-    console.log(liveSetNum);
-    const setNum = !isRest ? liveSetNum : isLastExc ? 0 : liveSetNum + 1;
-    console.log(setNum);
-    const exercise = groupedBySets[groupNum].sets[setNum];
-    console.log(exercise);
-    const completedRounds = isRest && isLastExc ? liveCompletedRounds + 1 : liveCompletedRounds
-
-    const workOrRest = liveWorkOrRest === 'rest' ? 'work' : 'rest';
-
-    //
-
-    return setLiveGroup({
-      groupNum,
-      setNum,
-      exercise,
-      workOrRest,
-      completedRounds,
+  const updateLiveGroup = (num) => {
+    const updatedLiveGroup = executeTimerLogic(liveGroup, num, groupedExercises);
+    setLiveGroup({
+      ...updatedLiveGroup,
     });
   };
 
@@ -154,10 +107,10 @@ function Workout({ user, currentWorkout }) {
   };
 
   return (
-    <Layout user={user} currentWorkout={currentWorkout} loading={false}>
+    <Layout user={user} trainingSession={trainingSession} loading={false}>
       <h1 align="center">Workout Page</h1>
       {loading && <p>Loading login info...</p>}
-      {!currentWorkout && <p> no workout</p>}
+      {!trainingSession && <p> no workout</p>}
       <Grid container alignItems="center" spacing={5}>
         <Grid item xs={4} align="center">
           <WorkoutTimer timerProps={timerProps} />
@@ -168,7 +121,7 @@ function Workout({ user, currentWorkout }) {
         </Grid>
       </Grid>
       <br />
-      <WorkoutTable currentWorkout={currentWorkout} liveGroupNumber={liveGroup.liveGroupNumber} />
+      <WorkoutTable trainingSession={trainingSession} liveGroupNumber={liveGroup.groupNum} />
     </Layout>
   );
 }
@@ -187,8 +140,7 @@ export async function getServerSideProps({ req, res }) {
   const { user } = session;
   try {
     const { localUser } = await loginLocal({ user });
-    const { program } = await getProgram({ localUser });
-    const currentWorkout = program.workouts.find((nextWorkout) => nextWorkout.completed === false);
+    const { trainingSession } = await getTrainingSession({ localUser });
 
     if (!session || !session.user) {
       console.log('no sesssion and no user');
@@ -199,7 +151,7 @@ export async function getServerSideProps({ req, res }) {
     return {
       props: {
         user: session.user,
-        currentWorkout,
+        trainingSession,
       },
     };
   } catch (e) {
@@ -208,7 +160,7 @@ export async function getServerSideProps({ req, res }) {
   }
 }
 
-Workout.propTypes = {
+Train.propTypes = {
   user: PropTypes.shape({
     given_name: PropTypes.string,
     family_name: PropTypes.string,
@@ -222,16 +174,18 @@ Workout.propTypes = {
     sub: PropTypes.string,
   }),
 
-  currentWorkout: PropTypes.shape({
+  trainingSession: PropTypes.shape({
     exercises: PropTypes.arrayOf(
       PropTypes.shape({
         _id: PropTypes.string,
         exerciseName: PropTypes.string,
-        sets: PropTypes.number,
-        set: PropTypes.number,
-        numReps: PropTypes.number,
+        exerciseNumber: PropTypes.number,
+        totalSets: PropTypes.number,
+        groupNumber: PropTypes.number,
+        numReps: PropTypes.array,
         resistance: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
         resistanceType: PropTypes.string,
+        setsCompleted: PropTypes.number,
         complete: PropTypes.bool,
         workTime: PropTypes.number,
         restTime: PropTypes.number,
@@ -240,12 +194,12 @@ Workout.propTypes = {
   }),
 };
 
-Workout.defaultProps = {
+Train.defaultProps = {
   user: null,
-  currentWorkout: null,
+  trainingSession: null,
 };
 
-export default Workout;
+export default Train;
 
 /* Create an exercise object where each key is the ID of the exercise and it's respective properties
 

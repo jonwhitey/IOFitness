@@ -19,13 +19,7 @@ const useStyles = makeStyles((theme) => ({
 export default function ExerciseCard(props) {
   const classes = useStyles();
   // liveGroup props
-  const { 
-    groupNum,
-    setNum,
-    workOrRest,
-    exercise
-    
-  } = props;
+  const { groupNum, totalSets, setNumber, workOrRest, exercise } = props;
   const setWorkOrRest = (workOrRest) => {
     if (workOrRest === 'work') {
       return classes.work;
@@ -43,8 +37,12 @@ export default function ExerciseCard(props) {
           {exercise.exerciseName}
         </Typography>
         <Typography className={classes.pos} color="textSecondary">
-          Sets Remaining:
-          {1}
+          Set Number:
+          {setNumber}
+        </Typography>
+        <Typography className={classes.pos} color="textSecondary">
+          Total Sets:
+          {totalSets}
         </Typography>
         <Typography className={classes.pos} color="textSecondary">
           Reps:
@@ -69,21 +67,25 @@ export default function ExerciseCard(props) {
 
 ExerciseCard.propTypes = {
   groupNum: PropTypes.number,
-  setNum: PropTypes.number,
+  exerciseIndex: PropTypes.number,
+  setNumber: PropTypes.number,
+  totalSets: PropTypes.number,
   workOrRest: PropTypes.string,
   exercise: PropTypes.shape({
     exerciseName: PropTypes.string,
-    numReps: PropTypes.number,
+    numReps: PropTypes.array,
     workTime: PropTypes.number,
     restTime: PropTypes.number,
     resistance: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     resistanceType: PropTypes.string,
-  })
+  }),
 };
 ExerciseCard.defaultProps = {
-  groupNum: null,
-  setNum: null,
-  workOrRest: null,
+  groupNum: 1,
+  setNumber: 0,
+  totalSets: 3,
+  exerciseIndex: 0,
+  workOrRest: 'rest',
   exercise: {
     exerciseName: null,
     numReps: null,
@@ -91,8 +93,5 @@ ExerciseCard.defaultProps = {
     restTime: null,
     resistance: null,
     resistanceType: null,
-  }
+  },
 };
-
-
-

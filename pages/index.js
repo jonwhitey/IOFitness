@@ -1,7 +1,5 @@
 import React, { useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { useRouter } from 'next/router';
-import { route } from 'next/dist/next-server/server/router';
 import auth0 from '../lib/auth0';
 import Layout from '../components/layout';
 import { useFetchUser, UserProvider } from '../lib/user';
