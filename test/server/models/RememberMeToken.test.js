@@ -1,3 +1,4 @@
+/*
 const { assert } = require('chai');
 const User = require('../../../server/models/User');
 const randomString = require('../../../lib/randomString');
@@ -63,3 +64,4 @@ describe('RememberMe Model Method Tests:', () => {
     });
   });
 });
+*/

@@ -70,7 +70,7 @@ export default function WorkoutTable(props) {
   const { trainingSession } = props;
   const { liveGroupNumber } = props;
   // timer settings
-  console.log({ liveGroupNumber });
+  console.log({ liveGroupNumber});
   // conditionally renders set rows by returning classes.set
   const handleLiveGroupStyle = (realGroupNumber) => {
     if (realGroupNumber === liveGroupNumber) {

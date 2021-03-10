@@ -8,7 +8,7 @@ const { Schema } = mongoose;
 
 const mongoSchema = new Schema({
   uid: String,
-  sessionName: String,
+  trainingSessionName: String,
   date: Date,
   completed: Boolean,
   exercises: [
@@ -61,12 +61,48 @@ class TrainingSessionClass {
     }
   }
 
-  static async getTrainingSession(uid) {
+  static async getTrainingSession(uid, trainingSessionName) {
     try {
-      const trainingSession = await this.findOne({ uid });
+      const trainingSession = await this.findOne({ uid, trainingSessionName });
       return trainingSession;
     } catch (e) {
       console.log('could not find new program');
+      return e;
+    }
+  }
+
+  static async getLastCompletedTrainingSessionByName(uid, trainingSessionName) {
+    try {
+      const lastTrainingSession = await this.findOne({
+        uid,
+        trainingSessionName,
+        completed: true,
+      })
+        .sort({ date: -1 })
+        .lean();
+      return lastTrainingSession;
+    } catch (e) {
+      console.log('could not getTrainingSessionsByName');
+      return e;
+    }
+  }
+
+  static async completeTrainingSession(completedSessionId, nextSession) {
+    // find and update the previous session
+    console.log('TrainingSession.completeTrainingSession');
+    // console.log(completedSessionId);
+    try {
+      const sessionComplete = await this.findOneAndUpdate(
+        { _id: completedSessionId },
+        { completed: true, date: Date.now() },
+      );
+      // console.log(sessionComplete);
+      const createNextSession = await this.create(nextSession);
+      return [sessionComplete, createNextSession];
+      // create the next session
+    } catch (e) {
+      console.log('could not completeTrainingSession');
+      console.log(e);
       return e;
     }
   }

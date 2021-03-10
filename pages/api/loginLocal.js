@@ -10,7 +10,7 @@ export default async (req, res) => {
   try {
     const localUser = await LocalUser.loginLocal({ user });
     if (localUser) {
-      console.log(localUser);
+      //console.log(localUser);
       res.json({ localUser });
     }
   } catch (e) {

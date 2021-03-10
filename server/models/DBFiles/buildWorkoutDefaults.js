@@ -1,4 +1,5 @@
-import {trainingSessions} from './trainingSessions';
+import range from 'lodash.range';
+import { trainingSessions } from './trainingSessions';
 
 const lowerBody = [
   'Back Squat',
@@ -45,11 +46,12 @@ const warmup = [
   'Toes to Bar',
   'Hip Thrusters',
 ];
-
+const trueOrFalseArray = ['true', 'false'];
+const exerciseIntensityArray = ['strength', 'hypertrophy', 'endurance', 'finisher', 'warmup'];
 const movement = ['push', 'pull', 'lower body'];
-const strengthRepsArray = [3, 4, 5, 6];
-const hypertrophyRepsArray = [7, 8, 9, 10, 11, 12];
-const enduranceRepsArray = [13, 14, 15, 16, 17, 18, 19, 20];
+const strengthRepsArray = [5, 6, 7];
+const hypertrophyRepsArray = [8, 9, 10];
+const enduranceRepsArray = [12, 13, 14];
 const repsArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
 // make workouts array of objects
 
@@ -62,8 +64,8 @@ const resistanceTypeArray = [
   'crossover cords',
   'hip bands',
 ];
-const lbsArray = Array.from(Array.from(Array(Math.ceil(500 - 0)).keys()), (x) => 0 + x);
-const kgsArray = Array.from(Array.from(Array(Math.ceil((200 - 0) / 2)).keys()), (x) => 0 + x * 2);
+const lbsArray = range(0, 500, 5);
+const kgsArray = range(0, 300, 4);
 // need to figure out assistance or resistance ... going to assume assistance with loops
 const loopBandAssistanceArray = ['green', 'purple', 'black', 'red', 0];
 const loopBandResistanceArray = [0, 'red', 'black', 'purple', 'green'];
@@ -185,4 +187,6 @@ export {
   hipBandArray,
   arraySelect,
   repsArray,
+  exerciseIntensityArray,
+  trueOrFalseArray,
 };

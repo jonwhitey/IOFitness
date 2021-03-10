@@ -1,5 +1,6 @@
+/*
 const { assert } = require('chai');
-const User = require('../../../server/models/User');
+//const User = require('../../../server/models/User');
 
 describe('User Model Method Tests:', () => {
   const user1SignUp = {
@@ -41,6 +42,7 @@ describe('User Model Method Tests:', () => {
     signUpOrLogin: 'signup',
   };
 
+  /*
   let user1Id = '';
   after(async () => {
     await User.deleteOne({ email: 'jonathan.e.white@colorado.edu' });
@@ -91,3 +93,4 @@ describe('User Model Method Tests:', () => {
     });
   });
 });
+*/

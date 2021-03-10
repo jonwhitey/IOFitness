@@ -20,6 +20,8 @@ import {
   timeArray,
   resistanceTypeArray,
   arraySelect,
+  exerciseIntensityArray,
+  trueOrFalseArray,
 } from '../server/models/DBFiles/buildWorkoutDefaults';
 import { trainingSessions } from '../server/models/DBFiles/trainingSessions';
 
@@ -76,6 +78,7 @@ function BuildProgram(props) {
   const handleMultiChange = (selectedOption) => {
     setValue('reactSelect', selectedOption);
   };
+  // eslint-disable-next-line no-unused-vars
   const { newTrainingSessions } = watch();
 
   return (
@@ -155,7 +158,7 @@ function BuildProgram(props) {
                     <Grid item xs={1}>
                       <SelectField
                         label="Reps"
-                        defaultValue={exercise.numReps}
+                        defaultValue={exercise.numReps[0]}
                         name={`newTrainingSessions[${trainingSessionIndex}][${exerciseIndex}].numReps`}
                         array={arraySelect(exercise.exerciseIntensity)}
                         control={control}
@@ -180,6 +183,17 @@ function BuildProgram(props) {
                         defaultValue={exercise.restTime}
                         name={`newTrainingSessions[${trainingSessionIndex}][${exerciseIndex}].restTime`}
                         array={timeArray}
+                        control={control}
+                        handleMultiChange={handleMultiChange}
+                        errors={errors}
+                      />
+                    </Grid>
+                    <Grid item xs={1}>
+                      <SelectField
+                        label="exerciseIntensity"
+                        defaultValue={exercise.exerciseIntensity}
+                        name={`newTrainingSessions[${trainingSessionIndex}][${exerciseIndex}].exerciseIntensity`}
+                        array={exerciseIntensityArray}
                         control={control}
                         handleMultiChange={handleMultiChange}
                         errors={errors}

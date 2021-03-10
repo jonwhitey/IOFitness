@@ -53,16 +53,16 @@ function Home({ user }) {
 
 export async function getServerSideProps({ req, res }) {
   const session = await auth0.getSession(req);
-  console.log(session);
+  //console.log(session);
   if (!session || !session.user) {
     console.log('no sesssion and no user');
     return { props: { user: null } };
   }
 
-  console.log(session.user);
+  //console.log(session.user);
   const { user } = session;
   try {
-    console.log('loginLocal index.js');
+    //console.log('loginLocal index.js');
     const { localUser } = await loginLocal({ user });
 
     return {

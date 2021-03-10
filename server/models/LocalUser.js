@@ -28,6 +28,16 @@ const mongoSchema = new Schema({
     unique: false,
     default: '',
   },
+  trainingSessionOrder: {
+    type: Array,
+    unique: false,
+    default: [],
+  },
+  nextSession: {
+    type: String,
+    unique: false,
+    default: '',
+  },
   sub: {
     type: String,
     unique: true,
@@ -43,7 +53,7 @@ class LocalUserClass {
     return ['id', 'displayName', 'email', 'isAdmin'];
   }
 
-  static async findEmail({ user_id }) {
+  static async findEmail({ uid }) {
     try {
       const email = await this.findOne({ _id: uid }).select('email');
       return email;
@@ -64,15 +74,46 @@ class LocalUserClass {
     }
   }
 
+  static async updateNextSession(uid, nextSession) {
+    console.log('LocalUser.updateNextSession');
+    console.log(uid);
+    console.log(nextSession);
+    try {
+      const updatedUser = await this.findOneAndUpdate({ _id: uid }, { nextSession });
+      return updatedUser;
+    } catch (e) {
+      console.log(e);
+      return e;
+    }
+  }
+
+  static async updateTrainingSessionOrder(uid, trainingSessionOrder) {
+    console.log('LocalUser.updateTrainingSessionOrder');
+    console.log(uid);
+    console.log(trainingSessionOrder);
+
+    try {
+      const updatedUser = await this.findOneAndUpdate(
+        { _id: uid },
+        { trainingSessionOrder, nextSession: trainingSessionOrder[0] },
+      );
+      console.log(updatedUser);
+      return updatedUser;
+    } catch (e) {
+      console.log(e);
+      return e;
+    }
+  }
+
   static async loginLocal({ user }) {
     console.log('User.loginLocal');
 
     try {
-      const user_exists = await this.findOne({ sub: user.sub });
-      console.log(user_exists);
+      const userExists = await this.findOne({ sub: user.sub });
+      console.log(userExists);
 
       // if user does not exist, add user to local userDB,
-      if (user_exists === null) {
+      if (userExists === null) {
         console.log('user does not exist add new user');
         console.log('add new user');
         const newUser = await this.create(user);
@@ -80,14 +121,14 @@ class LocalUserClass {
         console.log(newUser);
         return newUser;
       }
-      if (user_exists != null && user_exists.updated_at === user.updated_at) {
+      if (userExists != null && userExists.updated_at === user.updated_at) {
         console.log('user is up to date');
-        return user_exists;
+        return userExists;
       }
       // update user
       console.log('update user');
-      await this.updateOne({ _id: user_exists._id }, { user });
-      return user_exists;
+      await this.updateOne({ _id: userExists._id }, { user });
+      return userExists;
     } catch (e) {
       console.log(e);
       return e;

@@ -4,25 +4,20 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Howl } from 'howler';
 import Grid from '@material-ui/core/Grid';
 import PropTypes from 'prop-types';
+import Button from '@material-ui/core/Button';
+import { useRouter } from 'next/router';
 import auth0 from '../lib/auth0';
 import Layout from '../components/layout';
-import { loginLocal, getTrainingSession } from '../lib/api/customer';
+import { loginLocal, getTrainingSession, completeTrainingSession } from '../lib/api/customer';
 import sound1 from '../public/sounds/hero1.mp3';
 import ExerciseCard from '../components/train/ExerciseCard';
 import WorkoutTimer from '../components/train/SessionTimer';
 import TimerControl from '../components/train/TimerControl';
 import WorkoutTable from '../components/train/SessionTable';
 import { executeTimerLogic } from '../lib/trainPage/timerLogic';
-
 /* 
 need to:
-- go back through the logic of update liveGroup and work it out
-
-
-I got it worked out. Wasn't working becuase:
-- setNum and liveSetNumber track which exercise you're on within a group, not which set you're on
-- js doesn't like the accumulators on non-initialized variables
-- needed to create another variable to track sets - called completedRounds and liveCompletedRounds
+- write a map function that creates
 
 Problems to fix:
 - need to write some logic for increasing reps and resistance - find my rules
@@ -38,10 +33,10 @@ Problems to fix:
 
 
 */
-function Train({ user, trainingSession }) {
+function Train({ user, trainingSession, localUser }) {
   const loading = false;
   const { exercises: dbExcercises } = trainingSession;
-  // console.log({ dbExcercises });
+  const router = useRouter();
 
   const groupedExercises = dbExcercises.reduce((acc, exercise) => {
     const { groupNumber, totalSets } = exercise;
@@ -54,14 +49,6 @@ function Train({ user, trainingSession }) {
       },
     };
   }, {});
-
-  // In order for the timer to work, you need to know  //  - group num
-  //  - set num
-  //  - exer
-
-  //  - next()
-  //    - isGroupComplete()
-  //    - isSetComplete()
 
   const [liveGroup, setLiveGroup] = useState({
     groupNum: 1,
@@ -106,9 +93,21 @@ function Train({ user, trainingSession }) {
     handleKey,
   };
 
+  const handleCompleteTrainingSession = async () => {
+    try {
+      const isComplete = await completeTrainingSession({ localUser, trainingSession });
+      if (isComplete) {
+        router.push({ pathname: '/train' });
+        return;
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   return (
     <Layout user={user} trainingSession={trainingSession} loading={false}>
-      <h1 align="center">Workout Page</h1>
+      <h1 align="center">{trainingSession.trainingSessionName}</h1>
       {loading && <p>Loading login info...</p>}
       {!trainingSession && <p> no workout</p>}
       <Grid container alignItems="center" spacing={5}>
@@ -120,6 +119,7 @@ function Train({ user, trainingSession }) {
           <ExerciseCard {...liveGroup} />
         </Grid>
       </Grid>
+      <Button onClick={handleCompleteTrainingSession}>Complete Session</Button>
       <br />
       <WorkoutTable trainingSession={trainingSession} liveGroupNumber={liveGroup.groupNum} />
     </Layout>
@@ -142,16 +142,27 @@ export async function getServerSideProps({ req, res }) {
     const { localUser } = await loginLocal({ user });
     const { trainingSession } = await getTrainingSession({ localUser });
 
-    if (!session || !session.user) {
-      console.log('no sesssion and no user');
+    if (!localUser) {
+      console.log('localLogin failed');
       // eslint-disable-next-line consistent-return
-      return { props: { user: null } };
+      return { props: { localUser: null } };
+    }
+    if (!trainingSession) {
+      console.log('no trainingSession found');
+      // eslint-disable-next-line consistent-return
+      return {
+        redirect: {
+          permanent: false,
+          destination: '/build-program',
+        },
+      };
     }
     // eslint-disable-next-line consistent-return
     return {
       props: {
         user: session.user,
         trainingSession,
+        localUser,
       },
     };
   } catch (e) {
@@ -175,6 +186,7 @@ Train.propTypes = {
   }),
 
   trainingSession: PropTypes.shape({
+    trainingSessionName: PropTypes.string,
     exercises: PropTypes.arrayOf(
       PropTypes.shape({
         _id: PropTypes.string,
@@ -192,11 +204,23 @@ Train.propTypes = {
       }),
     ),
   }),
+  localUser: PropTypes.shape({
+    email: PropTypes.string,
+    isAdmin: PropTypes.bool,
+    given_name: PropTypes.string,
+    family_name: PropTypes.string,
+    nickname: PropTypes.string,
+    trainingSessionOrder: PropTypes.array,
+    nextSession: PropTypes.string,
+    sub: PropTypes.string,
+    updated_at: PropTypes.string,
+  }),
 };
 
 Train.defaultProps = {
   user: null,
   trainingSession: null,
+  localUser: null,
 };
 
 export default Train;
