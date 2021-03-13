@@ -9,8 +9,7 @@ import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import { useRouter } from 'next/router';
 
-import auth0 from '../lib/auth0';
-import Layout from '../components/layout';
+import { useUser } from '@auth0/nextjs-auth0';import Layout from '../components/layout';
 import SelectField from '../components/SelectField';
 import { styleForm, styleTextField } from '../components/SharedStyles';
 import { createMultipleTrainingSessions, loginLocal } from '../lib/api/customer';
@@ -50,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function BuildProgram(props) {
-  const { user } = props;
+  const { user, error, isLoading } = useUser();
   const { localUser } = props;
   const classes = useStyles(props);
   const { register, handleSubmit, setValue, errors, control, watch } = useForm({
@@ -220,31 +219,43 @@ function BuildProgram(props) {
     </Layout>
   );
 }
-export async function getServerSideProps({ req, res }) {
-  const session = await auth0.getSession(req);
-  console.log(session);
-  if (!session || !session.user) {
-    console.log('no sesssion and no user');
-    res.writeHead(302, {
-      Location: '/',
-    });
-    res.end();
-    return;
+
+  export async function getServerSideProps({ req, res }) {
+    const { user, error, isLoading } = useUser();
+  
+    try {
+      const { localUser } = await loginLocal({ user });
+      const { trainingSession } = await getTrainingSession({ localUser });
+  
+      if (!localUser) {
+        console.log('localLogin failed');
+        // eslint-disable-next-line consistent-return
+        return { props: { localUser: null } };
+      }
+      if (!trainingSession) {
+        console.log('no trainingSession found');
+        // eslint-disable-next-line consistent-return
+        return {
+          redirect: {
+            permanent: false,
+            destination: '/build-program',
+          },
+        };
+      }
+      // eslint-disable-next-line consistent-return
+      return {
+        props: {
+          user,
+          trainingSession,
+          localUser,
+        },
+      };
+    } catch (e) {
+      // eslint-disable-next-line consistent-return
+      return { props: { user } };
+    }
   }
-  if (!req.localUser) {
-    const { user } = session;
-    const { localUser } = await loginLocal({ user });
-    console.log('GSSP localUser');
-    // eslint-disable-next-line consistent-return
-    return {
-      props: {
-        // progressions,
-        localUser,
-        user: session.user,
-      },
-    };
-  }
-}
+
 
 BuildProgram.propTypes = {
   user: PropTypes.shape({

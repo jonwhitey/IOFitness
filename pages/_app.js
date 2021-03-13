@@ -22,6 +22,8 @@ Ensures that styles are rendered by the server on initial load and client after 
 
 */
 
+import { UserProvider } from '@auth0/nextjs-auth0';
+
 export default function MyApp(props) {
   const { Component, pageProps } = props;
 
@@ -35,6 +37,7 @@ export default function MyApp(props) {
 
   return (
     <>
+      <UserProvider>
       <Head />
       <ThemeProvider theme={theme}>
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
@@ -42,6 +45,7 @@ export default function MyApp(props) {
         <Component {...pageProps} />
         <Notifier />
       </ThemeProvider>
+      </UserProvider>
     </>
   );
 }

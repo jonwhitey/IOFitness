@@ -6,9 +6,9 @@ import Grid from '@material-ui/core/Grid';
 import PropTypes from 'prop-types';
 import Button from '@material-ui/core/Button';
 import { useRouter } from 'next/router';
-import auth0 from '../lib/auth0';
-import Layout from '../components/layout';
-import { loginLocal, getTrainingSession, completeTrainingSession } from '../lib/api/customer';
+import { useUser } from '@auth0/nextjs-auth0';import Layout from '../components/layout';
+import { getTrainingSession, completeTrainingSession } from '../lib/api/customer';
+import {callLoginLocal} from '../lib/loginLocal/callLoginLocal'
 import sound1 from '../public/sounds/hero1.mp3';
 import ExerciseCard from '../components/train/ExerciseCard';
 import WorkoutTimer from '../components/train/SessionTimer';
@@ -33,10 +33,15 @@ Problems to fix:
 
 
 */
-function Train({ user, trainingSession, localUser }) {
+function Train() {
   const loading = false;
-  const { exercises: dbExcercises } = trainingSession;
   const router = useRouter();
+  const { user, error, isLoading } = useUser();
+  const {localUser, trainingSession} = callLoginLocal(user);
+  console.log("FIND ME");
+  console.log({user});
+  console.log(localUser);
+  const { exercises: dbExcercises } = trainingSession;
 
   const groupedExercises = dbExcercises.reduce((acc, exercise) => {
     const { groupNumber, totalSets } = exercise;
@@ -126,50 +131,6 @@ function Train({ user, trainingSession, localUser }) {
   );
 }
 
-export async function getServerSideProps({ req, res }) {
-  const session = await auth0.getSession(req);
-  if (!session || !session.user) {
-    console.log('no sesssion and no user');
-    res.writeHead(302, {
-      Location: '/',
-    });
-    res.end();
-    return;
-  }
-
-  const { user } = session;
-  try {
-    const { localUser } = await loginLocal({ user });
-    const { trainingSession } = await getTrainingSession({ localUser });
-
-    if (!localUser) {
-      console.log('localLogin failed');
-      // eslint-disable-next-line consistent-return
-      return { props: { localUser: null } };
-    }
-    if (!trainingSession) {
-      console.log('no trainingSession found');
-      // eslint-disable-next-line consistent-return
-      return {
-        redirect: {
-          permanent: false,
-          destination: '/build-program',
-        },
-      };
-    }
-    // eslint-disable-next-line consistent-return
-    return {
-      props: {
-        user: session.user,
-        trainingSession,
-        localUser,
-      },
-    };
-  } catch (e) {
-    // eslint-disable-next-line consistent-return
-    return { props: { user: session.user } };
-  }
-}
 
 Train.propTypes = {
   user: PropTypes.shape({
