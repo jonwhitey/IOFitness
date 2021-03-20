@@ -1,8 +1,9 @@
+import React, { useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import React from 'react';
-import { useUser } from '@auth0/nextjs-auth0';
-
+import { useUser, getSession } from '@auth0/nextjs-auth0';
 import Layout from '../components/layout';
+
+
 const useStyles = makeStyles((theme) => ({
   button: {
     margin: theme.spacing(1),
@@ -11,11 +12,16 @@ const useStyles = makeStyles((theme) => ({
     display: 'none',
   },
 }));
-export default function Home() {
-  const { user, error, isLoading } = useUser();
 
+function Home1(props) {
+  const classes = useStyles();
+  const loading = false;
+  const { localUser, trainingSession } = props;
+
+  const { user, error, isLoading } = useUser();
+  
   return (
-    <Layout>
+    <Layout user={user}>
       <h1>Next.js and Auth0 Example</h1>
 
       {isLoading && <p>Loading login info...</p>}
@@ -37,7 +43,7 @@ export default function Home() {
       {!isLoading && !error && !user && (
         <>
           <p>
-            To test the login click in <i>Login</i>
+            To test the login click in <a href="/api/auth/login">Login</a>
           </p>
           <p>
             Once you have logged in you should be able to click in <i>Protected Page</i> and <i>Logout</i>
@@ -48,5 +54,8 @@ export default function Home() {
   );
 }
 
-    
 
+
+
+
+export default Home1;

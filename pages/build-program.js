@@ -9,7 +9,9 @@ import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import { useRouter } from 'next/router';
 
-import { useUser } from '@auth0/nextjs-auth0';import Layout from '../components/layout';
+import { useUser, withPageAuthRequired } from '@auth0/nextjs-auth0';
+import Layout from '../components/layout';
+import {serverSideHandler} from '../lib/serverSideHandler/serverSideHandler';
 import SelectField from '../components/SelectField';
 import { styleForm, styleTextField } from '../components/SharedStyles';
 import { createMultipleTrainingSessions, loginLocal } from '../lib/api/customer';
@@ -220,41 +222,10 @@ function BuildProgram(props) {
   );
 }
 
-  export async function getServerSideProps({ req, res }) {
-    const { user, error, isLoading } = useUser();
-  
-    try {
-      const { localUser } = await loginLocal({ user });
-      const { trainingSession } = await getTrainingSession({ localUser });
-  
-      if (!localUser) {
-        console.log('localLogin failed');
-        // eslint-disable-next-line consistent-return
-        return { props: { localUser: null } };
-      }
-      if (!trainingSession) {
-        console.log('no trainingSession found');
-        // eslint-disable-next-line consistent-return
-        return {
-          redirect: {
-            permanent: false,
-            destination: '/build-program',
-          },
-        };
-      }
-      // eslint-disable-next-line consistent-return
-      return {
-        props: {
-          user,
-          trainingSession,
-          localUser,
-        },
-      };
-    } catch (e) {
-      // eslint-disable-next-line consistent-return
-      return { props: { user } };
-    }
-  }
+export async function getServerSideProps({ req, res }) {  
+  withPageAuthRequired();
+  return serverSideHandler(req, res);
+}
 
 
 BuildProgram.propTypes = {

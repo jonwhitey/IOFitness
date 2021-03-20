@@ -26,6 +26,7 @@ import { UserProvider } from '@auth0/nextjs-auth0';
 
 export default function MyApp(props) {
   const { Component, pageProps } = props;
+  const { user } = pageProps;
 
   React.useEffect(() => {
     // Remove the server-side injected CSS.
@@ -37,7 +38,7 @@ export default function MyApp(props) {
 
   return (
     <>
-      <UserProvider>
+      <UserProvider user={user}>
       <Head />
       <ThemeProvider theme={theme}>
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}

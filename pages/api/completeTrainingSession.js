@@ -30,10 +30,7 @@ export default async (req, res) => {
     //console.log(lastCompletedSession);
 
     const nextTrainingSession = analyzeTrainingSessions(lastCompletedSession, trainingSession);
-
-    // if it's the first training session, log complete and create the same session
-    //console.log('trainingSessionId');
-    //console.log(trainingSessionId);
+    
     const completeFirstTrainingSession = await TrainingSession.completeTrainingSession(
       trainingSessionId,
       nextTrainingSession,

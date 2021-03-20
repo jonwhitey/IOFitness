@@ -517,7 +517,7 @@ const workout2 = [
     totalSets: 3,
     numReps: [14, 14, 14],
     setsCompleted: 0,
-    resistance: [14, 14, 14],
+    resistance: 24,
     resistanceType: 'kgs',
     exerciseType: 'pull',
     exerciseIntensity: 'endurance',

@@ -15,20 +15,23 @@ const { repeatSession } = require('../../../lib/analyzeTrainingSession/functions
 const {
   compareTrainingSessions,
 } = require('../../../lib/analyzeTrainingSession/functions/compareTrainingSessions');
+
+const {compileSessionExercises} = require('../../../lib/analyzeTrainingSession/functions/compileSessionExercises');
 const {
   trainingSession1,
   trainingSession2,
   progressedTrainingSession,
   partiallyProgressedTrainingSession,
+  fullWorkoutWithIds,
+  progressedFullWorkoutWithIds,
+  partiallyProgressedExercisesWithIds,
+  squatWarmupWithIds,
+  unprogressedExercisesWithIds,
+  unprogressedLoopBandExerciseWithId,
+  progressedLoopBandExerciseWithId,
 } = require('./testSetup/analyzeTSessionData');
-const {
-  squatWarmup,
-  unprogressedExercises,
-  fullWorkout1,
-  progressedFullWorkout1,
-  unprogressedLoopBandExercise,
-  progressedLoopBandExercise,
-} = require('../../../server/models/DBFiles/trainingSessions');
+
+const {squatWarmup, fullWorkout1} = require('../../../server/models/DBFiles/trainingSessions')
 
 describe('analyzeTrainingSession unit tests', () => {
   // setup
@@ -88,7 +91,7 @@ describe('analyzeTrainingSession unit tests', () => {
       // set up
       const completedSession = progressedTrainingSession;
       const lastCompletedSession = trainingSession2;
-      const expectedResult = squatWarmup;
+      const expectedResult = squatWarmupWithIds;
 
       // exercise
       const result = compareTrainingSessions(completedSession, lastCompletedSession);
@@ -100,7 +103,7 @@ describe('analyzeTrainingSession unit tests', () => {
     it('takes a partially progressed exercise array and returns exercises that have not been progressed and the warmup', async () => {
       const completedSession = partiallyProgressedTrainingSession;
       const lastCompletedSession = trainingSession2;
-      const expectedResult = squatWarmup.concat(unprogressedExercises);
+      const expectedResult = squatWarmupWithIds.concat(unprogressedExercisesWithIds);
 
       // exercise
       const result = compareTrainingSessions(completedSession, lastCompletedSession);
@@ -111,9 +114,10 @@ describe('analyzeTrainingSession unit tests', () => {
   describe('increaseRepsOrResistance', () => {
     it('correctly increases loopband reistance', async () => {
       // set up
-      const exercisesToProgress = unprogressedLoopBandExercise;
-      const expectedResult = progressedLoopBandExercise;
-
+      const exercisesToProgress = unprogressedLoopBandExerciseWithId;
+      const expectedResult = progressedLoopBandExerciseWithId;
+      console.log('EXERCISE TO PROGRESS');
+      console.log(exercisesToProgress);
       // exercise
       const result = increaseRepsOrResistance(exercisesToProgress);
       // verify
@@ -124,8 +128,8 @@ describe('analyzeTrainingSession unit tests', () => {
   describe('progressExercises', () => {
     it('correctly progresses a list of exercsises', async () => {
       // set up
-      const exercisesToProgress = fullWorkout1;
-      const expectedResult = progressedFullWorkout1;
+      const exercisesToProgress = fullWorkoutWithIds;
+      const expectedResult = progressedFullWorkoutWithIds;
 
       // exercise
       const result = progressExercises(exercisesToProgress);
@@ -133,4 +137,20 @@ describe('analyzeTrainingSession unit tests', () => {
       assert.deepEqual(result, expectedResult);
     });
   });
+
+  describe('compileSessionExercises', () => {
+    it('correctly compiles the list of exercises', async () => {
+      // fullworkout
+      // warmup
+      const fullWorkoutExercises = trainingSession1.exercises;
+      const warmup = squatWarmup;
+      // print the full workout
+
+      const expecetedResult = fullWorkoutExercises;
+
+      const result = compileSessionExercises(trainingSession1, warmup);
+
+      assert.deepEqual(result, expecetedResult);
+    })
+  })
 });

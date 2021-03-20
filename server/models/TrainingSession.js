@@ -62,10 +62,12 @@ class TrainingSessionClass {
   }
 
   static async getTrainingSession(uid, trainingSessionName) {
+    console.log('TrainingSession.getTrainingSession')
     try {
-      const trainingSession = await this.findOne({ uid, trainingSessionName });
+      const trainingSession = await this.findOne({ uid, trainingSessionName, 'completed': false }, ).sort({'date': -1}).lean();
       return trainingSession;
     } catch (e) {
+      console.log(e);
       console.log('could not find new program');
       return e;
     }
@@ -90,13 +92,15 @@ class TrainingSessionClass {
   static async completeTrainingSession(completedSessionId, nextSession) {
     // find and update the previous session
     console.log('TrainingSession.completeTrainingSession');
-    // console.log(completedSessionId);
+    console.log({completedSessionId});
     try {
       const sessionComplete = await this.findOneAndUpdate(
         { _id: completedSessionId },
         { completed: true, date: Date.now() },
       );
       // console.log(sessionComplete);
+      console.log(nextSession.exercises[8]);
+      console.log(nextSession.completed);
       const createNextSession = await this.create(nextSession);
       return [sessionComplete, createNextSession];
       // create the next session

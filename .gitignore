@@ -10,6 +10,7 @@ npm-debug.log
 .vscode/
 node_modules/
 .coverage
+.env.local
 .env
 .next
 server/models/.Exercises.js

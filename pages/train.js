@@ -6,15 +6,17 @@ import Grid from '@material-ui/core/Grid';
 import PropTypes from 'prop-types';
 import Button from '@material-ui/core/Button';
 import { useRouter } from 'next/router';
-import { useUser } from '@auth0/nextjs-auth0';import Layout from '../components/layout';
-import { getTrainingSession, completeTrainingSession } from '../lib/api/customer';
-import {callLoginLocal} from '../lib/loginLocal/callLoginLocal'
+import Layout from '../components/layout';
+import { useUser, withPageAuthRequired } from '@auth0/nextjs-auth0';
+import { completeTrainingSession } from '../lib/api/customer';
 import sound1 from '../public/sounds/hero1.mp3';
 import ExerciseCard from '../components/train/ExerciseCard';
 import WorkoutTimer from '../components/train/SessionTimer';
 import TimerControl from '../components/train/TimerControl';
 import WorkoutTable from '../components/train/SessionTable';
 import { executeTimerLogic } from '../lib/trainPage/timerLogic';
+import {serverSideHandler} from '../lib/serverSideHandler/serverSideHandler';
+
 /* 
 need to:
 - write a map function that creates
@@ -33,14 +35,15 @@ Problems to fix:
 
 
 */
-function Train() {
+function Train(props) {
+  console.log("TRAIN PAGE");
   const loading = false;
   const router = useRouter();
+  
   const { user, error, isLoading } = useUser();
-  const {localUser, trainingSession} = callLoginLocal(user);
-  console.log("FIND ME");
-  console.log({user});
-  console.log(localUser);
+  const {localUser, trainingSession} = props;
+  console.log(trainingSession);
+
   const { exercises: dbExcercises } = trainingSession;
 
   const groupedExercises = dbExcercises.reduce((acc, exercise) => {
@@ -129,6 +132,12 @@ function Train() {
       <WorkoutTable trainingSession={trainingSession} liveGroupNumber={liveGroup.groupNum} />
     </Layout>
   );
+}
+
+
+export async function getServerSideProps({ req, res }) {  
+  withPageAuthRequired();
+  return serverSideHandler(req, res);
 }
 
 
