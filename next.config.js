@@ -1,6 +1,8 @@
 // next.config.js
 module.exports = {
+  poweredByHeader: false,
   target: 'serverless',
+  // imports mp3's
   webpack(config, options) {
     const { isServer } = options;
     config.module.rules.push({

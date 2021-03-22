@@ -7,6 +7,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import Checkbox from '@material-ui/core/Checkbox';
 
 const useStyles = makeStyles((theme) => ({
   1: {
@@ -79,19 +80,23 @@ export default function WorkoutTable(props) {
     return classes[realGroupNumber];
   };
 
+  // handle change... add to completedExerciseArray if changed to true
+  // remove from completedExerciseArray if false
+  // check all option
+
+  
+
   return (
     <TableContainer component={Paper}>
       <Table className={classes.table} aria-label="simple table">
         <TableHead>
           <TableRow>
+            <TableCell align="right">Complete</TableCell>
             <TableCell>Group Number</TableCell>
             <TableCell>Exercise Name</TableCell>
             <TableCell align="right">Total Sets</TableCell>
             <TableCell align="right">Reps</TableCell>
             <TableCell align="right">Resistance</TableCell>
-            <TableCell align="right">Complete</TableCell>
-            <TableCell>Work Time</TableCell>
-            <TableCell>Rest Time</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -100,6 +105,14 @@ export default function WorkoutTable(props) {
               key={exercise.exerciseName}
               className={handleLiveGroupStyle(exercise.groupNumber)}
             >
+              <TableCell align="right" className={classes.tCell}>
+                <Checkbox
+                checked={false}
+                onChange={handleChange(exercise.exerciseName)}
+                name="checkedF"
+                indeterminate
+                />    
+              </TableCell>
               <TableCell component="th" scope="row" className={classes.tCell}>
                 {exercise.groupNumber}
               </TableCell>
@@ -114,15 +127,6 @@ export default function WorkoutTable(props) {
               </TableCell>
               <TableCell align="right" className={classes.tCell}>
                 {exercise.resistance}
-              </TableCell>
-              <TableCell align="right" className={classes.tCell}>
-                {exercise.complete}
-              </TableCell>
-              <TableCell component="th" scope="row" className={classes.tCell}>
-                {exercise.workTime}
-              </TableCell>
-              <TableCell component="th" scope="row" className={classes.tCell}>
-                {exercise.restTime}
               </TableCell>
             </TableRow>
           ))}

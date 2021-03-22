@@ -42,7 +42,6 @@ function Train(props) {
   
   const { user, error, isLoading } = useUser();
   const {localUser, trainingSession} = props;
-  console.log(trainingSession);
 
   const { exercises: dbExcercises } = trainingSession;
 
@@ -67,13 +66,20 @@ function Train(props) {
     exercise: groupedExercises[1].exercises[0],
   });
 
+  const initExerciseCompletionMap = new Map(trainingSession.exercises.map(obj => [obj.exerciseName, obj.complete]));
+  console.log({initExerciseCompletionMap});
+
+
+  /*
+  const [exerciseCompletionMap, setExerciseCompletionMap] = useState(initExerciseCompletionMap);
+
   const updateLiveGroup = (num) => {
     const updatedLiveGroup = executeTimerLogic(liveGroup, num, groupedExercises);
     setLiveGroup({
       ...updatedLiveGroup,
     });
   };
-
+  */
   const [key, setKey] = useState(1);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -100,7 +106,7 @@ function Train(props) {
     updateLiveGroup,
     handleKey,
   };
-
+  
   const handleCompleteTrainingSession = async () => {
     try {
       const isComplete = await completeTrainingSession({ localUser, trainingSession });
@@ -129,7 +135,7 @@ function Train(props) {
       </Grid>
       <Button onClick={handleCompleteTrainingSession}>Complete Session</Button>
       <br />
-      <WorkoutTable trainingSession={trainingSession} liveGroupNumber={liveGroup.groupNum} />
+      <WorkoutTable trainingSession={trainingSession} liveGroupNumber={liveGroup.groupNum} {...exerciseCompletionMap} setExerciseCompletionMap={setExerciseCompletionMap}/>
     </Layout>
   );
 }

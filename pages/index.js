@@ -1,21 +1,13 @@
-import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { useUser } from '@auth0/nextjs-auth0';
 
 import Layout from '../components/layout';
-const useStyles = makeStyles((theme) => ({
-  button: {
-    margin: theme.spacing(1),
-  },
-  input: {
-    display: 'none',
-  },
-}));
-export default function Home() {
+
+export default function Index() {
   const { user, error, isLoading } = useUser();
 
   return (
-    <Layout>
+    <Layout user={user}>
       <h1>Next.js and Auth0 Example</h1>
 
       {isLoading && <p>Loading login info...</p>}
@@ -47,6 +39,3 @@ export default function Home() {
     </Layout>
   );
 }
-
-    
-
