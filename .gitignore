@@ -4,7 +4,6 @@ tmp/
 npm-debug.log
 .DS_Store
 *report
-
 .build/*
 .next
 .vscode/
@@ -16,3 +15,5 @@ node_modules/
 server/models/.Exercises.js
 server/models/.UserProfiles.js
 .todo
+*.log
+.env
