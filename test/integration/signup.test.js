@@ -1,3 +1,4 @@
+/*
 const puppeteer = require('puppeteer');
 const { assert } = require('chai');
 
@@ -15,7 +16,7 @@ describe('Puppeteer Sign Up and Log In Flow', () => {
 
   it('takes input and creates a new user', async () => {
     console.log('visiting page');
-    await page.goto('http://localhost:3000/signup' /* { waitUntil: 'networkidle0' } */);
+    await page.goto('http://localhost:3000/signup' /* { waitUntil: 'networkidle0' } );
     console.log('at page');
     // Type a keyword into the search box and press enter
     await page.type('#firstName', 'Jonathan');
@@ -118,3 +119,4 @@ describe('Puppeteer Sign Up and Log In Flow', () => {
     await browser.close();
   });
 });
+*/

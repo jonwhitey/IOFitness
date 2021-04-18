@@ -1,13 +1,9 @@
-const Enzyme = require('enzyme');
-const Adapter = require('enzyme-adapter-react-16');
-
+/*
 const { JSDOM } = require('jsdom');
 const mongoose = require('mongoose');
-const User = require('../server/models/User');
+//const User = require('../server/models/User');
 
 require('dotenv').config();
-
-Enzyme.configure({ adapter: new Adapter() });
 
 const dev = process.env.NODE_ENV !== 'production';
 
@@ -20,10 +16,10 @@ const options = {
   useUnifiedTopology: true,
 };
 
-before(async function() {
+before(async function () {
   await mongoose.connect(MONGO_URL, options);
   console.log('Mongoose connection open');
-  await User.deleteOne({ email: 'jonathan.e.white@colorado.edu' });
+  //await User.deleteOne({ email: 'jonathan.e.white@colorado.edu' });
   console.log('User deleted');
 });
 
@@ -42,10 +38,11 @@ global.document = window.document;
 global.navigator = {
   userAgent: 'node.js',
 };
-global.requestAnimationFrame = function(callback) {
+global.requestAnimationFrame = function (callback) {
   return setTimeout(callback, 0);
 };
-global.cancelAnimationFrame = function(id) {
+global.cancelAnimationFrame = function (id) {
   clearTimeout(id);
 };
 copyProps(window, global);
+*/

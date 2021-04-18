@@ -70,14 +70,14 @@ function Header({ user, loading, hideHeader }) {
                       </Link>
                     </MenuItem>
                     <MenuItem id="logout-button">
-                      <Link href="/api/logout">
+                      <Link href="/api/auth/logout">
                         <a style={{ color: '#000' }}>Logout</a>
                       </Link>
                     </MenuItem>
                   </Menu>
                 </div>
               ) : (
-                <Link href="/api/login">
+                <Link href="/api/auth/login">
                   <a style={{ margin: '0px 20px 0px auto' }}>Log in</a>
                 </Link>
               ))}

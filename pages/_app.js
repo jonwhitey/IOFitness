@@ -22,8 +22,11 @@ Ensures that styles are rendered by the server on initial load and client after 
 
 */
 
+import { UserProvider } from '@auth0/nextjs-auth0';
+
 export default function MyApp(props) {
   const { Component, pageProps } = props;
+  const { user } = pageProps;
 
   React.useEffect(() => {
     // Remove the server-side injected CSS.
@@ -35,13 +38,15 @@ export default function MyApp(props) {
 
   return (
     <>
-      <Head />
-      <ThemeProvider theme={theme}>
-        {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-        <CssBaseline />
-        <Component {...pageProps} />
-        <Notifier />
-      </ThemeProvider>
+      <UserProvider user={user}>
+        <Head />
+        <ThemeProvider theme={theme}>
+          {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+          <CssBaseline />
+          <Component {...pageProps} />
+          <Notifier />
+        </ThemeProvider>
+      </UserProvider>
     </>
   );
 }

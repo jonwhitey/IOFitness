@@ -33,7 +33,7 @@ SelectField.propTypes = {
     displayName: PropTypes.string,
     email: PropTypes.string.isRequired,
   }),
-  label: PropTypes.string.isRequired,
+  label: PropTypes.string,
   defaultValue: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   name: PropTypes.string.isRequired,
   array: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])).isRequired,

@@ -7,6 +7,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import Checkbox from '@material-ui/core/Checkbox';
 
 const useStyles = makeStyles((theme) => ({
   1: {
@@ -63,14 +64,17 @@ const useStyles = makeStyles((theme) => ({
   tCell: {
     color: 'white',
   },
+  TableRow: {
+    height: '20px',
+  }
 }));
-export default function WorkoutTable(props) {
+export default function SessionTable(props) {
   const classes = useStyles();
   // liveGroup props
   const { trainingSession } = props;
   const { liveGroupNumber } = props;
   // timer settings
-  console.log({ liveGroupNumber });
+  console.log({ liveGroupNumber});
   // conditionally renders set rows by returning classes.set
   const handleLiveGroupStyle = (realGroupNumber) => {
     if (realGroupNumber === liveGroupNumber) {
@@ -79,19 +83,24 @@ export default function WorkoutTable(props) {
     return classes[realGroupNumber];
   };
 
+  // handle change... add to completedExerciseArray if changed to true
+  // remove from completedExerciseArray if false
+  // check all option
+
+  const handleChange = {};
+     
+
   return (
     <TableContainer component={Paper}>
       <Table className={classes.table} aria-label="simple table">
         <TableHead>
           <TableRow>
+            <TableCell align="right">Complete</TableCell>
             <TableCell>Group Number</TableCell>
             <TableCell>Exercise Name</TableCell>
             <TableCell align="right">Total Sets</TableCell>
             <TableCell align="right">Reps</TableCell>
             <TableCell align="right">Resistance</TableCell>
-            <TableCell align="right">Complete</TableCell>
-            <TableCell>Work Time</TableCell>
-            <TableCell>Rest Time</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -100,6 +109,14 @@ export default function WorkoutTable(props) {
               key={exercise.exerciseName}
               className={handleLiveGroupStyle(exercise.groupNumber)}
             >
+              <TableCell align="right" className={classes.tCell}>
+                <Checkbox
+                checked={false}
+                onChange={handleChange}
+                name="checkedF"
+                indeterminate
+                />    
+              </TableCell>
               <TableCell component="th" scope="row" className={classes.tCell}>
                 {exercise.groupNumber}
               </TableCell>
@@ -115,15 +132,6 @@ export default function WorkoutTable(props) {
               <TableCell align="right" className={classes.tCell}>
                 {exercise.resistance}
               </TableCell>
-              <TableCell align="right" className={classes.tCell}>
-                {exercise.complete}
-              </TableCell>
-              <TableCell component="th" scope="row" className={classes.tCell}>
-                {exercise.workTime}
-              </TableCell>
-              <TableCell component="th" scope="row" className={classes.tCell}>
-                {exercise.restTime}
-              </TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -131,12 +139,11 @@ export default function WorkoutTable(props) {
     </TableContainer>
   );
 }
-WorkoutTable.propTypes = {
+SessionTable.propTypes = {
   liveGroupNumber: PropTypes.number,
   trainingSession: PropTypes.shape({
     exercises: PropTypes.arrayOf(
       PropTypes.shape({
-        _id: PropTypes.string,
         exerciseNumber: PropTypes.number,
         exerciseName: PropTypes.string,
         totalSets: PropTypes.number,
@@ -153,7 +160,7 @@ WorkoutTable.propTypes = {
   }),
 };
 
-WorkoutTable.defaultProps = {
+SessionTable.defaultProps = {
   liveGroupNumber: 0,
   trainingSession: null,
 };

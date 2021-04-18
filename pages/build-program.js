@@ -9,8 +9,9 @@ import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import { useRouter } from 'next/router';
 
-import auth0 from '../lib/auth0';
+import { useUser, withPageAuthRequired } from '@auth0/nextjs-auth0';
 import Layout from '../components/layout';
+import {serverSideHandler} from '../lib/serverSideHandler/serverSideHandler';
 import SelectField from '../components/SelectField';
 import { styleForm, styleTextField } from '../components/SharedStyles';
 import { createMultipleTrainingSessions, loginLocal } from '../lib/api/customer';
@@ -20,6 +21,8 @@ import {
   timeArray,
   resistanceTypeArray,
   arraySelect,
+  exerciseIntensityArray,
+  trueOrFalseArray,
 } from '../server/models/DBFiles/buildWorkoutDefaults';
 import { trainingSessions } from '../server/models/DBFiles/trainingSessions';
 
@@ -48,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function BuildProgram(props) {
-  const { user } = props;
+  const { user, error, isLoading } = useUser();
   const { localUser } = props;
   const classes = useStyles(props);
   const { register, handleSubmit, setValue, errors, control, watch } = useForm({
@@ -57,7 +60,7 @@ function BuildProgram(props) {
       newTrainingSessions: trainingSessions,
     },
   });
-
+  
   const router = useRouter();
 
   const onSubmit = async (data) => {
@@ -76,6 +79,7 @@ function BuildProgram(props) {
   const handleMultiChange = (selectedOption) => {
     setValue('reactSelect', selectedOption);
   };
+  // eslint-disable-next-line no-unused-vars
   const { newTrainingSessions } = watch();
 
   return (
@@ -84,7 +88,7 @@ function BuildProgram(props) {
       <form style={styleForm} onSubmit={handleSubmit(onSubmit)}>
         <Grid container className={classes.root} spacing={2}>
           {trainingSessions.map((trainingSession, trainingSessionIndex) => (
-            <Grid item xs={12}>
+            <Grid item xs={12} key={trainingSessionIndex}>
               <Paper align="center" className={classes.paper}>
                 <TextField
                   style={styleTextField}
@@ -96,8 +100,8 @@ function BuildProgram(props) {
                   inputRef={register}
                 />
                 {trainingSession.map((exercise, exerciseIndex) => (
-                  <Grid container className={classes.root} spacing={0}>
-                    <Grid item xs={1}>
+                  <Grid container className={classes.root} spacing={0} key={exerciseIndex}>
+                    <Grid item xs={1} >
                       <SelectField
                         label="Group"
                         defaultValue={exercise.groupNumber}
@@ -119,7 +123,7 @@ function BuildProgram(props) {
                         errors={errors}
                       />
                     </Grid>
-                    <Grid item xs={3}>
+                    <Grid item xs={3} >
                       <SelectField
                         label="Type"
                         defaultValue={exercise.resistanceType}
@@ -130,7 +134,7 @@ function BuildProgram(props) {
                         errors={errors}
                       />
                     </Grid>
-                    <Grid item xs={1}>
+                    <Grid item xs={1} >
                       <SelectField
                         label="Resistance"
                         defaultValue={exercise.resistance}
@@ -141,7 +145,7 @@ function BuildProgram(props) {
                         errors={errors}
                       />
                     </Grid>
-                    <Grid item xs={1}>
+                    <Grid item xs={1} >
                       <SelectField
                         label="totalSets"
                         defaultValue={exercise.totalSets}
@@ -163,34 +167,26 @@ function BuildProgram(props) {
                         errors={errors}
                       />
                     </Grid>
-                    <Grid item xs={1}>
+                    <Grid item xs={1} key={exerciseIndex+.9}>
                       <SelectField
-                        label="Work"
-                        defaultValue={exercise.workTime}
-                        name={`newTrainingSessions[${trainingSessionIndex}][${exerciseIndex}].workTime`}
-                        array={timeArray}
+                        label="exerciseIntensity"
+                        defaultValue={exercise.exerciseIntensity}
+                        name={`newTrainingSessions[${trainingSessionIndex}][${exerciseIndex}].exerciseIntensity`}
+                        array={exerciseIntensityArray}
                         control={control}
                         handleMultiChange={handleMultiChange}
                         errors={errors}
                       />
                     </Grid>
-                    <Grid item xs={1}>
-                      <SelectField
-                        label="Rest"
-                        defaultValue={exercise.restTime}
-                        name={`newTrainingSessions[${trainingSessionIndex}][${exerciseIndex}].restTime`}
-                        array={timeArray}
-                        control={control}
-                        handleMultiChange={handleMultiChange}
-                        errors={errors}
-                      />
-                    </Grid>
+                    <input type="hidden" ref={register({setValueAs: v => parseInt(v),})} name={`newTrainingSessions[${trainingSessionIndex}][${exerciseIndex}].workTime`} />
+                    <input type="hidden" ref={register({setValueAs: v => parseInt(v),})} name={`newTrainingSessions[${trainingSessionIndex}][${exerciseIndex}].restTime`} />
                   </Grid>
                 ))}
               </Paper>
             </Grid>
           ))}
         </Grid>
+        
         <Button
           type="submit"
           className={classes.button}
@@ -206,31 +202,14 @@ function BuildProgram(props) {
     </Layout>
   );
 }
-export async function getServerSideProps({ req, res }) {
-  const session = await auth0.getSession(req);
-  console.log(session);
-  if (!session || !session.user) {
-    console.log('no sesssion and no user');
-    res.writeHead(302, {
-      Location: '/',
-    });
-    res.end();
-    return;
-  }
-  if (!req.localUser) {
-    const { user } = session;
-    const { localUser } = await loginLocal({ user });
-    console.log('GSSP localUser');
-    // eslint-disable-next-line consistent-return
-    return {
-      props: {
-        // progressions,
-        localUser,
-        user: session.user,
-      },
-    };
-  }
+
+export async function getServerSideProps({ req, res }) {  
+  withPageAuthRequired();
+  console.log('build-program getServerSideProps');
+  console.log(req.props);
+  return serverSideHandler(req, res);
 }
+
 
 BuildProgram.propTypes = {
   user: PropTypes.shape({
@@ -256,3 +235,27 @@ BuildProgram.defaultProps = {
 };
 
 export default BuildProgram;
+/*
+<Grid item xs={1}>
+                      <SelectField
+                        label="Work"
+                        defaultValue={exercise.workTime}
+                        name={`newTrainingSessions[${trainingSessionIndex}][${exerciseIndex}].workTime`}
+                        array={timeArray}
+                        control={control}
+                        handleMultiChange={handleMultiChange}
+                        errors={errors}
+                      />
+                    </Grid>
+                    <Grid item xs={1} key={exerciseIndex+.8}>
+                      <SelectField
+                        label="Rest"
+                        defaultValue={exercise.restTime}
+                        name={`newTrainingSessions[${trainingSessionIndex}][${exerciseIndex}].restTime`}
+                        array={timeArray}
+                        control={control}
+                        handleMultiChange={handleMultiChange}
+                        errors={errors}
+                      />
+                    </Grid>
+                    */

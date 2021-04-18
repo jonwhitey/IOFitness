@@ -73,7 +73,7 @@ ExerciseCard.propTypes = {
   workOrRest: PropTypes.string,
   exercise: PropTypes.shape({
     exerciseName: PropTypes.string,
-    numReps: PropTypes.array,
+    numReps: PropTypes.number,
     workTime: PropTypes.number,
     restTime: PropTypes.number,
     resistance: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),

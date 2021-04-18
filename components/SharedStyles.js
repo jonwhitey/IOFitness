@@ -1,3 +1,14 @@
+/*
+https://css-tricks.com/inheriting-box-sizing-probably-slightly-better-best-practice/
+sets all components to border-box, the new box sizing format that makes the width of the component include the padding and bordergit  
+
+html {
+  box-sizing: border-box;
+}
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+*/
 const styleBigAvatar = {
   width: '80px',
   height: '80px',

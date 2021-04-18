@@ -1,3 +1,4 @@
+/*
 const puppeteer = require('puppeteer');
 const { assert } = require('chai');
 const { before, after } = require('mocha');
@@ -43,3 +44,4 @@ describe('Landing Page', () => {
     await browser.close();
   });
 });
+*/

@@ -1,29 +1,29 @@
+
 /* eslint-disable no-nested-ternary */
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Howl } from 'howler';
 import Grid from '@material-ui/core/Grid';
 import PropTypes from 'prop-types';
-import auth0 from '../lib/auth0';
+import Button from '@material-ui/core/Button';
+import { useRouter } from 'next/router';
 import Layout from '../components/layout';
-import { loginLocal, getTrainingSession } from '../lib/api/customer';
+import { useUser, withPageAuthRequired } from '@auth0/nextjs-auth0';
+import { completeTrainingSession } from '../lib/api/customer';
 import sound1 from '../public/sounds/hero1.mp3';
 import ExerciseCard from '../components/train/ExerciseCard';
 import WorkoutTimer from '../components/train/SessionTimer';
 import TimerControl from '../components/train/TimerControl';
 import WorkoutTable from '../components/train/SessionTable';
+import SessionTableForm from '../components/train/SessionTableForm';
 import { executeTimerLogic } from '../lib/trainPage/timerLogic';
-
+import {serverSideHandler} from '../lib/serverSideHandler/serverSideHandler';
+import { useForm, Controller, useFieldArray } from 'react-hook-form';
+import { DevTool } from '@hookform/devtools';
 /* 
 need to:
-- go back through the logic of update liveGroup and work it out
-
-
-I got it worked out. Wasn't working becuase:
-- setNum and liveSetNumber track which exercise you're on within a group, not which set you're on
-- js doesn't like the accumulators on non-initialized variables
-- needed to create another variable to track sets - called completedRounds and liveCompletedRounds
-
+- write a map function that creates
+  
 Problems to fix:
 - need to write some logic for increasing reps and resistance - find my rules
   - 2x2
@@ -38,10 +38,15 @@ Problems to fix:
 
 
 */
-function Train({ user, trainingSession }) {
+function Train(props) {
+  console.log("TRAIN PAGE");
   const loading = false;
+  const router = useRouter();
+  
+  const { user, error, isLoading } = useUser();
+  const {localUser, trainingSession} = props;
+
   const { exercises: dbExcercises } = trainingSession;
-  // console.log({ dbExcercises });
 
   const groupedExercises = dbExcercises.reduce((acc, exercise) => {
     const { groupNumber, totalSets } = exercise;
@@ -55,14 +60,6 @@ function Train({ user, trainingSession }) {
     };
   }, {});
 
-  // In order for the timer to work, you need to know  //  - group num
-  //  - set num
-  //  - exer
-
-  //  - next()
-  //    - isGroupComplete()
-  //    - isSetComplete()
-
   const [liveGroup, setLiveGroup] = useState({
     groupNum: 1,
     exerciseIndex: 0,
@@ -72,11 +69,22 @@ function Train({ user, trainingSession }) {
     exercise: groupedExercises[1].exercises[0],
   });
 
+  /*
+  const initExerciseCompletionMap = new Map(trainingSession.exercises.map(obj => [obj.exerciseName, obj.complete]));
+  console.log({initExerciseCompletionMap});
+  */
+
+  /*
+  const [exerciseCompletionMap, setExerciseCompletionMap] = useState(initExerciseCompletionMap);
+  */
+
   const updateLiveGroup = (num) => {
+    console.log('updateLiveGroup')
     const updatedLiveGroup = executeTimerLogic(liveGroup, num, groupedExercises);
     setLiveGroup({
       ...updatedLiveGroup,
     });
+    console.log(updatedLiveGroup);
   };
 
   const [key, setKey] = useState(1);
@@ -108,7 +116,7 @@ function Train({ user, trainingSession }) {
 
   return (
     <Layout user={user} trainingSession={trainingSession} loading={false}>
-      <h1 align="center">Workout Page</h1>
+      <h1 align="center">{trainingSession.trainingSessionName}</h1>
       {loading && <p>Loading login info...</p>}
       {!trainingSession && <p> no workout</p>}
       <Grid container alignItems="center" spacing={5}>
@@ -121,44 +129,17 @@ function Train({ user, trainingSession }) {
         </Grid>
       </Grid>
       <br />
-      <WorkoutTable trainingSession={trainingSession} liveGroupNumber={liveGroup.groupNum} />
+      <SessionTableForm trainingSession={trainingSession} liveGroupNumber={liveGroup.groupNum} localUser={localUser}/>
     </Layout>
   );
 }
 
-export async function getServerSideProps({ req, res }) {
-  const session = await auth0.getSession(req);
-  if (!session || !session.user) {
-    console.log('no sesssion and no user');
-    res.writeHead(302, {
-      Location: '/',
-    });
-    res.end();
-    return;
-  }
 
-  const { user } = session;
-  try {
-    const { localUser } = await loginLocal({ user });
-    const { trainingSession } = await getTrainingSession({ localUser });
-
-    if (!session || !session.user) {
-      console.log('no sesssion and no user');
-      // eslint-disable-next-line consistent-return
-      return { props: { user: null } };
-    }
-    // eslint-disable-next-line consistent-return
-    return {
-      props: {
-        user: session.user,
-        trainingSession,
-      },
-    };
-  } catch (e) {
-    // eslint-disable-next-line consistent-return
-    return { props: { user: session.user } };
-  }
+export async function getServerSideProps({ req, res }) {  
+  withPageAuthRequired();
+  return serverSideHandler(req, res);
 }
+
 
 Train.propTypes = {
   user: PropTypes.shape({
@@ -175,6 +156,7 @@ Train.propTypes = {
   }),
 
   trainingSession: PropTypes.shape({
+    trainingSessionName: PropTypes.string,
     exercises: PropTypes.arrayOf(
       PropTypes.shape({
         _id: PropTypes.string,
@@ -182,21 +164,34 @@ Train.propTypes = {
         exerciseNumber: PropTypes.number,
         totalSets: PropTypes.number,
         groupNumber: PropTypes.number,
-        numReps: PropTypes.array,
+        numReps: PropTypes.number,
         resistance: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
         resistanceType: PropTypes.string,
         setsCompleted: PropTypes.number,
         complete: PropTypes.bool,
         workTime: PropTypes.number,
         restTime: PropTypes.number,
+        exerciseIntensity: PropTypes.string,
       }),
     ),
+  }),
+  localUser: PropTypes.shape({
+    email: PropTypes.string,
+    isAdmin: PropTypes.bool,
+    given_name: PropTypes.string,
+    family_name: PropTypes.string,
+    nickname: PropTypes.string,
+    trainingSessionOrder: PropTypes.array,
+    nextSession: PropTypes.string,
+    sub: PropTypes.string,
+    updated_at: PropTypes.string,
   }),
 };
 
 Train.defaultProps = {
   user: null,
   trainingSession: null,
+  localUser: null,
 };
 
 export default Train;

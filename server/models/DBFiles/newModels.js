@@ -37,9 +37,9 @@ exercises have the keys:
 
 each exercise is performed in multiple times, each time a user performs an exercise they complete a set
 
-when all the exercises of all the sets in all the groups are completed, the user has completed the workout
+when all the exercises of all the sets in all the groups are complete, the user has complete the workout
 
-the workout will then be saved as completed, and the next workout will be generated with user input
+the workout will then be saved as complete, and the next workout will be generated with user input
     the user will input weather or not to increase repetitions or resistance in their next workout
 
 a user can have 3-12 workouts that repeat 6-8 times over the course of a program cycles
@@ -138,7 +138,7 @@ const workoutSchema = new Schema({
   uid: String,
   program_id: String,
   date: Date,
-  completed: Boolean,
+  complete: Boolean,
   exerciseGroups: [
     [
       {
