@@ -62,7 +62,7 @@ export default async (req, res) => {
     const trainingSessionObject = {
       uid: localUser._id,
       date: '',
-      completed: false,
+      complete: false,
       trainingSessionName: trainingSession.trainingSessionName,
       exercises: addExerciseNumber(exercisesArray),
     };

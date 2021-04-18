@@ -11,35 +11,38 @@ import { analyzeTrainingSessions } from '../../lib/analyzeTrainingSession/analyz
 export default async (req, res) => {
   await connectToDb();
   const { localUser } = req.body;
-  const { trainingSession } = req.body;
+  const { liveTrainingSession } = req.body;
   console.log('hit completeTrainingSesssion');
-  console.log('trainingSession._id');
-  console.log(trainingSession._id);
-  const trainingSessionId = trainingSession._id;
+  console.log(req.body);
+  
+  const liveTrainingSessionId = liveTrainingSession._id;
   // delete the _id for the new trainingSession
-  const updatedTrainingSession = trainingSession;
-  delete updatedTrainingSession._id;
+  
 
   try {
     // get previous trainingSession with the same user and name
     const lastCompletedSession = await TrainingSession.getLastCompletedTrainingSessionByName(
-      trainingSession.uid,
-      trainingSession.trainingSessionName,
+      liveTrainingSession.uid,
+      liveTrainingSession.trainingSessionName,
     );
-    console.log('no lastCompletedSession');
+    console.log('liveTrainingSession.exercises.complete');
+    console.log(liveTrainingSession.exercises[6].complete);
     //console.log(lastCompletedSession);
 
-    const nextTrainingSession = analyzeTrainingSessions(lastCompletedSession, trainingSession);
-    
-    const completeFirstTrainingSession = await TrainingSession.completeTrainingSession(
-      trainingSessionId,
+    const nextTrainingSession = analyzeTrainingSessions(lastCompletedSession, liveTrainingSession);
+    console.log('liveTrainingSession.exercises.complete');
+    console.log(liveTrainingSession.exercises[6].complete);
+
+    const completeTrainingSession = await TrainingSession.completeTrainingSession(
+      liveTrainingSessionId,
+      liveTrainingSession,
       nextTrainingSession,
     );
 
     // update localUser.nextSession
     const { trainingSessionOrder } = localUser;
     const tSessionOrderLength = trainingSessionOrder.length;
-    const tSessionIndex = trainingSessionOrder.indexOf(trainingSession.trainingSessionName);
+    const tSessionIndex = trainingSessionOrder.indexOf(liveTrainingSession.trainingSessionName);
     let nextSessionIndex = tSessionIndex + 1;
 
     if (tSessionIndex === tSessionOrderLength - 1) {
@@ -52,7 +55,7 @@ export default async (req, res) => {
       nextSessionName,
     );
 
-    res.json({ completeFirstTrainingSession, updateLocalUserNextSession });
+    res.json({ completeTrainingSession, updateLocalUserNextSession });
   } catch (e) {
     console.log(e);
     res.json(e);

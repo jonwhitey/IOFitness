@@ -10,15 +10,15 @@ const mongoSchema = new Schema({
   uid: String,
   trainingSessionName: String,
   date: Date,
-  completed: Boolean,
+  complete: Boolean,
   exercises: [
     {
+      _id: false,
       exerciseName: String,
       exerciseNumber: Number,
       groupNumber: Number,
       totalSets: Number,
-      setsCompleted: { type: Number, default: 0 },
-      numReps: Array,
+      numReps: Number,
       resistance: Schema.Types.Mixed,
       resistanceType: String,
       exerciseIntensity: String,
@@ -63,12 +63,14 @@ class TrainingSessionClass {
 
   static async getTrainingSession(uid, trainingSessionName) {
     console.log('TrainingSession.getTrainingSession')
+    console.log(uid);
+    console.log(trainingSessionName);
     try {
-      const trainingSession = await this.findOne({ uid, trainingSessionName, 'completed': false }, ).sort({'date': -1}).lean();
+      const trainingSession = await this.findOne({ uid, trainingSessionName, 'complete': false }, ).sort({'date': -1}).lean();
       return trainingSession;
     } catch (e) {
       console.log(e);
-      console.log('could not find new program');
+      console.log('could not find trainingSession');
       return e;
     }
   }
@@ -78,7 +80,7 @@ class TrainingSessionClass {
       const lastTrainingSession = await this.findOne({
         uid,
         trainingSessionName,
-        completed: true,
+        complete: true,
       })
         .sort({ date: -1 })
         .lean();
@@ -89,20 +91,34 @@ class TrainingSessionClass {
     }
   }
 
-  static async completeTrainingSession(completedSessionId, nextSession) {
+  static async completeTrainingSession(completedSessionId, completedSession, nextSession) {
     // find and update the previous session
     console.log('TrainingSession.completeTrainingSession');
-    console.log({completedSessionId});
+    
     try {
+      const trainingSession = await this.findOne({_id: completedSessionId});
+      console.log('found training session');
+      trainingSession.exercises = completedSession.exercises;
+      trainingSession.complete = completedSession.complete;
+      trainingSession.date = Date.now();
+
+      await trainingSession.save();
+      nextSession.complete = false;
+      const createNextSession = await this.create(nextSession);
+
+      return createNextSession;
+
+      /*
       const sessionComplete = await this.findOneAndUpdate(
         { _id: completedSessionId },
-        { completed: true, date: Date.now() },
+        { exercises: completedSession.exercises, complete: completedSession.complete, date: Date.now() },
       );
       // console.log(sessionComplete);
       console.log(nextSession.exercises[8]);
-      console.log(nextSession.completed);
+      console.log(nextSession.complete);
       const createNextSession = await this.create(nextSession);
       return [sessionComplete, createNextSession];
+      */
       // create the next session
     } catch (e) {
       console.log('could not completeTrainingSession');
@@ -112,7 +128,7 @@ class TrainingSessionClass {
   }
 
   // search for a program with a users uid
-  // find the next trainingSession in the workouts Array where completed = false
+  // find the next trainingSession in the workouts Array where complete = false
   // return just that trainingSession and the program _id
 }
 

@@ -8,7 +8,7 @@ const { Schema } = mongoose;
 const workoutSchema = new Schema({
   uid: String,
   date: Date,
-  completed: Boolean,
+  complete: Boolean,
   exercises: [
     {
       exerciseName: String,
@@ -85,7 +85,7 @@ class ProgramClass {
   }
 
   // search for a program with a users uid
-  // find the next workout in the workouts Array where completed = false
+  // find the next workout in the workouts Array where complete = false
   // return just that workout and the program _id
 }
 

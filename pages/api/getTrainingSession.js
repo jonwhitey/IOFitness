@@ -15,7 +15,8 @@ export default async (req, res) => {
       localUser._id,
       localUser.nextSession,
     );
-    console.log('trainingSession!');
+    
+    console.log('getTrainingSession!');
     res.json({ trainingSession });
   } catch (e) {
     res.json(e);

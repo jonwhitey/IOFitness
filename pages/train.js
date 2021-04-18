@@ -1,3 +1,4 @@
+
 /* eslint-disable no-nested-ternary */
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
@@ -14,13 +15,15 @@ import ExerciseCard from '../components/train/ExerciseCard';
 import WorkoutTimer from '../components/train/SessionTimer';
 import TimerControl from '../components/train/TimerControl';
 import WorkoutTable from '../components/train/SessionTable';
+import SessionTableForm from '../components/train/SessionTableForm';
 import { executeTimerLogic } from '../lib/trainPage/timerLogic';
 import {serverSideHandler} from '../lib/serverSideHandler/serverSideHandler';
-
+import { useForm, Controller, useFieldArray } from 'react-hook-form';
+import { DevTool } from '@hookform/devtools';
 /* 
 need to:
 - write a map function that creates
-
+  
 Problems to fix:
 - need to write some logic for increasing reps and resistance - find my rules
   - 2x2
@@ -66,20 +69,24 @@ function Train(props) {
     exercise: groupedExercises[1].exercises[0],
   });
 
+  /*
   const initExerciseCompletionMap = new Map(trainingSession.exercises.map(obj => [obj.exerciseName, obj.complete]));
   console.log({initExerciseCompletionMap});
-
+  */
 
   /*
   const [exerciseCompletionMap, setExerciseCompletionMap] = useState(initExerciseCompletionMap);
+  */
 
   const updateLiveGroup = (num) => {
+    console.log('updateLiveGroup')
     const updatedLiveGroup = executeTimerLogic(liveGroup, num, groupedExercises);
     setLiveGroup({
       ...updatedLiveGroup,
     });
+    console.log(updatedLiveGroup);
   };
-  */
+
   const [key, setKey] = useState(1);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -106,18 +113,6 @@ function Train(props) {
     updateLiveGroup,
     handleKey,
   };
-  
-  const handleCompleteTrainingSession = async () => {
-    try {
-      const isComplete = await completeTrainingSession({ localUser, trainingSession });
-      if (isComplete) {
-        router.push({ pathname: '/train' });
-        return;
-      }
-    } catch (e) {
-      console.log(e);
-    }
-  };
 
   return (
     <Layout user={user} trainingSession={trainingSession} loading={false}>
@@ -133,9 +128,8 @@ function Train(props) {
           <ExerciseCard {...liveGroup} />
         </Grid>
       </Grid>
-      <Button onClick={handleCompleteTrainingSession}>Complete Session</Button>
       <br />
-      <WorkoutTable trainingSession={trainingSession} liveGroupNumber={liveGroup.groupNum} {...exerciseCompletionMap} setExerciseCompletionMap={setExerciseCompletionMap}/>
+      <SessionTableForm trainingSession={trainingSession} liveGroupNumber={liveGroup.groupNum} localUser={localUser}/>
     </Layout>
   );
 }
@@ -170,13 +164,14 @@ Train.propTypes = {
         exerciseNumber: PropTypes.number,
         totalSets: PropTypes.number,
         groupNumber: PropTypes.number,
-        numReps: PropTypes.array,
+        numReps: PropTypes.number,
         resistance: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
         resistanceType: PropTypes.string,
         setsCompleted: PropTypes.number,
         complete: PropTypes.bool,
         workTime: PropTypes.number,
         restTime: PropTypes.number,
+        exerciseIntensity: PropTypes.string,
       }),
     ),
   }),

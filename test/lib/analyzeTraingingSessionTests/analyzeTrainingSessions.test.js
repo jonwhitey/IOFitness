@@ -21,17 +21,16 @@ const {
   trainingSession1,
   trainingSession2,
   progressedTrainingSession,
-  partiallyProgressedTrainingSession,
-  fullWorkoutWithIds,
-  progressedFullWorkoutWithIds,
-  partiallyProgressedExercisesWithIds,
-  squatWarmupWithIds,
-  unprogressedExercisesWithIds,
-  unprogressedLoopBandExerciseWithId,
-  progressedLoopBandExerciseWithId,
+  partiallyProgressedTrainingSession, 
+  completedUnprogressedExercises,
+  completedUnprogressedSquatExercises,
+  completedUnprogressedLoopBandExercise,
+  completedProgressedLoopBandExercise,
+  completedSquatWarmup, 
 } = require('./testSetup/analyzeTSessionData');
 
-const {squatWarmup, fullWorkout1} = require('../../../server/models/DBFiles/trainingSessions')
+const {completeAllExercises } = require('../../../lib/analyzeTrainingSession/functions/completeAllExercises');
+const {squatWarmup, unprogressedSquatExercises, fullSquatExerciseList, progressedSquatExerciseList} = require('../../../server/models/DBFiles/trainingSessions');
 
 describe('analyzeTrainingSession unit tests', () => {
   // setup
@@ -44,113 +43,131 @@ describe('analyzeTrainingSession unit tests', () => {
   // test isFirstTrainingSession
 
   describe('isFirstTrainingSession', () => {
-    it('recognizes that only the first session is completed', async () => {
+    it('recognizes that only the first session is complete', async () => {
       // set up
       const lastCompletedSession = null;
       // exercise
-      const result = isFirstTrainingSession(lastCompletedSession);
+      const actualResult= isFirstTrainingSession(lastCompletedSession);
       const expectedResult = true;
       // verify
-      assert.equal(result, expectedResult);
+      assert.equal(actualResult, expectedResult);
     });
     it('regcognizes that it is not the first session', async () => {
       // set up
       const lastCompletedSession = trainingSession2;
       const expectedResult = false;
       // exercise
-      const result = isFirstTrainingSession(lastCompletedSession);
+      const actualResult= isFirstTrainingSession(lastCompletedSession);
       // verify
-      assert.equal(result, expectedResult);
+      assert.equal(actualResult, expectedResult);
     });
   });
   describe('repeatSession', () => {
-    it('returns the same session without the _id field', async () => {
+    it('returns the same session without the trainingSession or exercises _id field and complete: false', async () => {
       // set up
       const completedSession = trainingSession1;
+      const expectedResultExercises = trainingSession1.exercises.map(e => ({...e, complete: false}));
       const expectedResult = completedSession;
+      expectedResult.exercises = expectedResultExercises
       delete completedSession._id;
       // exercise
-      const result = repeatSession(completedSession);
+      const actualResult= repeatSession(completedSession);
+      
       // verify
-      assert.deepEqual(result, expectedResult);
+      assert.deepEqual(actualResult, expectedResult);
     });
   });
   describe('compareTrainingSessions', () => {
     it('returns the entire list of exercises when two sessions are equal', async () => {
       // set up
-      const completedSession = trainingSession1;
-      const lastCompletedSession = trainingSession2;
-      const expectedResult = trainingSession2.exercises;
+      console.log('setup');
+      const completedSession = completeAllExercises(trainingSession1, 'trainingSession');
+      const lastCompletedSession = completeAllExercises(trainingSession2, 'trainingSession');
+      const expectedResult = lastCompletedSession.exercises;
 
       // exercise
-      const result = compareTrainingSessions(completedSession, lastCompletedSession);
+      const actualResult= compareTrainingSessions(lastCompletedSession, completedSession);
+      console.log('compareTrainingSessions1');
+      console.log(completedSession.exercises[8]);
+      console.log(lastCompletedSession.exercises[8]);
+      //console.log(actualResult);
       // verify
-      assert.deepEqual(result, expectedResult);
+      assert.deepEqual(actualResult, expectedResult);
     });
     it('takes a full progressed exercise array and only returns the warmup', async () => {
       // set up
-      const completedSession = progressedTrainingSession;
-      const lastCompletedSession = trainingSession2;
-      const expectedResult = squatWarmupWithIds;
+
+      const completedSession = completeAllExercises(progressedTrainingSession, 'trainingSession');
+      const lastCompletedSession = completeAllExercises(trainingSession2, 'trainingSession');
+      const expectedResult = completedSquatWarmup;
+      console.log('expectedREsult1');
+      console.log(expectedResult[1]);
 
       // exercise
-      const result = compareTrainingSessions(completedSession, lastCompletedSession);
+      const actualResult= compareTrainingSessions(completedSession, lastCompletedSession);
       // verify
-      assert.deepEqual(result, expectedResult);
+      assert.deepEqual(actualResult, expectedResult);
     });
 
     // eslint-disable-next-line max-len
     it('takes a partially progressed exercise array and returns exercises that have not been progressed and the warmup', async () => {
-      const completedSession = partiallyProgressedTrainingSession;
-      const lastCompletedSession = trainingSession2;
-      const expectedResult = squatWarmupWithIds.concat(unprogressedExercisesWithIds);
+      const completedSession = completeAllExercises(partiallyProgressedTrainingSession, 'trainingSession');
+      const lastCompletedSession = completeAllExercises(trainingSession2, 'trainingSession');
+      const expectedResult = completedUnprogressedSquatExercises;
 
       // exercise
-      const result = compareTrainingSessions(completedSession, lastCompletedSession);
+      const actualResult= compareTrainingSessions(completedSession, lastCompletedSession);
+      console.log('compareTrainingSessions');
+      console.log(actualResult.length);
       // verify
-      assert.deepEqual(result, expectedResult);
+      assert.deepEqual(actualResult, expectedResult);
     });
   });
   describe('increaseRepsOrResistance', () => {
     it('correctly increases loopband reistance', async () => {
       // set up
-      const exercisesToProgress = unprogressedLoopBandExerciseWithId;
-      const expectedResult = progressedLoopBandExerciseWithId;
-      console.log('EXERCISE TO PROGRESS');
-      console.log(exercisesToProgress);
+      const exercisesToProgress = completedUnprogressedLoopBandExercise;
+      const expectedResult = completedProgressedLoopBandExercise;
       // exercise
-      const result = increaseRepsOrResistance(exercisesToProgress);
+      const actualResult= increaseRepsOrResistance(exercisesToProgress);
       // verify
-      assert.deepEqual(result, expectedResult);
+      assert.deepEqual(actualResult, expectedResult);
     });
   });
 
   describe('progressExercises', () => {
     it('correctly progresses a list of exercsises', async () => {
       // set up
-      const exercisesToProgress = fullWorkoutWithIds;
-      const expectedResult = progressedFullWorkoutWithIds;
+      const exercisesToProgress = fullSquatExerciseList;
+      const expectedResult = progressedSquatExerciseList;
 
       // exercise
-      const result = progressExercises(exercisesToProgress);
+      const actualResult= progressExercises(exercisesToProgress);
       // verify
-      assert.deepEqual(result, expectedResult);
+      assert.deepEqual(actualResult, expectedResult);
     });
   });
 
   describe('compileSessionExercises', () => {
-    it('correctly compiles the list of exercises', async () => {
+    it('returns the same traingingSession with complete: false', async () => {
       // fullworkout
       // warmup
-      const fullWorkoutExercises = trainingSession1.exercises;
+      const nextSession = completeAllExercises(trainingSession1, 'trainingSession');
+
+      let fullWorkoutExercises = trainingSession2.exercises.map(v =>( {...v, complete: false, }));
       const warmup = squatWarmup;
       // print the full workout
-
+      console.log('compilesed');
+      console.log(fullWorkoutExercises[8]);
       const expecetedResult = fullWorkoutExercises;
 
-      const result = compileSessionExercises(trainingSession1, warmup);
+      const actualResult= compileSessionExercises(nextSession, warmup);
+      console.log('EXERCISE 8');
+      console.log(nextSession.exercises[8]);
+      console.log(actualResult[8]);
+      console.log(expecetedResult[8]);
 
-      assert.deepEqual(result, expecetedResult);
+      assert.deepEqual(actualResult, expecetedResult);
     })
   })
 });

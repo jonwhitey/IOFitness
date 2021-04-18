@@ -64,8 +64,11 @@ const useStyles = makeStyles((theme) => ({
   tCell: {
     color: 'white',
   },
+  TableRow: {
+    height: '20px',
+  }
 }));
-export default function WorkoutTable(props) {
+export default function SessionTable(props) {
   const classes = useStyles();
   // liveGroup props
   const { trainingSession } = props;
@@ -84,7 +87,8 @@ export default function WorkoutTable(props) {
   // remove from completedExerciseArray if false
   // check all option
 
-  
+  const handleChange = {};
+     
 
   return (
     <TableContainer component={Paper}>
@@ -108,7 +112,7 @@ export default function WorkoutTable(props) {
               <TableCell align="right" className={classes.tCell}>
                 <Checkbox
                 checked={false}
-                onChange={handleChange(exercise.exerciseName)}
+                onChange={handleChange}
                 name="checkedF"
                 indeterminate
                 />    
@@ -135,12 +139,11 @@ export default function WorkoutTable(props) {
     </TableContainer>
   );
 }
-WorkoutTable.propTypes = {
+SessionTable.propTypes = {
   liveGroupNumber: PropTypes.number,
   trainingSession: PropTypes.shape({
     exercises: PropTypes.arrayOf(
       PropTypes.shape({
-        _id: PropTypes.string,
         exerciseNumber: PropTypes.number,
         exerciseName: PropTypes.string,
         totalSets: PropTypes.number,
@@ -157,7 +160,7 @@ WorkoutTable.propTypes = {
   }),
 };
 
-WorkoutTable.defaultProps = {
+SessionTable.defaultProps = {
   liveGroupNumber: 0,
   trainingSession: null,
 };
