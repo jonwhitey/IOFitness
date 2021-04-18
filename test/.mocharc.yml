@@ -1,9 +1,0 @@
-timeout: 10000
-require: '@babel/register'
-file: 
-  - 'test/mocha.setup.js'
-  - 'test/mocha.teardown.js'
-
-
-
-

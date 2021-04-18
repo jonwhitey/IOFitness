@@ -18,3 +18,4 @@ server/models/.UserProfiles.js
 .todo
 *.log
 .env
+/test
