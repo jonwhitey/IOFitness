@@ -1,8 +1,16 @@
 // next.config.js
 module.exports = {
   poweredByHeader: false,
+  target: 'serverless'
+};
+
+
+/*
+module.exports = {
+  poweredByHeader: false,
   target: 'serverless',
   // imports mp3's
+  webpack5: false,
   webpack(config, options) {
     const { isServer } = options;
     config.module.rules.push({
@@ -25,3 +33,4 @@ module.exports = {
     return config;
   },
 };
+*/
