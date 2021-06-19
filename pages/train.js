@@ -10,7 +10,6 @@ import { useRouter } from 'next/router';
 import Layout from '../components/layout';
 import { useUser, withPageAuthRequired } from '@auth0/nextjs-auth0';
 import { completeTrainingSession } from '../lib/api/customer';
-import sound1 from '../public/sounds/hero1.mp3';
 import ExerciseCard from '../components/train/ExerciseCard';
 import WorkoutTimer from '../components/train/SessionTimer';
 import TimerControl from '../components/train/TimerControl';
@@ -20,6 +19,7 @@ import { executeTimerLogic } from '../lib/trainPage/timerLogic';
 import {serverSideHandler} from '../lib/serverSideHandler/serverSideHandler';
 import { useForm, Controller, useFieldArray } from 'react-hook-form';
 import { DevTool } from '@hookform/devtools';
+const sound1 = new URL('../public/sounds/hero1.mp3', import.meta.url);
 /* 
 need to:
 - write a map function that creates
