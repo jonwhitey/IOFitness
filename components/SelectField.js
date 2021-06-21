@@ -4,13 +4,14 @@ import PropTypes from 'prop-types';
 import { styleSelectInput } from './SharedStyles';
 
 function SelectField({ label, defaultValue, name, array, control, handleMultiChange, errors }) {
+  console.log(array);
   return (
-    <FormControl className="formInput" error={Boolean(errors.wordlevel)} style={styleSelectInput}>
+    <FormControl className="formInput" error={Boolean(errors)} style={styleSelectInput}>
       <InputLabel shrink id="demo-simple-select-placeholder-label-label">
         {label}
       </InputLabel>
       <Controller
-        as={
+        render= {({ field }) => (
           // eslint-disable-next-line react/jsx-wrap-multilines
           <Select defaultValue={defaultValue}>
             {array.map((x) => (
@@ -19,7 +20,7 @@ function SelectField({ label, defaultValue, name, array, control, handleMultiCha
               </MenuItem>
             ))}
           </Select>
-        }
+        )}
         name={name}
         rules={{ required: 'this is required' }}
         control={control}
@@ -41,7 +42,7 @@ SelectField.propTypes = {
   control: PropTypes.object.isRequired,
   handleMultiChange: PropTypes.func.isRequired,
   // eslint-disable-next-line react/forbid-prop-types
-  errors: PropTypes.object.isRequired,
+  errors: PropTypes.object,
 };
 
 SelectField.defaultProps = {

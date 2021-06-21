@@ -75,67 +75,27 @@ const hipBandArray = ['yellow', 'red', 'blue'];
 // add exercise intensity - warmup, strength, hypertrophy, endurance, finisher
 // movement type - push, pull, lowerbody, coreStability, shoulderStability, shoulderMobility, hipMobility, hipStability, movementPattern
 
-const arraySelect = (str, exerciseName) => {
-  if (str === 'push') {
-    return push;
-  }
-  if (str === 'pull') {
-    return pull;
-  }
-  if (str === 'lower body') {
-    return lowerBody;
-  }
-  if (str === 'warmup') {
-    return repsArray;
-  }
-  if (str === 'finisher') {
-    return repsArray;
-  }
-  if (
-    str === 'coreStability' ||
-    str === 'hipStability' ||
-    str === 'shoulderStability' ||
-    str === 'shoulderMobility' ||
-    str === 'movementPattern'
-  ) {
-    return warmup;
-  }
-  if (str === 'lbs') {
-    return lbsArray;
-  }
-  if (str === 'kgs') {
-    return kgsArray;
-  }
-  if (str === 'loop band assistance') {
-    return loopBandAssistanceArray;
-  }
-  if (str === 'none') {
-    return lbsArray;
-  }
-  if (str === 'loop band resistance') {
-    return loopBandResistanceArray;
-  }
-  if (str === 'crossover cords') {
-    return crossOverCordsArray;
-  }
-  if (str === 'hip bands') {
-    return hipBandArray;
-  }
-  if (str === 'strength') {
-    return strengthRepsArray;
-  }
-  if (str === 'hypertrophy') {
-    return hypertrophyRepsArray;
-  }
-  if (str === 'endurance') {
-    return enduranceRepsArray;
-  }
-  if (str === null) {
-    console.log('null str entered to arraySelect');
-    return [0];
-  }
-  return str;
-};
+const arraySelect = {
+  'push': push,
+  'pull': pull,
+  'lowerBody': lowerBody,
+  warmup: repsArray,
+  'finisher': repsArray,
+  'coreStability': warmup,
+  'hipStability': warmup,
+  'shoulderStability': warmup,
+  'shoulderMobility': warmup, 
+  'movementPattern': warmup,
+  'lbs': lbsArray,
+  'kgs': kgsArray,
+  'loopBandAssistance': loopBandAssistanceArray,
+  'loopBandResistance': loopBandResistanceArray,
+  'crossoverCords': crossOverCordsArray,
+  'hip bands': hipBandArray,
+  'strength': strengthRepsArray,
+  'hypertrophy': hypertrophyRepsArray,
+  'endurance': enduranceRepsArray,
+  };
 const groupArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
 
 const totalSetsArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];

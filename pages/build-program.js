@@ -97,7 +97,7 @@ function BuildProgram(props) {
                   label="Session Name"
                   defaultValue={`Session ${trainingSessionIndex + 1}`}
                   autoFocus
-                  inputRef={register}
+                  {...register(`newTrainingSessions[${trainingSessionIndex}].trainingSessionName`)}
                 />
                 {trainingSession.map((exercise, exerciseIndex) => (
                   <Grid container className={classes.root} spacing={0} key={exerciseIndex}>
@@ -178,8 +178,12 @@ function BuildProgram(props) {
                         errors={errors}
                       />
                     </Grid>
-                    <input type="hidden" ref={register({setValueAs: v => parseInt(v),})} name={`newTrainingSessions[${trainingSessionIndex}][${exerciseIndex}].workTime`} />
-                    <input type="hidden" ref={register({setValueAs: v => parseInt(v),})} name={`newTrainingSessions[${trainingSessionIndex}][${exerciseIndex}].restTime`} />
+                    <input
+                      type="hidden"
+                      name={`newTrainingSessions[${trainingSessionIndex}][${exerciseIndex}].workTime`} />
+                    <input
+                      type="hidden"
+                      name={`newTrainingSessions[${trainingSessionIndex}][${exerciseIndex}].restTime`} />
                   </Grid>
                 ))}
               </Paper>
