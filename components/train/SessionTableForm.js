@@ -4,8 +4,6 @@ import { DevTool } from "@hookform/devtools";
 import PropTypes from "prop-types";
 import Button from "@material-ui/core/Button";
 import { makeStyles } from "@material-ui/core/styles";
-import { TextField, Slider } from "@material-ui/core";
-import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import { useRouter } from "next/router";
 import Table from "@material-ui/core/Table";
@@ -19,20 +17,7 @@ import { useUser, withPageAuthRequired } from "@auth0/nextjs-auth0";
 import { serverSideHandler } from "../../lib/serverSideHandler/serverSideHandler";
 import SelectField from "../SelectField";
 import { styleForm, styleTextField } from "../SharedStyles";
-import {
-  createMultipleTrainingSessions,
-  loginLocal
-} from "../../lib/api/customer";
-import {
-  groupArray,
-  totalSetsArray,
-  timeArray,
-  resistanceTypeArray,
-  arraySelect,
-  exerciseIntensityArray,
-  trueOrFalseArray
-} from "../../server/models/DBFiles/buildWorkoutDefaults";
-import { trainingSessions } from "../../server/models/DBFiles/trainingSessions";
+import { arraySelect } from "../../server/models/DBFiles/buildWorkoutDefaults";
 import { completeTrainingSession } from "../../lib/api/customer";
 
 const useStyles = makeStyles(theme => ({
@@ -96,6 +81,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function SessionTableForm(props) {
+  console.log('sessionTableForm');
   const classes = useStyles();
   // liveGroup props
   const { trainingSession } = props;
@@ -119,7 +105,7 @@ export default function SessionTableForm(props) {
 
   const handleChange = {};
 
-  const { register, handleSubmit, setValue, errors, control, watch } = useForm({
+  const { register, handleSubmit, setValue, errors, control, getValues } = useForm({
     defaultValues: {
       uid: localUser ? localUser.id : "",
       liveTrainingSession: trainingSession
@@ -150,11 +136,12 @@ export default function SessionTableForm(props) {
   const handleMultiChange = selectedOption => {
     setValue("reactSelect", selectedOption);
   };
-  // eslint-disable-next-line no-unused-vars
-  const { liveTrainingSession } = watch();
+
+  //const { liveTrainingSession } = watch();
 
   const completeAll = (event, data) => {
     console.log("completeAll");
+    const liveTrainingSession = getValues('liveTrainingSession');
     const toggleComplete = !liveTrainingSession.complete;
     setValue("liveTrainingSession.complete", toggleComplete);
     trainingSession.exercises.forEach((exercise, exerciseIndex) => {
@@ -163,6 +150,7 @@ export default function SessionTableForm(props) {
         toggleComplete
       );
     });
+    console.log('done');
   };
 
   return (
@@ -276,8 +264,9 @@ export default function SessionTableForm(props) {
                   <TableCell align="right" className={classes.tCell}>
                     <SelectField
                       defaultValue={exercise.numReps}
+                      objectKey={exercise.exerciseIntensity}
                       name={`liveTrainingSession.exercises[${exerciseIndex}].numReps`}
-                      array={`arraySelect[${exercise.exerciseIntensity}]`}
+                      array={arraySelect[`${exercise.exerciseIntensity}`]}
                       control={control}
                       handleMultiChange={handleMultiChange}
                       errors={errors}
@@ -287,8 +276,9 @@ export default function SessionTableForm(props) {
                   <TableCell align="right" className={classes.tCell}>
                     <SelectField
                       defaultValue={exercise.resistance}
+                      objectKey={exercise.resistanceType}
                       name={`liveTrainingSession.exercises[${exerciseIndex}].resistance`}
-                      array={`arraySelect[${exercise.resistanceType}]`}
+                      array={arraySelect[`${exercise.resistanceType}`]}
                       control={control}
                       handleMultiChange={handleMultiChange}
                       errors={errors}

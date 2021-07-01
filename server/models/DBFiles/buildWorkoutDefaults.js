@@ -52,7 +52,7 @@ const movement = ['push', 'pull', 'lower body'];
 const strengthRepsArray = [5, 6, 7];
 const hypertrophyRepsArray = [8, 9, 10];
 const enduranceRepsArray = [12, 13, 14];
-const repsArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
+const repsArray = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
 // make workouts array of objects
 
 const resistanceTypeArray = [
@@ -79,7 +79,7 @@ const arraySelect = {
   'push': push,
   'pull': pull,
   'lowerBody': lowerBody,
-  warmup: repsArray,
+  'warmup': repsArray,
   'finisher': repsArray,
   'coreStability': warmup,
   'hipStability': warmup,
@@ -95,6 +95,7 @@ const arraySelect = {
   'strength': strengthRepsArray,
   'hypertrophy': hypertrophyRepsArray,
   'endurance': enduranceRepsArray,
+  'none': repsArray,
   };
 const groupArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
 

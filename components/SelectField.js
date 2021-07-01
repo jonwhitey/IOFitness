@@ -3,8 +3,9 @@ import { Controller } from 'react-hook-form';
 import PropTypes from 'prop-types';
 import { styleSelectInput } from './SharedStyles';
 
-function SelectField({ label, defaultValue, name, array, control, handleMultiChange, errors }) {
+function SelectField({ label, defaultValue, name, array, control, handleMultiChange, errors, objectKey }) {
   console.log(array);
+  console.log(objectKey);
   return (
     <FormControl className="formInput" error={Boolean(errors)} style={styleSelectInput}>
       <InputLabel shrink id="demo-simple-select-placeholder-label-label">

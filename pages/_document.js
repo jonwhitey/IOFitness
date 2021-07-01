@@ -24,6 +24,7 @@ No flash of style
 
 class MyDocument extends Document {
   render() {
+    console.log('render');
     return (
       <Html
         lang="en"
